@@ -7,9 +7,9 @@ class fitness():
         # sine configuration
         # magnitude for sine, this should be max and min angles of legs,
         # for right now this only affects coxa, so this would be max and min rotation of coxa, this should be in radians
-        self.sin_mag = 1
+        self.sin_mag: float = 1
         # period for sine
-        self.sin_period = 0.5
+        self.sin_period:float = 0.5
 
     def leg_angles(self,individual:Individual) -> float:
         # this function will look at joints and use sine as target
