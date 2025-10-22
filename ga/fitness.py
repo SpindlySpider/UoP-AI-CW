@@ -5,7 +5,8 @@ class fitness():
     # used to determine fitness of a individual
     def __init__(self):
         # sine configuration
-        # magnitude for sine
+        # magnitude for sine, this should be max and min angles of legs,
+        # for right now this only affects coxa, so this would be max and min rotation of coxa, this should be in radians
         self.sin_mag = 1
         # period for sine
         self.sin_period = 0.5
