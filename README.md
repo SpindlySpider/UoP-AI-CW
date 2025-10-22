@@ -4,13 +4,19 @@
 
 ## Genetic algorithm
 
-### chromosomes
+### chromosome
+Current chromosome encoding is a array of size 24 with floats as elements.
+The floats represent radian angles of joints.
+Every 3 elements correspond to a limb (coxa,femur,tibia).
 
-### fitness function 
+An individual is a full gait, so a array of chromosomes.
+
+### fitness function
+Current implementation uses a sine as a target for coxa rotation over multiple frames. hopefully this will lead to a semi realistic movement.
 
 ### selection algorithm
 
-### cross over
+### crossover
 
 ### mutation
 
