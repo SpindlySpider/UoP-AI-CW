@@ -1,3 +1,4 @@
+# 23/10/25
 pusdeo random popultion generation
 array size 24x 300 for individual 
 100 population size - for programming
@@ -15,7 +16,8 @@ fitness func:
  - mathematical algo for errors
  - pose estimation
 
-
+- angle consistancy between frames
+- legs over lap 
 
 
 selection
