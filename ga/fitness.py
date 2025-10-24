@@ -7,7 +7,7 @@ class fitness():
         # sine configuration
         # magnitude for sine, this should be max and min angles of legs,
         # for right now this only affects coxa, so this would be max and min rotation of coxa, this should be in radians
-        self.sin_mag: float = 1
+        self.sin_mag: float = 6
         # period for sine
         self.sin_period:float = 0.5
 
@@ -22,9 +22,13 @@ class fitness():
         for limb_index in range(1,24,3):
             # extract coxa rotation for L1,L2,... etc
             # each entry is a different timestamp of that limbs rotation
-            coxa_list = [individual[row][limb_index] for row in range(len(individual))]
+            coxa_list = [individual[row][limb_index-1] for row in range(len(individual))]
+            # not getting correct amount 
+            # print("indvidual:",individual)
+            # print(" coxalist:",coxa_list)
             opposite = limb_index % 2 == 0
             coxa_fit_val += self.coxa_fitness(coxa_list,opposite)
+        # print("coxa_fit",coxa_fit_val)
 
         # generate fitness for tibia and femur here
         # ...

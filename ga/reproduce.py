@@ -22,6 +22,6 @@ def mutate(population:Population,mut_rate:float) -> Population:
             for g_idx, gene in enumerate(chromosome):
                 if random.random() <= mut_rate:
                     # mutate gene and reassign
-                    gene = gene * 5
+                    gene = random.uniform(-90,90)
                     population[in_idx][c_idx][g_idx] = gene
     return population

@@ -1,6 +1,5 @@
 import random
 from custom_types import Chromosome, Individual, Population
-from typing import Optional
 
 
 class Population_obj():
@@ -18,21 +17,22 @@ class Population_obj():
         }
 
         # max gait = number of entries of poses for each individual
-        self.max_gait: int = 10
-        self.max_pop: int = 1
+        self.max_gait: int = 300
+        self.max_pop: int = 50
 
     def gen_individual(self) -> Individual:
         # set seed so we can regen results
-        random.seed(self.seed)
+        # random.seed(self.seed)
         individual: Individual = []
-        joint_names: list[str] = ["tiba", "coxa", "femur"]
+        joint_names: list[str] = ["tibia", "coxa", "femur"]
         for _ in range(self.max_gait):
             chromosome: Chromosome = []
-            for gene in range(1, 24,):
-                joint: str = joint_names[gene % 3]
+            for gene in range(1, 24):
+                # joint: str = joint_names[gene % 3]
                 # append random value between constrained angle for each joint
-                min, max = self.angle_constraint[joint]
-                chromosome.append(random.uniform(min,max))
+                # min, max = self.angle_constraint[joint]
+                # chromosome.append(random.uniform(min,max))
+                chromosome.append(random.random())
             individual.append(chromosome)
         return individual
 
