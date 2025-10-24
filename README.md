@@ -34,7 +34,13 @@ Current implementation:
     - where `x` is the current frame in the gait (e.g. individual[frame][angle1])
 
     - additionally we can count the current number of the coxa join (e.g. coxa1,cox2) and then inverse the target to ensure that the rotation of the leg behind the current is going in the opposite direction, like in this [video](https://youtu.be/GtHzpX0FCFY)
-    - for example at frame 22 (e.g. individual[22]) we look at the target rotation value, calculated using `coxa1_t=20*sin(0.5*22)+50` which equals `30.00019586898593` for coxa1, however for coxa2, as it is a equal number we instead set the x to negative `coxa2_t=20*sin(0.5*-22)+50` which equals `69.99980413101407`, rounded up coxa 1 is aiming for min rotation (30) where as coxa 2 is aiming for maximum rotation (70)
+    - for example at frame 22 (e.g. individual[22]) we look at the target rotation value, calculated using `coxa1_t=20*sin(0.5*22)+50` which equals `30.00019586898593` for coxa1, however for coxa2, as it is a even number we instead set the x to negative `coxa2_t=20*sin(0.5*-22)+50` which equals `69.99980413101407`, rounded up coxa 1 is aiming for min rotation (30) where as coxa 2 is aiming for maximum rotation (70)
+  ##### picture of coxa 1 and 2 over time
+<img width="623" height="637" alt="image" src="https://github.com/user-attachments/assets/6eadc1d5-36e3-4ae7-8fe2-84f085be5fd0" />
+<img width="680" height="613" alt="image" src="https://github.com/user-attachments/assets/c49797e0-d623-4122-ac96-b954492b6af4" />
+
+- note: according to [this paper](https://ieeexplore.ieee.org/document/4650677) the x-y (which this models rotation is limited to) can move 35 degree,  meaning the fitness function tracks the range of min and max `-17.5,17.5`
+
 
 
 ### selection algorithm
