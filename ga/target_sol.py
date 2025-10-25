@@ -11,37 +11,30 @@ def produce_target(gait_length:int):
                 # if the joint is on the left side invert
                 opposite = not opposite
             if joint % 3 ==0:
-                # idx = (-idx) if opposite else idx
+                # coxa joint rotate
                 target = (23*(math.sin(0.4*idx)))
                 target = (-target) if opposite else target
                 frame.append(target)
             else:
+                # we could use a matplotlib to show timings.
+                # want this on the troth of the coxa rotation
+                # off set the movement so that when the leg is moving forward it is up e.g. rotation 0
                 even_limb = leg_num % 2 == 0 
 
-                if not opposite:
-                    even_limb = not even_limb
-
-                period_offset = 2 if even_limb else 0
-                # period_offset = 0 if even_limb else 2
-
-                # if not opposite:
-                    # period_offset = 0
+                # values obtained through experimentation.
+                period_offset = 15 if even_limb else 2
 
                 sin_val = (0.4*idx)+period_offset
 
-                if opposite:
+                if even_limb:
                     sin_val = (-sin_val)
 
                 target = (100*(math.sin(sin_val))) - 100
-                # target = -(target)
+                # clamp values to -50
                 if target <= -50:
                     target = -50
-                # target = (-target) if opposite else target
-                # target = target if opposite else (-target)
 
                 frame.append(target)
-                # need to check if for leg down we want it to stay at 50 and then go down to 0 when up
-                # frame.append(-50)
         best.append(frame)
     print(best)
     output.output("sol.txt",best)
