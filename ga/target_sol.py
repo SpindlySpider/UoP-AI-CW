@@ -6,22 +6,33 @@ def produce_target(gait_length:int):
         frame = []
         for joint in range(24):
             opposite = (joint) % 2 == 0
+            leg_num = joint // 3
             if joint < 11:
+                # if the joint is on the left side invert
                 opposite = not opposite
             if joint % 3 ==0:
                 # idx = (-idx) if opposite else idx
                 target = (23*(math.sin(0.4*idx)))
                 target = (-target) if opposite else target
                 frame.append(target)
-            # elif joint % 2 == 0:
-                # joint is femur
-                # frame.append(-10)
             else:
-                # idx = idx if opposite else (-idx)
-                # target = ((50)*(math.sin(0.4*idx)))
-                # target = (100*(math.sin(0.4*(-idx)))) -100
-                # 0.2 for peroid looks good, but doesnt do it enough sometimes
-                target = (100*(math.sin(0.4*idx+2))) -100
+                even_limb = leg_num % 2 == 0 
+
+                if not opposite:
+                    even_limb = not even_limb
+
+                period_offset = 2 if even_limb else 0
+                # period_offset = 0 if even_limb else 2
+
+                # if not opposite:
+                    # period_offset = 0
+
+                sin_val = (0.4*idx)+period_offset
+
+                if opposite:
+                    sin_val = (-sin_val)
+
+                target = (100*(math.sin(sin_val))) - 100
                 # target = -(target)
                 if target <= -50:
                     target = -50
