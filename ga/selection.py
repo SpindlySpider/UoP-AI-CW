@@ -1,5 +1,6 @@
 from custom_types import Population
 import random
+import numpy
 
 def roulette(population: Population, fitness: list[float]) -> Population:
     # create list same size as pop
@@ -22,6 +23,13 @@ def roulette(population: Population, fitness: list[float]) -> Population:
                 selected_parents.append(population[individual])
                 break
     return selected_parents
+
+
+def eliteism(population: Population, fitness: list[float],number:int) -> Population:
+    elite_idx = numpy.argsort(fitness)[-number:]
+    elites = [population[i] for i in elite_idx]
+    return elites
+
 
 def tournament(population: Population,fitness: list[float]) -> Population:
     selected_parents: Population = []
