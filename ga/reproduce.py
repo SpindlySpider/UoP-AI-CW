@@ -1,6 +1,7 @@
 from custom_types import Chromosome, Individual,Population
 import random
 
+
 def crossover(parents:Population,gait_length:int,crossover_rate:float) -> Population:
     pop_size: int = len(parents)
     offspring: Population = []
@@ -33,6 +34,6 @@ def mutate(population:Population,mut_rate:float) -> Population:
             for g_idx, gene in enumerate(chromosome):
                 if random.random() <= mut_rate:
                     # mutate gene and reassign
-                    gene = random.uniform(-45,45)
-                    population[in_idx][c_idx][g_idx] = gene
+                    # gene = random.uniform(-45,45)
+                    population[in_idx][c_idx][g_idx] = gene + round(random.uniform(-2,2),2)
     return population
