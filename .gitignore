@@ -2,3 +2,5 @@ venv
 __pycache__
 .git-old
 results.txt
+output.png
+output_opposite.png
