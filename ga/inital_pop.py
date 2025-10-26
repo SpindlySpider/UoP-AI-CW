@@ -1,7 +1,6 @@
 import random
 from custom_types import Chromosome, Individual, Population
 
-
 class Population_obj():
     # object used to track and hold population of GA
     def __init__(self, seed):
@@ -9,16 +8,10 @@ class Population_obj():
         self.seed: int = seed
         # init population list - optional for init
         self.population: Population = []
-        # constraint on min and max angles of joints
-        self.angle_constraint: dict[str, tuple[float, float]] = {
-            "coxa": (-90, 90),
-            "femur": (-90, 90),
-            "tibia": (-90, 90)
-        }
 
         # max gait = number of entries of poses for each individual
         self.max_gait: int = 300
-        self.max_pop: int = 500
+        self.max_pop: int = 700
 
     def gen_individual(self) -> Individual:
         # set seed so we can regen results
@@ -28,7 +21,7 @@ class Population_obj():
             chromosome: Chromosome = []
             for idx in range(24):
                 if idx %3 == 0:
-                    chromosome.append(random.random())
+                    chromosome.append(round(random.uniform(0,360),2))
                 else:
                     chromosome.append(0)
             individual.append(chromosome)
