@@ -1,4 +1,4 @@
-from inital_pop import Population_obj
+import inital_pop as pop
 from fitness import fitness
 import selection
 import reproduce
@@ -8,23 +8,19 @@ def main():
     generations:int =  1350
     gait_length = 30
     max_pop = 1000
-    population = Population_obj(gait_length,max_pop).gen_population()
-    print(len(population[0][0]))
+    population = pop.gen_population(max_pop,gait_length)
     fit = fitness(gait_length)
-    best_inx = 0
     for gen in range(generations):
         fitness_list = []
         # generate fitness list
-        fit_val = 0
-        for idx,individual in enumerate(population):
+        best_inx,fit_val = 0,0
+        for individual in population:
             fit_val:float = fit.get_fitness(individual)
             fitness_list.append(fit_val)
         best_idx = fitness_list.index(max(fitness_list))
-        print(population[best_idx])
-        print(gen,best_idx, fitness_list[best_idx])
+        print("generation:",gen,"| best index: ",best_idx, "| fitness: ",fitness_list[best_idx])
 
         # select new parents and reproduce
-
         population = selection.tournament(population,fitness_list,3)
         # population = selection.roulette(population,fitness_list)
 
