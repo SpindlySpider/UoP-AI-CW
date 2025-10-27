@@ -42,11 +42,27 @@ Current implementation:
 - note: according to [this paper](https://ieeexplore.ieee.org/document/4650677) the x-y (which this models rotation is limited to) can move 35 degree,  meaning the fitness function tracks the range of min and max `-17.5,17.5`
 
 
-
 ### selection algorithm
+Ended up using a 3 way tournament
 
 ### crossover
+Used uniform crossover as single point cross over lead to decreasing fitness
 
 ### mutation
+Genes are mutated by adding or subtracting 0.5 from the current value.
+
+### testing / results
+To test an individual I added this to matlab
+```
+v = readmatrix('ga/results.txt')
+A = deg2rad(v)
+
+for idx = 1:300
+    plot_spider_pose(A(idx,:))
+    pause(0.001)
+end
+```
+The CWD must include the results.txt which is produced by `main.py`, ideally this should be run from this repos root.
+after running `main.py` and including the above snippet into matlab you should see a result like this:
 
 ## Neural network
