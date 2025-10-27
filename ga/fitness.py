@@ -34,9 +34,10 @@ class fitness():
             # make the value relative to 1 instead of large number of error
             j = 1/(1+j)
             fit_dict[joint] = j
-        # weight the comparison here. e.g. coxa worth more e.t.c
+        # weight the comparison here. e.g. coxa worth more e.t.c 
         # normalize 
         # total = fit_dict["coxa"] + fit_dict["femur"] + fit_dict["tibia"]
         # fit_val = (0.34*(fit_dict["coxa"]/total)) + (0.33*(fit_dict["femur"]/total)) + (0.33*(fit_dict["tibia"]/total))
+        # ^ stuff above commented out because I couldnt get a good result from it
         fit_val = fit_dict["coxa"] + fit_dict["femur"] + fit_dict["tibia"]
         return fit_val
