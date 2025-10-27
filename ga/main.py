@@ -1,5 +1,5 @@
-import inital_pop as pop
 from fitness import fitness
+import inital_pop as pop
 import selection
 import reproduce
 import output
@@ -13,10 +13,9 @@ def main():
     for gen in range(generations):
         fitness_list = []
         # generate fitness list
-        best_inx,fit_val = 0,0
+        best_idx = 0
         for individual in population:
-            fit_val:float = fit.get_fitness(individual)
-            fitness_list.append(fit_val)
+            fitness_list.append(fit.get_fitness(individual))
         best_idx = fitness_list.index(max(fitness_list))
         print("generation:",gen,"| best index: ",best_idx, "| fitness: ",fitness_list[best_idx])
 

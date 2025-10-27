@@ -64,8 +64,7 @@ def generate_graph(individual):
     plt.legend()
     plt.savefig("output_opposite.png")
 
-
-optimal_solution = produce_target(300)
-print(optimal_solution)
-generate_graph(optimal_solution)
-output.output("sol.txt",optimal_solution)
+if __name__ == "__main__":
+    optimal_solution = produce_target(300)
+    generate_graph(optimal_solution)
+    output.output("sol.txt",optimal_solution)
