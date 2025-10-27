@@ -4,6 +4,7 @@ import numpy
 
 def roulette(population: Population, fitness: list[float]) -> Population:
     # create list same size as pop
+    # need to come up with a better way, I think selection is too fine, since there is like 300 individuals or whatever
     total_fit = sum(fitness)
     cumulative_sum = []
     selected_parents: Population = []
@@ -25,19 +26,17 @@ def roulette(population: Population, fitness: list[float]) -> Population:
     return selected_parents
 
 
-def eliteism(population: Population, fitness: list[float],number:int) -> Population:
-    elite_idx = numpy.argsort(fitness)[-number:]
-    elites = [population[i] for i in elite_idx]
-    return elites
-
-
-def tournament(population: Population,fitness: list[float]) -> Population:
+def tournament(population: Population,fitness: list[float],num_selected:int) -> Population:
+    # num selected is how many to compare in a tournament
     selected_parents: Population = []
     pop_size:int = len(population)
+    # increase size to compare like 5 individuals at a time
     for _ in range(pop_size):
-        p1,p2 = (random.randint(0,pop_size-1) for _ in range(2))
-        if fitness[p1] > fitness[p2]:
-            selected_parents.append(population[p1])
-        else:
-            selected_parents.append(population[p2])
+        selected_idx = [random.randint(0,pop_size-1) for _ in range(num_selected)]
+        # need to get the highest value in these idxs
+        best = {"idx":0,"val":0}
+        for i in selected_idx:
+            if fitness[i] >= best["val"]:
+                best = {"idx":i,"val":fitness[i]}
+        selected_parents.append(population[best["idx"]])
     return selected_parents

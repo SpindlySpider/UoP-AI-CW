@@ -3,36 +3,35 @@ from fitness import fitness
 import selection
 import reproduce
 import output
-import numpy
 
 def main():
-    generations:int =  300
-    elites = 50
-    population = Population_obj(10).gen_population()
+    generations:int =  1350
+    gait_length = 30
+    max_pop = 1000
+    population = Population_obj(gait_length,max_pop).gen_population()
     print(len(population[0][0]))
-    fit = fitness()
+    fit = fitness(gait_length)
     best_inx = 0
     for gen in range(generations):
         fitness_list = []
         # generate fitness list
         fit_val = 0
         for idx,individual in enumerate(population):
-            fit_val:float = fit.leg_angles(individual)
+            fit_val:float = fit.get_fitness(individual)
             fitness_list.append(fit_val)
-        # need to use numpy as python default max cannot handle multi-dimensional array
-        best_idx = fitness_list.index(numpy.max(fitness_list))
+        best_idx = fitness_list.index(max(fitness_list))
         print(population[best_idx])
         print(gen,best_idx, fitness_list[best_idx])
-        # select new parents and reproduce
-        new_pop = []
-        new_pop = selection.eliteism(population,fitness_list,elites)
 
-        population = selection.roulette(population,fitness_list)
+        # select new parents and reproduce
+
+        population = selection.tournament(population,fitness_list,3)
+        # population = selection.roulette(population,fitness_list)
+
         # reproduce
-        population = reproduce.crossover(population,300,0.6)
-        population = reproduce.mutate(population,0.001)
-        new_pop = new_pop + population
-        new_pop = new_pop[:500]
+        # population = reproduce.crossover(population,gait_length,0.6)
+        population = reproduce.uniform_crossover(population,gait_length,0.7)
+        population = reproduce.mutate(population,0.02)
     output.output("results.txt",population[best_idx])
 
 

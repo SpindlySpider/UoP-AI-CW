@@ -3,15 +3,13 @@ from custom_types import Chromosome, Individual, Population
 
 class Population_obj():
     # object used to track and hold population of GA
-    def __init__(self, seed):
-        # population seed so we can regenerate results.
-        self.seed: int = seed
+    def __init__(self, gait_length:int,max_pop:int):
         # init population list - optional for init
         self.population: Population = []
 
         # max gait = number of entries of poses for each individual
-        self.max_gait: int = 300
-        self.max_pop: int = 700
+        self.max_gait: int = gait_length
+        self.max_pop: int = max_pop
 
     def gen_individual(self) -> Individual:
         # set seed so we can regen results
@@ -19,11 +17,8 @@ class Population_obj():
         individual: Individual = []
         for _ in range(self.max_gait):
             chromosome: Chromosome = []
-            for idx in range(24):
-                if idx %3 == 0:
-                    chromosome.append(round(random.uniform(0,360),2))
-                else:
-                    chromosome.append(0)
+            for _ in range(24):
+                chromosome.append(round(random.uniform(-90,90),2))
             individual.append(chromosome)
         return individual
 

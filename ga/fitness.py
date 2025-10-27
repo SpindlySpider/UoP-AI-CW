@@ -1,52 +1,42 @@
 from custom_types import Chromosome, Individual
-import math
+import target_sol
 
 class fitness():
     # used to determine fitness of a individual
-    def __init__(self):
-        # sine configuration
-        # magnitude for sine, this should be max and min angles of legs,
-        # for right now this only affects coxa, so this would be max and min rotation of coxa, this should be in radians
-        self.sin_mag: float = 35
-        # period for sine
-        self.sin_period:float = 0.01
+    def __init__(self,gait_length:int):
+        # we generate the target solution initially to reduce computation later.
+        self.target_individual = target_sol.produce_target(gait_length)
+        self.gait_length = gait_length
 
-    def leg_angles(self,individual:Individual) -> float:
-        # this function will look at joints and use sine as target
-        coxa_fit_val = 0
-        # get fitness of coxa joints
-        for limb_index in range(0,24,3):
-            # this will make coxa1 = [r1,r2,r3,...,max_gait], then coxa2 e.t.c
-            coxa_list = [individual[row][limb_index] for row in range(len(individual))]
-            opposite = (limb_index) % 2 == 0
-            if limb_index < 11:
-                opposite = not opposite
-            coxa_fit_val += self.coxa_fitness(coxa_list,opposite)
+    def get_fitness(self,individual:Individual) -> float:
+        # get the fitness of this individual by comparison to target
+        # using mean squared error for error: https://en.wikipedia.org/wiki/Mean_squared_error
 
-        # generate fitness for tibia and femur here
-        # ...
+        # fitness dictionary used to track the error of each joint
+        fit_dict:dict[str,float] = {"coxa":0,"femur":0,"tibia":0}
+        # used to get current joint in loop
+        joint_names = ["coxa","femur","tibia"]
 
-        #  we can set how much each rotation fitness affects the overall fitness of this individual
-        # e.g. fit = 0.5*coxa_fit_val + femur_fit*0.3 + tibia_fit*0.2 
+        for frame_idx in range(self.gait_length):
+            for chromosome_idx in range(24):
+                joint = joint_names[chromosome_idx % 3]
+                t = self.target_individual[frame_idx][chromosome_idx]
+                p = individual[frame_idx][chromosome_idx]
+                err = (t - p)**2
+                fit_dict[joint] += err
 
-        # fit_val = 1/(1+(coxa_fit_val/8))
-        # return fit_val
-        return coxa_fit_val
-
-    def coxa_fitness(self, coxa_list:list[float], opposite: bool) -> float:
-        # function used to determine the fitness of a individual coxa joint with a target of sine
-        # oposite used to determine which direction the target should be (pos or neg)
-        total_error = 0
-        for timestamp, rotation in enumerate(coxa_list):
-            # might need to multiply target by acceptable angles
-            timestamp = -timestamp if opposite else timestamp
-            # target = self.sin_mag*(math.sin(self.sin_period*timestamp))
-            # period is issue here
-            target = self.sin_mag*(math.sin(self.sin_period*timestamp))
-            # total_error += (target-rotation)**2
-            total_error += abs(rotation-target)
-            # total_error += target-rotation
-        mae_fit = (1/len(coxa_list)) * total_error
-        fit_val = 2*(1/(1+mae_fit))
-        # fit_val = 1/(1+total_error)
+        for joint in joint_names:
+            j = fit_dict[joint]
+            # MSE needs sum of (t-p)^2 to be * by 1/n
+            # n = joint num of that joint * gait, e.g. 8 * 300
+            # j = (1/(8*self.gait_length)) * j
+            j = (j/(8*self.gait_length))
+            # make the value relative to 1 instead of large number of error
+            j = 1/(1+j)
+            fit_dict[joint] = j
+        # weight the comparison here. e.g. coxa worth more e.t.c
+        # normalize 
+        # total = fit_dict["coxa"] + fit_dict["femur"] + fit_dict["tibia"]
+        # fit_val = (0.34*(fit_dict["coxa"]/total)) + (0.33*(fit_dict["femur"]/total)) + (0.33*(fit_dict["tibia"]/total))
+        fit_val = fit_dict["coxa"] + fit_dict["femur"] + fit_dict["tibia"]
         return fit_val
