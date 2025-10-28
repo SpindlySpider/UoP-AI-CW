@@ -1,4 +1,5 @@
-from custom_types import Chromosome, Individual
+from custom_types import Chromosome, Individual, Gait
+import math
 import target_sol
 
 class fitness():
@@ -16,12 +17,13 @@ class fitness():
         fit_dict:dict[str,float] = {"coxa":0,"femur":0,"tibia":0}
         # used to get current joint in loop
         joint_names = ["coxa","femur","tibia"]
+        gait = self.gen_gait(individual)
 
         for frame_idx in range(self.gait_length):
             for chromosome_idx in range(24):
                 joint = joint_names[chromosome_idx % 3]
                 t = self.target_individual[frame_idx][chromosome_idx]
-                p = individual[frame_idx][chromosome_idx]
+                p = gait[frame_idx][chromosome_idx]
                 err = (t - p)**2
                 fit_dict[joint] += err
 
@@ -41,3 +43,16 @@ class fitness():
         # ^ stuff above commented out because I couldnt get a good result from it
         fit_val = fit_dict["coxa"] + fit_dict["femur"] + fit_dict["tibia"]
         return fit_val
+
+    def gen_gait(self,individual:Individual) -> Gait:
+        gait:Gait = []
+        # need to gen the length of the gait using sin params in f
+        for idx in range(self.gait_length):
+            gait.append([])
+            for chromosome in individual:
+                mag, period, offset, neg = chromosome
+                sin_val:float = (period*idx)+offset
+                sin_val:float = (-sin_val) if neg else sin_val
+                predict:float = mag*math.sin(sin_val)
+                gait[idx].append(predict)
+        return gait

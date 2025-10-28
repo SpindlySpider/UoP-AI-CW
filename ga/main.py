@@ -5,10 +5,10 @@ import reproduce
 import output
 
 def main():
-    generations:int =  2000
-    gait_length:int = 40
+    generations:int =  500
+    gait_length:int = 100
     # huge search space
-    max_pop:int = 4000
+    max_pop:int = 1000
     population = pop.gen_population(max_pop, gait_length)
     fit = fitness(gait_length)
     for gen in range(generations):
