@@ -6,8 +6,9 @@ import output
 
 def main():
     generations:int =  1350
-    gait_length = 30
-    max_pop = 1000
+    gait_length = 40
+    # huge search space
+    max_pop = 1300
     population = pop.gen_population(max_pop,gait_length)
     fit = fitness(gait_length)
     for gen in range(generations):

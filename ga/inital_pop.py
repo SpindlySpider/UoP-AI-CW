@@ -6,7 +6,8 @@ def gen_individual(gait_length:int) -> Individual:
     for _ in range(gait_length):
         chromosome: Chromosome = []
         for _ in range(24):
-            chromosome.append(round(random.uniform(-90,90),2))
+            # seeding values for search spaces (target sol is between -50 and 25)
+            chromosome.append(round(random.uniform(-50,25),11))
         individual.append(chromosome)
     return individual
 
