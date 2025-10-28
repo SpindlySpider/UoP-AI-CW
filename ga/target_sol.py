@@ -56,30 +56,27 @@ Returns:
     A picture of the graph saved as output.png and output_opposite.png
 '''
 def generate_graph(individual):
-    # sorry for messy code
     # get frames for plotting
     x:list[int] = [f for f in range(len(individual))]
 
     coxa_left:list[float] = []
     femur_tibia_left:list[float] = []
-    coxa_opposite:list[float] = []
-    femur_tibia_left_opposite:list[float] = []
+    coxa_right:list[float] = []
+    femur_tibia_right:list[float] = []
     # limits the number of frames displayed on graph
     frame_limit:int = 50
     for frame in range(len(x)):
         coxa_left.append(individual[frame][0])
-        coxa_opposite.append(individual[frame][3])
+        coxa_right.append(individual[frame][3])
         femur_tibia_left.append(individual[frame][1])
-        femur_tibia_left_opposite.append(individual[frame][4])
+        femur_tibia_right.append(individual[frame][4])
     plt.plot(x[:frame_limit],coxa_left[:frame_limit], label="coxa left")
     plt.plot(x[:frame_limit],femur_tibia_left[:frame_limit], label="tibia and femur")
+    plt.plot(x[:frame_limit],coxa_right[:frame_limit], label="coxa right")
+    plt.plot(x[:frame_limit],femur_tibia_right[:frame_limit], label="tibia and femur right")
     plt.legend()
     plt.savefig("output.png")
     plt.close()
-    plt.plot(x[:frame_limit],coxa_opposite[:frame_limit], label="coxa left")
-    plt.plot(x[:frame_limit],femur_tibia_left_opposite[:frame_limit], label="tibia and femur")
-    plt.legend()
-    plt.savefig("output_opposite.png")
 
 if __name__ == "__main__":
     optimal_solution = produce_target(300)
