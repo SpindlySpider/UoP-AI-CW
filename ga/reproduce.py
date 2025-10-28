@@ -67,7 +67,7 @@ def mutate(population:Population,mut_rate:float) -> Population:
         for c_idx,chromosome in enumerate(individual):
             for g_idx, gene in enumerate(chromosome):
                 if random.random() <= mut_rate:
-                    new_gene = round(random.uniform(gene-0.3,gene+0.3),5) 
+                    new_gene = round(random.uniform(gene-0.2,gene+0.2),9) 
                     # clamp between -50 & 25
                     if new_gene >= 25:
                         new_gene = 25

@@ -5,11 +5,11 @@ import reproduce
 import output
 
 def main():
-    generations:int =  1350
-    gait_length = 40
+    generations:int =  2000
+    gait_length:int = 40
     # huge search space
-    max_pop = 1300
-    population = pop.gen_population(max_pop,gait_length)
+    max_pop:int = 4000
+    population = pop.gen_population(max_pop, gait_length)
     fit = fitness(gait_length)
     for gen in range(generations):
         fitness_list = []
@@ -21,7 +21,7 @@ def main():
         print("generation:",gen,"| best index: ",best_idx, "| fitness: ",fitness_list[best_idx])
 
         # select new parents and reproduce
-        population = selection.tournament(population,fitness_list,3)
+        population = selection.tournament(population,fitness_list,5)
         # population = selection.roulette(population,fitness_list)
 
         # reproduce
