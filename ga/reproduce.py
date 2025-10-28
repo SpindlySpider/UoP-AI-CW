@@ -36,9 +36,9 @@ def uniform_crossover(parents:Population,gait_length:int,crossover_rate:float) -
         p1,p2 = parents[i], parents[i+1]
         o1,o2 = [],[]
         if random.random() <= crossover_rate:
-            for joint_idx in range(24):
+            for joint_idx in range(12):
                 c1,c2 = [],[]
-                for gene_idx in range(4):
+                for gene_idx in range(5):
                     # for each gene choose if it should come from p1 or p2
                     # generate a "frame"
                     if random.random() >= gene_chance:
@@ -65,13 +65,24 @@ def mutate(population:Population,mut_rate:float) -> Population:
     # mutate should generate a new frame, not a individual float
     for in_idx,individual in enumerate(population):
         for c_idx,chromosome in enumerate(individual):
-            m,p,o,n = chromosome
-            val_arr = [m,p,o,n]
+            m,p,o,n,v = chromosome
+            val_arr = [m,p,o,n,v]
             for g_idx in range(4):
                 # will either be mag, p, offset, n
                 if random.random() <= mut_rate:
-                    if g_idx < 3:
-                        val_arr[g_idx] = round(random.uniform(val_arr[g_idx]-0.1,val_arr[g_idx]+0.1),9)
+                    if g_idx == 0 or g_idx == 4:
+                        # magnitude and V offset
+                        new_gene = round(random.uniform(val_arr[g_idx]-10,val_arr[g_idx]+10),9)
+                        new_gene = new_gene if new_gene <= 50 else 50
+                        new_gene = new_gene if new_gene >= -50 else -50
+                        val_arr[g_idx] = new_gene
+                    elif g_idx < 3:
+                        # val_arr[g_idx] = round(random.uniform(val_arr[g_idx]-0.1,val_arr[g_idx]+0.1),9)
+                        # fine adjust on period and peroid offset
+                        new_gene = round(random.uniform(val_arr[g_idx]-0.5,val_arr[g_idx]+0.5),9)
+                        new_gene = new_gene if new_gene <= 10 else 10
+                        new_gene = new_gene if new_gene >= -10 else -10
+                        val_arr[g_idx] = new_gene
                     else:
                         # bool
                         val_arr[g_idx] = not val_arr[g_idx]

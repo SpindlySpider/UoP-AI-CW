@@ -1,8 +1,9 @@
 type Period = float 
 type Magnitude = float
 type H_offset = float
+type V_offset = float
 type Negative = bool
-type Chromosome = tuple[Magnitude, Period,H_offset,Negative]
+type Chromosome = tuple[Magnitude, Period,H_offset,Negative,V_offset]
 type Individual = list[Chromosome]
 type Population = list[Individual]
 type Gait = list[list[float]]

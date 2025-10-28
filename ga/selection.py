@@ -1,6 +1,5 @@
 from custom_types import Population
 import random
-import numpy
 
 def roulette(population: Population, fitness: list[float]) -> Population:
     # create list same size as pop
