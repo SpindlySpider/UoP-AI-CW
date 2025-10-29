@@ -6,7 +6,7 @@ class fitness():
     # used to determine fitness of a individual
     def __init__(self,gait_length:int):
         # we generate the target solution initially to reduce computation later.
-        self.target_individual = target_sol.produce_target(gait_length)
+        self.target_individual = target_sol.random_sol(gait_length)
         self.gait_length = gait_length
 
     def get_fitness(self,individual:Individual) -> float:

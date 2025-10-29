@@ -41,9 +41,8 @@ def produce_target(gait_length:int,period,coxa_mag,tf_v_shift,tf_mag) -> Individ
         best.append(frame)
     return best
 
-def random_sol() -> Individual:
-    gait_length = 300
-    period = round(random.random(),3)
+def random_sol(gait_length:int) -> Individual:
+    period = round(random.uniform(0.05,1),3)
     c_mag = round(random.uniform(5,23),3)
     tf_v_shift = round(random.uniform(40,50),3)
     tf_mag = round(random.uniform(10,30),3)
@@ -79,6 +78,6 @@ def generate_graph(individual):
 if __name__ == "__main__":
 
     # optimal_solution = produce_target(300,0.2,20,45,25)
-    optimal_solution = random_sol()
+    optimal_solution = random_sol(300)
     generate_graph(optimal_solution)
     output.output("sol.txt",optimal_solution)
