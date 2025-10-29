@@ -78,7 +78,7 @@ def mutate(population:Population,mut_rate:float) -> Population:
                         val_arr[g_idx] = new_gene
                     elif g_idx < 3:
                         # val_arr[g_idx] = round(random.uniform(val_arr[g_idx]-0.1,val_arr[g_idx]+0.1),9)
-                        # fine adjust on period and peroid offset
+                        # fine adjust on period and period offset
                         new_gene = round(random.uniform(val_arr[g_idx]-0.5,val_arr[g_idx]+0.5),9)
                         new_gene = new_gene if new_gene <= 10 else 10
                         new_gene = new_gene if new_gene >= -10 else -10

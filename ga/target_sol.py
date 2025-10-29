@@ -1,12 +1,16 @@
 import math
+
+from numpy import random
 import output
 import matplotlib.pyplot as plt
 from custom_types import Chromosome, Individual
 
-def produce_target(gait_length:int) -> Individual:
+def produce_target(gait_length:int,period,coxa_mag,tf_v_shift,tf_mag) -> Individual:
     best: Individual = []
+
+    period_offset:float = 2
     for idx in range(gait_length):
-        frame:Chromosome = []
+        frame:list[float] = []
         for joint in range(24):
             leg_num:int = joint // 3
             even_limb:int = leg_num % 2 == 0 
@@ -16,27 +20,35 @@ def produce_target(gait_length:int) -> Individual:
                 coxa_opposite = not even_limb
             if joint % 3 ==0:
                 # coxa joint rotate
-                target:float = (20*(math.sin(0.4*idx)))
+                target:float = (coxa_mag*(math.sin(period*idx)))
                 target = (-target) if coxa_opposite else target
                 frame.append(target)
             else:
                 # value obtained through experimentation.
-                period_offset:float = 2
                 # match period so that gait syncs up
-                sin_val:float = (0.4*idx)+period_offset
+                sin_val:float = (period*idx)+period_offset
 
                 if even_limb:
                     # invert direction of sin wave if it is an even limb
                     # this is so it syncs up with coxa rotation
                     sin_val = (-sin_val)
 
-                target:float = (25*(math.sin(sin_val))) - 45
+                target:float = (tf_mag*(math.sin(sin_val))) - tf_v_shift
 
                 if target <= -50:
                     target = -50
                 frame.append(target)
         best.append(frame)
     return best
+
+def random_sol() -> Individual:
+    gait_length = 300
+    period = round(random.random(),3)
+    c_mag = round(random.uniform(5,23),3)
+    tf_v_shift = round(random.uniform(40,50),3)
+    tf_mag = round(random.uniform(10,30),3)
+    optimal_solution = produce_target(gait_length,period,c_mag,tf_v_shift,tf_mag)
+    return optimal_solution
 
 def generate_graph(individual):
     # sorry for messy code
@@ -66,6 +78,7 @@ def generate_graph(individual):
 
 if __name__ == "__main__":
 
-    optimal_solution = produce_target(300)
+    # optimal_solution = produce_target(300,0.2,20,45,25)
+    optimal_solution = random_sol()
     generate_graph(optimal_solution)
     output.output("sol.txt",optimal_solution)
