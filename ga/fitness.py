@@ -2,78 +2,121 @@ from custom_types import Chromosome, Individual, Gait
 import math
 import target_sol
 
-class fitness():
-    # used to determine fitness of a individual
-    def __init__(self,gait_length:int):
-        # we generate the target solution initially to reduce computation later.
+class Fitness:
+    """
+    A class to evaluate the fitness of an individual gait using a target gait as reference.
+
+    The fitness is calculated based on the Mean Squared Error (MSE) between the generated
+    gait (from the individual's chromosomes) and a target gait solution. Lower error means
+    a higher fitness score.
+
+    Attributes:
+        target_individual (Gait): A reference gait used for comparison.
+        gait_length (int): The number of time steps representing one gait cycle.
+    """
+
+    def __init__(self, gait_length: int):
+        """
+        Initialize the fitness evaluator.
+
+        Parameters:
+            gait_length (int): The number of time steps in the gait cycle.
+
+        Notes:
+            The target gait is generated once during initialization to avoid recomputation.
+        """
         self.target_individual = target_sol.random_sol(gait_length)
         self.gait_length = gait_length
 
-    def get_fitness(self,individual:Individual) -> float:
-        # get the fitness of this individual by comparison to target
-        # using mean squared error for error: https://en.wikipedia.org/wiki/Mean_squared_error
+    def get_fitness(self, individual: Individual) -> float:
+        """
+        Compute the fitness of a given individual by comparing it to the target gait.
 
-        # fitness dictionary used to track the error of each joint
-        fit_dict:dict[str,float] = {"coxa":0,"femur":0,"tibia":0}
-        # used to get current joint in loop
-        joint_names = ["coxa","femur","tibia"]
-        gait = gen_gait(individual,self.gait_length)
+        The comparison uses Mean Squared Error (MSE) for each joint (coxa, femur, tibia),
+        normalized and inverted so that higher fitness corresponds to lower error.
 
+        Parameters:
+            individual (Individual): The individual whose gait is to be evaluated.
+
+        Returns:
+            float: The total fitness value for the individual. Higher is better.
+        """
+        # Track cumulative error per joint type
+        fit_dict: dict[str, float] = {"coxa": 0, "femur": 0, "tibia": 0}
+        joint_names = ["coxa", "femur", "tibia"]
+
+        # Generate gait (predicted joint movements) for this individual
+        gait = gen_gait(individual, self.gait_length)
+
+        # Limit comparison to the first 50 time steps for efficiency
         length = self.gait_length if self.gait_length < 50 else 50
+
         for chromosome_idx in range(length):
+            # Evaluate left side joints (indices 0–5)
             for gene_idx in range(6):
-                # only need to calculate if unique
-                # both R1+R3 the same and R2+24
                 joint = joint_names[gene_idx % 3]
-                t = self.target_individual[chromosome_idx][gene_idx]
-                p = gait[chromosome_idx][gene_idx]
-                err = (t - p)**2
-                fit_dict[joint] += err
-            for gene_idx in range(13,19):
-                # only need to calculate if unique
-                # both R1+R3 the same and R2+24
-                joint = joint_names[gene_idx % 3]
-                t = self.target_individual[chromosome_idx][gene_idx]
-                p = gait[chromosome_idx][gene_idx]
-                err = (t - p)**2
+                target_val = self.target_individual[chromosome_idx][gene_idx]
+                pred_val = gait[chromosome_idx][gene_idx]
+                err = (target_val - pred_val) ** 2
                 fit_dict[joint] += err
 
+            # Evaluate right side joints (indices 13–18, mirror pattern)
+            for gene_idx in range(13, 19):
+                joint = joint_names[gene_idx % 3]
+                target_val = self.target_individual[chromosome_idx][gene_idx]
+                pred_val = gait[chromosome_idx][gene_idx]
+                err = (target_val - pred_val) ** 2
+                fit_dict[joint] += err
+
+        # Normalize errors and invert (1 / (1 + MSE)) for fitness
         for joint in joint_names:
             j = fit_dict[joint]
-            # MSE needs sum of (t-p)^2 to be * by 1/n
-            # n = joint num of that joint * gait, e.g. 8 * 300
-            # j = (1/(8*self.gait_length)) * j
-            # j = (j/(8*self.gait_length))
-            j = (j/(4*self.gait_length))
-            # make the value relative to 1 instead of large number of error
-            j = 1/(1+j)
+            j = (j / (4 * self.gait_length))  # Average per joint
+            j = 1 / (1 + j)                   # Invert to make higher = better
             fit_dict[joint] = j
-        # weight the comparison here. e.g. coxa worth more e.t.c 
-        # normalize
-        # total = fit_dict["coxa"] + fit_dict["femur"] + fit_dict["tibia"]
-        # fit_val = (0.34*(fit_dict["coxa"]/total)) + (0.33*(fit_dict["femur"]/total)) + (0.33*(fit_dict["tibia"]/total))
-        # ^ stuff above commented out because I couldnt get a good result from it
+
+        # Combine fitness across all joint types equally
         fit_val = fit_dict["coxa"] + fit_dict["femur"] + fit_dict["tibia"]
-        # fit_val = fit_dict["coxa"]
+
         return fit_val
 
-def gen_gait(individual:Individual,gait_length:int) -> Gait:
-    gait:Gait = []
-    # need to gen the length of the gait using sin params in f
+
+def gen_gait(individual: Individual, gait_length: int) -> Gait:
+    """
+    Generate a gait sequence from an individual's chromosomes.
+
+    Each chromosome defines a sine wave controlling a joint's motion.
+    The gait sequence is built by evaluating these sine functions over time.
+
+    Parameters:
+        individual (Individual): The list of chromosomes defining the gait.
+        gait_length (int): The number of time steps to simulate.
+
+    Returns:
+        Gait: A list of lists containing predicted joint angles over time.
+    """
+    gait: Gait = []
+
     for idx in range(gait_length):
         gait.append([])
-        # limb_counter = 0
         prev_limb = []
+
         for chromosome in individual:
             mag, period, offset, neg, v_offset = chromosome
-            sin_val:float = (period*idx)+offset
-            sin_val:float = (-sin_val) if neg else sin_val
-            predict:float = (mag*math.sin(sin_val)) + v_offset
+
+            # Compute sine value for current timestep
+            sin_val: float = (period * idx) + offset
+            sin_val = -sin_val if neg else sin_val
+            predict: float = (mag * math.sin(sin_val)) + v_offset
+
+            # Clamp joint angle to minimum threshold
             predict = predict if predict > -50 else -50
+
             prev_limb.append(predict)
             gait[idx].append(predict)
+
+            # Duplicate values for symmetric legs (6 joints mirrored)
             if len(prev_limb) == 6:
-                # repeat prev two
                 gait[idx] = gait[idx] + prev_limb[:3] + prev_limb[3:]
                 prev_limb = []
 
