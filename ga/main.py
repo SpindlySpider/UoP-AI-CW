@@ -5,11 +5,10 @@ import reproduce
 import output
 
 def main():
-    generations:int =  1350
-    gait_length = 40
-    # huge search space
-    max_pop = 1300
-    population = pop.gen_population(max_pop,gait_length)
+    generations:int =  600
+    gait_length:int = 40
+    max_pop:int = 3000
+    population = pop.gen_population(max_pop, gait_length)
     fit = fitness(gait_length)
     for gen in range(generations):
         fitness_list = []
@@ -21,14 +20,14 @@ def main():
         print("generation:",gen,"| best index: ",best_idx, "| fitness: ",fitness_list[best_idx])
 
         # select new parents and reproduce
-        population = selection.tournament(population,fitness_list,3)
+        population = selection.tournament(population,fitness_list,10)
         # population = selection.roulette(population,fitness_list)
 
         # reproduce
         # population = reproduce.crossover(population,gait_length,0.6)
         population = reproduce.uniform_crossover(population,gait_length,0.7)
-        population = reproduce.mutate(population,0.02)
-    output.output("results.txt",population[best_idx])
+        population = reproduce.mutate(population,0.025)
+    output.output_gait("results.txt",population[best_idx],300)
 
 
 if __name__ == "__main__":
