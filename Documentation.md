@@ -24,8 +24,8 @@ Each chromosome is represented as a 5-tuple:
 
 
 ### Reasoning
-A sine-wave representation was chosen because it provides smooth, periodic motion naturally suited to walking or crawling behaviour.
-This representation compactly encodes gait dynamics and supports realistic, continuous motion without abrupt angle changes.
+A sine-wave representation was selected as it gives smooth, periodic motion that is naturally matched to walking or crawling behaviour.
+This representation encodes gait dynamics and supports realistic and continuous motion without sudden angle changes.
 
 ### Trade-offs
 Compact encoding enables faster optimisation and smooth motion.
@@ -36,11 +36,11 @@ May limit irregular or complex leg trajectories.
 
 ## 3. Symmetry Reduction (12 Chromosomes Instead of 24)
 
-The spider’s body exhibits bilateral symmetry, meaning opposite legs often move in mirrored patterns.
+The spider’s body exhibits bilateral symmetry which means opposite legs often move in mirrored patterns.
 Rather than defining 24 independent joint controllers, only 12 unique chromosomes are generated, each shared between mirrored leg pairs.
 
 ### Reasoning
-Reducing the dimensionality from 24 to 12 parameters cuts computation time and search complexity by half while preserving realistic motion patterns.
+Reducing the dimensionality from 24 to 12 parameters decreases computation time and search complexity by half while preserving realistic movement patterns.
 
 ### Trade-offs
 Simplifies the genetic search space and speeds convergence.
@@ -97,7 +97,7 @@ Allow controlled asymmetry for advanced gaits by introducing mirroring offsets.
 <br>
 
 # *Fitness Function Design Decisions*
-This section describes the design reasoning, parameter choices, and trade-offs involved in the implementation of the fitness evaluation for the genetic algorithm.
+This section explains the design reasoning, choice of parameters, and trade-offs made during the implementation of the fitness evaluation of the genetic algorithm.
 
 ## 1. Overview
 
@@ -106,7 +106,6 @@ A higher fitness value indicates a more successful gait configuration.
 The comparison is performed against a target gait, generated once during initialization for computational efficiency.
 
 ## 2. Fitness Evaluation Method
-
 The fitness value is based on the Mean Squared Error (MSE) between predicted joint angles and the target gait over time.
 
 $$
@@ -143,7 +142,7 @@ The gen_gait function reconstructs the full gait motion by evaluating each chrom
 | **neg** | Boolean inversion | Enables mirrored motion between left and right sides |
 | **v_offset** | Baseline angle | Adjusts neutral joint position |
 
-The generated gait is stored as a list of joint angles for each timestep. Symmetric limbs are duplicated from one side to the other to reduce computational overhead.
+The generated gait is stored as a list of joint angles for each timestep. The limbs are symmetrical and are duplicated from one side to another for reducing computational overhead.
 
 ## 5. Efficiency Considerations
 
@@ -169,16 +168,16 @@ Replace fixed 50-step truncation with adaptive evaluation length based on moveme
 # *Selection Step Design Decisions*
 
 ## Overview
-The selection step chooses individuals from the population to become parents. Two methods are implemented in the code: **cumulative probability selection** and **tournament selection**.
+Selection chooses individuals from the population to become parents. The code implements two methods: **cumulative probability selection** and **tournament selection**.
 
 ---
 
 ## 1. Cumulative Probability Selection
 
 ### Method
-- Fitness values are normalized and accumulated into a cumulative distribution.
-- For each selection, a random number is drawn.
-- The first individual whose cumulative probability exceeds the random number is selected.
+- The fitness values are normalized and accumulated into a cumulative distribution.
+- A random number is drawn for every selection.
+- The first individual whose cumulative probability reaches and surpasses the random number will be selected.
 
 ### Design Rationale
 
