@@ -1,31 +1,31 @@
-from fitness import *
-import ga.initial_pop as pop
+from fitness import fitness
+import initial_pop as pop
 import selection
 import reproduce
 import output
 
-'''
-Main file to run genetic algorithm for gait generation of the spider.
-The Genetic algorithm evolves the population over a defined set number of generations and outputs the best solution found.
-A max population size and gait length can be defined to control the search space.
-'''
 def main():
+    '''
+    Main file to run genetic algorithm for gait generation of the spider.
+    The Genetic algorithm evolves the population over a defined set number of generations and outputs the best solution found.
+    A max population size and gait length can be defined to control the search space.
+    '''
     # define number of generations to run GA for
-    generations:int =  1350
+    generations:int =  600
     # define the set of frames in the gait cycle
-    gait_length = 40
+    gait_length:int = 40
     # define search space
-    max_pop = 1300
+    max_pop:int = 3000
     # generate initial population using a function from the initial_pop module(python file)
-    population = pop.gen_population(max_pop,gait_length)
+    population = pop.gen_population(max_pop, gait_length)
     # create fitness object using the class from fitness module(python file)
     fit = fitness(gait_length)
     # run GA for set number of generations defined above
     for gen in range(generations):
         # stores the fitness score of each individual in the population
-        # generate fitness list
-        fitness_list = []
         # stores the index of the best individual in current population
+        fitness_list = []  
+        # generate fitness list
         best_idx = 0
         # go through each individual in the population and get the fitness score 
         for individual in population:
@@ -39,13 +39,12 @@ def main():
         print("generation:",gen,"| best index: ",best_idx, "| fitness: ",fitness_list[best_idx])
 
         # select individuals for next generation using the functions from selection module(python file)
-        population = selection.tournament(population,fitness_list,3)
+        population = selection.tournament(population,fitness_list,10)
         # perform crossover and mutation to generate new individuals using functions from reproduce module(python file)
         population = reproduce.uniform_crossover(population,gait_length,0.7)
-        population = reproduce.mutate(population,0.02)
-
+        population = reproduce.mutate(population,0.025)
     # output the best individual found after the genetic algorithm is terminated
-    output.output("results.txt",population[best_idx])
+    output.output_gait("results.txt",population[best_idx],300)
 
 
 if __name__ == "__main__":
