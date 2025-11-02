@@ -1,8 +1,12 @@
 from fitness import fitness
+from fitness_graph import plot_fitness_graph
 import initial_pop as pop
 import selection
 import reproduce
 import output
+
+
+
 
 def main():
     '''
@@ -20,6 +24,8 @@ def main():
     population = pop.gen_population(max_pop, gait_length)
     # create fitness object using the class from fitness module(python file)
     fit = fitness(gait_length)
+    fitness_over_time = []
+    avg_fitness_over_time = []
     # run GA for set number of generations defined above
     for gen in range(generations):
         # stores the fitness score of each individual in the population
@@ -37,6 +43,10 @@ def main():
         best_idx = fitness_list.index(max(fitness_list))
         # print information about current generation
         print("generation:",gen,"| best index: ",best_idx, "| fitness: ",fitness_list[best_idx])
+        
+        avg_fitness = sum(fitness_list) / len(fitness_list)
+        fitness_over_time.append(fitness_list[best_idx])
+        avg_fitness_over_time.append(avg_fitness)
 
         # select individuals for next generation using the functions from selection module(python file)
         population = selection.tournament(population,fitness_list,10)
@@ -45,6 +55,10 @@ def main():
         population = reproduce.mutate(population,0.025)
     # output the best individual found after the genetic algorithm is terminated
     output.output_gait("results.txt",population[best_idx],300)
+    
+    print(fitness_over_time)
+
+    plot_fitness_graph(fitness_over_time, avg_fitness_over_time, generations)
 
 
 if __name__ == "__main__":
