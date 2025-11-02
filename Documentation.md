@@ -244,9 +244,180 @@ The resulting gait data will be saved for later comparison and testing. The code
 
 ## MATLAB Visualization
 
-To visualize an evolved gait in **MATLAB**, use the following script:
+To visualize the gait in **MATLAB**, use the following script:
 
 ```matlab
+function plot_spider_pose(angles)
+    % plot_spider_pose - Plot a static 3D spider pose based on joint angles
+    %
+    % Input:
+    %   angles: 1x24 vector of joint angles in radians
+    %           [theta1_1, theta2_1, theta3_1, ..., theta1_8, theta2_8, theta3_8]
+    % Legs are arranged in this configuration: {'L1', 'L2', 'L3', 'L4','R4', 'R3', 'R2', 'R1'}
+    
+    % Parameters
+    n_legs = 8;
+    segment_lengths = [1.2, 0.7, 1.0];  % [Coxa, Femur, Tibia]
+    a = 1.5; b = 1.0;  % Ellipse axes for body (oval shape)
+
+    % Base angles (L1 front-left to L4 rear-left, R4 rear-right to R1 front-right)
+    left_leg_angles = deg2rad([45, 75, 105, 135]);
+    right_leg_angles = deg2rad([-135, -105, -75, -45]);
+    base_angles = [left_leg_angles, right_leg_angles];
+
+    % Leg labels
+    leg_labels = {'L1', 'L2', 'L3', 'L4', 'R4', 'R3', 'R2', 'R1'};
+
+    % Validate input
+    if length(angles) ~= n_legs * 3
+        error('Input angles must be a 1x24 vector (3 angles per leg for 8 legs).');
+    end
+
+    % Setup figure
+    figure(1); clf;
+    set(gcf, 'Color', '[0,0,0]');
+    ax = gca;
+    ax.Color = [0.5 0.5 0.5];  
+    axis equal;
+    grid on;
+    hold on;
+    xlabel('X'); ylabel('Y'); zlabel('Z');
+    %view(45, 45); % window view
+    view(90,45);
+    xlim([-4 4]); ylim([-4 4]); zlim([-2 2]);
+
+    % Plot body (oval shape)
+    t = linspace(0, 2*pi, 100);
+    body_x = a * cos(t);
+    body_y = b * sin(t);
+    plot3(body_x, body_y, zeros(size(t)), 'k-', 'LineWidth', 3);
+
+    % Head marker (front of spider at +X)
+    plot3(a + 0.2, 0, 0, 'r^', 'MarkerSize', 10, 'MarkerFaceColor', 'r');
+
+    % Print joint angles for all legs
+    fprintf('--- Spider Pose ---\n');
+    
+    % Loop over legs
+    for i = 1:n_legs
+        % Indices for this leg's angles
+        idx = (i-1)*3 + 1;
+        theta1 = angles(idx);
+        theta2 = angles(idx+1);
+        theta3 = angles(idx+2);
+
+        fprintf('Leg %s: theta1 = %.3f rad, theta2 = %.3f rad, theta3 = %.3f rad\n', ...
+            leg_labels{i}, theta1, theta2, theta3);
+
+        % Compute leg base position on body ellipse
+        angle = base_angles(i);
+        x_base = a * cos(angle);
+        y_base = b * sin(angle);
+        base_pos = [x_base, y_base, 0];
+
+        % Compute FK for this leg
+        [j1, j2, j3, j4] = forward_leg_kinematics2(base_pos, angle, ...
+            [theta1, theta2, theta3], segment_lengths);
+
+        % Plot leg segments
+        plot3([j1(1), j2(1)], [j1(2), j2(2)], [j1(3), j2(3)], 'k-', 'LineWidth', 2);
+        plot3([j2(1), j3(1)], [j2(2), j3(2)], [j2(3), j3(3)], 'b-', 'LineWidth', 2);
+        plot3([j3(1), j4(1)], [j3(2), j4(2)], [j3(3), j4(3)], 'r-', 'LineWidth', 2);
+        plot3(j4(1), j4(2), j4(3), 'ro', 'MarkerSize', 5, 'MarkerFaceColor', 'r');
+
+        % Label leg
+        offset = 0.2;
+        label_pos = base_pos + offset * [cos(angle), sin(angle), 0];
+        text(label_pos(1), label_pos(2), label_pos(3)+0.05, leg_labels{i}, ...
+            'FontSize', 12, 'FontWeight', 'bold');
+    end
+
+    hold off;
+end
+
+function [j1, j2, j3, j4] = forward_leg_kinematics2(base_pos, base_angle, joint_angles, segment_lengths)
+    % base_pos: [x,y,z] position of leg base on body
+    % base_angle: angle around body ellipse where leg base is located (radians)
+    % joint_angles: [theta1, theta2, theta3] joint angles for the leg in radians
+    % segment_lengths: [coxa, femur, tibia] lengths of leg segments
+    
+    % Unpack joint angles
+    theta1 = joint_angles(1); % Coxa yaw (rotation about vertical axis)
+    theta2 = joint_angles(2); % Femur pitch
+    theta3 = joint_angles(3); % Tibia pitch
+    
+    % Unpack segment lengths
+    L1 = segment_lengths(1);  % Coxa length
+    L2 = segment_lengths(2);  % Femur length
+    L3 = segment_lengths(3);  % Tibia length
+    
+    % Joint 1: leg base on body
+    j1 = base_pos;  % starting point
+    
+    % --- Compute Coxa direction with elevation ---
+    coxa_elevation = deg2rad(30);  % fixed 30 degree upward pitch for coxa
+    
+    % Horizontal direction of coxa in XY plane based on base_angle + theta1
+    coxa_horiz_dir = [cos(base_angle + theta1), sin(base_angle + theta1), 0];
+    
+    % Rotation axis for pitch up: perpendicular to coxa horizontal direction in XY plane
+    rot_axis = cross(coxa_horiz_dir, [0 0 1]);
+    
+    % Rotation matrix around rot_axis by coxa_elevation
+    R = axis_angle_rotation_matrix(rot_axis, coxa_elevation);
+    
+    % Rotate horizontal coxa direction upward
+    coxa_dir = (R * coxa_horiz_dir')';
+    
+    % Joint 2 position: end of coxa segment
+    j2 = j1 + L1 * coxa_dir;
+    
+    % --- Femur rotation ---
+    % Femur pitch is relative to coxa direction, rotate in plane defined by coxa_dir
+    % To simplify, rotate femur around axis perpendicular to coxa_dir and Z
+    
+    % Define femur rotation axis (perpendicular to coxa_dir and vertical axis)
+    femur_rot_axis = cross(coxa_dir, [0 0 1]);
+    femur_rot_axis = femur_rot_axis / norm(femur_rot_axis);
+    
+    % Femur direction vector starts aligned with coxa_dir
+    femur_dir = rotate_vector(coxa_dir, femur_rot_axis, theta2);
+    
+    % Joint 3 position: end of femur segment
+    j3 = j2 + L2 * femur_dir;
+    
+    % --- Tibia rotation ---
+    % Tibia pitch is relative to femur direction
+    % Rotate tibia around axis perpendicular to femur_dir and vertical axis
+    
+    tibia_rot_axis = cross(femur_dir, [0 0 1]);
+    tibia_rot_axis = tibia_rot_axis / norm(tibia_rot_axis);
+    
+    % Tibia direction vector
+    tibia_dir = rotate_vector(femur_dir, tibia_rot_axis, theta3);
+    
+    % Joint 4 position: end of tibia segment (foot)
+    j4 = j3 + L3 * tibia_dir;
+end
+
+% --- Helper function: axis-angle rotation matrix ---
+function R = axis_angle_rotation_matrix(axis, angle)
+    axis = axis / norm(axis);
+    x = axis(1); y = axis(2); z = axis(3);
+    c = cos(angle);
+    s = sin(angle);
+    C = 1 - c;
+    R = [ x*x*C + c,   x*y*C - z*s, x*z*C + y*s;
+          y*x*C + z*s, y*y*C + c,   y*z*C - x*s;
+          z*x*C - y*s, z*y*C + x*s, z*z*C + c ];
+end
+
+% --- Helper function: rotate a vector around an axis by an angle ---
+function v_rot = rotate_vector(v, axis, angle)
+    R = axis_angle_rotation_matrix(axis, angle);
+    v_rot = (R * v')';
+end
+
 v = readmatrix('ga/sol.txt');
 A = deg2rad(v);
 
