@@ -164,10 +164,115 @@ This limit was determined empirically based on available computational power.
 
 ## Design Decisions and Trade-offs
 
-- Initial exploration of spider locomotion through video analysis suggested **sinusoidal patterns** matched biological motion.
-- Early prototypes using a **300×24 matrix** for full gait encoding were **computationally intensive**.
-- The current **parameterized sine-based encoding** offers a **lightweight yet expressive** representation.
-- Simplified fitness computation and symmetry assumptions yield faster convergence with reasonable gait realism.
+Initial exploration of spider locomotion through video analysis suggested that **sinusoidal motion patterns** closely matched natural spider walking behaviour.  
+Early experimentation aimed to replicate this motion directly by assigning fitness values to each **coxa joint** across time, using detailed frame-by-frame evaluations.
+
+---
+
+### Coxa Joint Fitness Evaluation (Initial Approach)
+
+The initial implementation represented each individual as a **2D array** of joint angles:
+
+```
+individual = [
+    [angle1, angle2, ..., angle24],
+    [angle1, angle2, ..., angle24],
+    ...
+]
+```
+
+- Each inner list corresponded to a single frame in the gait sequence.  
+- Each frame contained 24 joint angles (8 legs × 3 joints per leg).
+
+#### Extracting Coxa Joints
+Coxa joints were located at fixed indices within each frame:
+
+```
+coxa_indices = [0, 3, 6, 9, 12, 15, 18, 21]
+```
+
+A separate list was created for each coxa to track rotational angles across the gait duration.
+
+#### Fitness Calculation
+Each coxa’s fitness was determined by comparing its predicted motion to a **target rotation** generated using a **sine-wave model**:
+
+\[
+\text{target\_rotation} = A \sin(Bx) + D
+\]
+
+Where:
+- **A** = half the range of motion  
+- **B** = movement frequency  
+- **D** = midpoint of the motion range  
+- **x** = current frame index
+
+For a coxa range of **30°–70°**,  
+\( A = 20 \), \( D = 50 \), producing smooth oscillations between 30° and 70°.
+
+Adjacent legs were programmed to move in opposite phases by negating the input `x` for every even-numbered coxa, creating alternating motion:
+
+```
+coxa1_t = 20 * sin(0.5 * 22) + 50 = 30.0002
+coxa2_t = 20 * sin(0.5 * -22) + 50 = 69.9998
+```
+
+This configuration resulted in realistic alternating leg movement, with even and odd legs moving out of phase.
+
+---
+
+### Computational Limitations
+
+While biologically accurate, this method proved to be **computationally expensive**.  
+The algorithm evaluated all **frames**, **joints**, and **individuals** in the population, resulting in an approximate time complexity of:
+
+\[
+O(P \times N \times J)
+\]
+
+where:
+- *P* = population size  
+- *N* = number of frames per gait  
+- *J* = number of joints per individual  
+
+As both *P* and *N* increased, the runtime scaled **exponentially in practice**, creating a severe performance bottleneck and making the approach unsuitable for real-time or large-scale optimisation.
+
+---
+
+### Optimised Sine-Based Encoding (Final Approach)
+
+To address the inefficiency, the design transitioned to a **parameterised sine-based chromosome encoding**.  
+Instead of evaluating every frame and joint directly, each gene represented a set of sine-wave parameters that described the entire motion profile of a joint:
+
+| Parameter | Description | Range | Purpose |
+|------------|-------------|--------|----------|
+| **Amplitude** | Controls joint movement magnitude | (-55, 30) | Enables variation in swing intensity |
+| **Period** | Controls oscillation frequency | (-5, 5) | Determines speed of movement |
+| **h_offset** | Phase shift of sine wave | (-5, 5) | Synchronises or offsets limbs |
+| **negative** | Boolean flag to invert wave | {True, False} | Enables mirrored or opposing motion |
+| **v_offset** | Baseline joint position | (-50, 50) | Adjusts resting posture |
+
+This compact representation significantly reduced computational overhead while preserving realistic motion.
+
+---
+
+### Trade-offs
+
+| Aspect | Decision | Benefit | Limitation |
+|--------|-----------|----------|-------------|
+| **Representation** | Parameterised sine-wave encoding | Smooth, periodic motion; reduced data size | Restricts irregular or non-periodic movement |
+| **Fitness Evaluation** | Simplified function using averaged joint performance | Faster convergence, consistent comparisons | Reduced biomechanical granularity |
+| **Symmetry Assumption** | Mirrored motion for opposing legs | Ensures stable, coordinated gaits | Limits asymmetric gait discovery |
+| **Computation Efficiency** | Transition from frame-based to function-based evaluation | Lower runtime, scalable population size | Slight reduction in fine-grained control |
+
+---
+
+### Summary
+
+The initial frame-based coxa evaluation provided **high biological fidelity** but was limited by **exponential computational cost**.  
+The final **sine-wave chromosome encoding** maintained the essential realism of leg movement while enabling **efficient optimisation**, balancing accuracy and performance for practical implementation.
+
+---
+
 
 ---
 ## Code Structure
@@ -452,6 +557,18 @@ end
 | **Convergence Tracking** | Recorded and plotted fitness values across generations to monitor improvement |
 | **Visual Verification** | Assessed gait smoothness and motion stability via MATLAB visualization |
 | **Parameter Sensitivity** | Tested robustness by varying mutation rates and population sizes |
+
+## Convergence Tracking
+![alt text](image.png)
+![alt text](image-1.png)
+
+
+## Visual Verification
+<video width="640" height="480" controls>
+  <source src="spider_walking.mp4" type="video/mp4">
+  Your browser does not support the video tag.
+</video>
+
 
 ---
 
