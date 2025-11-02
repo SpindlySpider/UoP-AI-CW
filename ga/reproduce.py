@@ -68,10 +68,10 @@ def mutate(population:Population,mut_rate:float) -> Population:
             m,p,o,n,v = chromosome
             val_arr = [m,p,o,n,v]
             for g_idx in range(4):
-                # will either be mag, p, offset, n
+                # will either be amp, p, offset, n
                 if random.random() <= mut_rate:
                     if g_idx == 0 or g_idx == 4:
-                        # magnitude and V offset
+                        # amplitude and V offset
                         new_gene = round(random.uniform(val_arr[g_idx]-10,val_arr[g_idx]+10),9)
                         new_gene = new_gene if new_gene <= 50 else 50
                         new_gene = new_gene if new_gene >= -50 else -50

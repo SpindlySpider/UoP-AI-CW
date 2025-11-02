@@ -1,14 +1,13 @@
 import math
-
 from numpy import random
 import output
 import matplotlib.pyplot as plt
-from custom_types import Chromosome, Individual
+from custom_types import Individual, Period, Amplitude, H_offset, V_offset
 
-def produce_target(gait_length:int,period,coxa_mag,tf_v_shift,tf_mag) -> Individual:
+def produce_target(gait_length:int,period:Period,coxa_amp:Amplitude,tf_v_shift:V_offset,tf_amp:Amplitude) -> Individual:
     best: Individual = []
 
-    period_offset:float = 2
+    period_offset:H_offset = 2
     for idx in range(gait_length):
         frame:list[float] = []
         for joint in range(24):
@@ -20,7 +19,7 @@ def produce_target(gait_length:int,period,coxa_mag,tf_v_shift,tf_mag) -> Individ
                 coxa_opposite = not even_limb
             if joint % 3 ==0:
                 # coxa joint rotate
-                target:float = (coxa_mag*(math.sin(period*idx)))
+                target:float = (coxa_amp*(math.sin(period*idx)))
                 target = (-target) if coxa_opposite else target
                 frame.append(target)
             else:
@@ -33,7 +32,7 @@ def produce_target(gait_length:int,period,coxa_mag,tf_v_shift,tf_mag) -> Individ
                     # this is so it syncs up with coxa rotation
                     sin_val = (-sin_val)
 
-                target:float = (tf_mag*(math.sin(sin_val))) - tf_v_shift
+                target:float = (tf_amp*(math.sin(sin_val))) - tf_v_shift
 
                 if target <= -50:
                     target = -50
@@ -42,11 +41,11 @@ def produce_target(gait_length:int,period,coxa_mag,tf_v_shift,tf_mag) -> Individ
     return best
 
 def random_sol(gait_length:int) -> Individual:
-    period = round(random.uniform(0.05,1),3)
-    c_mag = round(random.uniform(5,23),3)
-    tf_v_shift = round(random.uniform(40,50),3)
-    tf_mag = round(random.uniform(10,30),3)
-    optimal_solution = produce_target(gait_length,period,c_mag,tf_v_shift,tf_mag)
+    period:Period = round(random.uniform(0.05,1),3)
+    c_amp: Amplitude = round(random.uniform(5,23),3)
+    tf_v_shift: V_offset = round(random.uniform(40,50),3)
+    tf_amp:Amplitude = round(random.uniform(10,30),3)
+    optimal_solution = produce_target(gait_length,period,c_amp,tf_v_shift,tf_amp)
     return optimal_solution
 
 def generate_graph(individual):

@@ -65,10 +65,10 @@ def gen_gait(individual:Individual,gait_length:int) -> Gait:
         # limb_counter = 0
         prev_limb = []
         for chromosome in individual:
-            mag, period, offset, neg, v_offset = chromosome
+            amp, period, offset, neg, v_offset = chromosome
             sin_val:float = (period*idx)+offset
             sin_val:float = (-sin_val) if neg else sin_val
-            predict:float = (mag*math.sin(sin_val)) + v_offset
+            predict:float = (amp*math.sin(sin_val)) + v_offset
             predict = predict if predict > -50 else -50
             prev_limb.append(predict)
             gait[idx].append(predict)
