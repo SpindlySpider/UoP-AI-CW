@@ -171,6 +171,8 @@ This limit was determined empirically based on available computational power.
 
 ---
 ## Code Structure
+
+```
 project/
 │
 ├── ga/   
@@ -185,6 +187,7 @@ project/
 │   └── target_sol.py      # Generate a target solution along with graph for each of the joints in the spider
 │
 └── requirements.txt
+```
 
 ## Usage Instructions
 
@@ -225,8 +228,6 @@ Execute the main program to start the Genetic Algorithm and evolve gait patterns
 python main.py
 ```
 
-This will start the evolutionary process and save the results in the `results/` folder.
-
 ---
 
 ### 4. Generate a Target Gait (Without GA)
@@ -237,7 +238,7 @@ To generate a **reference gait** without using the Genetic Algorithm:
 python target_sol.py
 ```
 
-The resulting gait data will be saved for later comparison and testing.
+The resulting gait data will be saved for later comparison and testing. The code generates a sol.txt file that contains a 300x24 matrix that can be imported into matlab.
 
 ---
 
@@ -246,7 +247,7 @@ The resulting gait data will be saved for later comparison and testing.
 To visualize an evolved gait in **MATLAB**, use the following script:
 
 ```matlab
-v = readmatrix('ga/results.txt');
+v = readmatrix('ga/sol.txt');
 A = deg2rad(v);
 
 for idx = 1:size(v,1)
@@ -256,7 +257,7 @@ end
 ```
 
 **Explanation:**
-- `readmatrix()` loads the gait data from `results.txt`.  
+- `readmatrix()` loads the gait data from `sol.txt`.  
 - `deg2rad()` converts joint angles to radians.  
 - The loop visualizes each time step, animating the spider’s movement.
 
@@ -277,7 +278,6 @@ end
 
 | Test Type | Description |
 |------------|-------------|
-| **Fitness Consistency** | Verified identical results across multiple runs using fixed random seeds |
 | **Convergence Tracking** | Recorded and plotted fitness values across generations to monitor improvement |
 | **Visual Verification** | Assessed gait smoothness and motion stability via MATLAB visualization |
 | **Parameter Sensitivity** | Tested robustness by varying mutation rates and population sizes |
