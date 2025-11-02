@@ -196,9 +196,9 @@ A separate list was created for each coxa to track rotational angles across the 
 #### Fitness Calculation
 Each coxa’s fitness was determined by comparing its predicted motion to a **target rotation** generated using a **sine-wave model**:
 
-$$
-\text{target\_rotation} = A \sin(Bx) + D
-$$
+```
+target_rotation = A \sin(Bx) + D
+```
 
 Where:
 - **A** = half the range of motion  
@@ -227,16 +227,12 @@ This configuration resulted in realistic alternating leg movement, with even and
 While biologically accurate, this method proved to be **computationally expensive**.  
 The algorithm evaluated all **frames**, **joints**, and **individuals** in the population, resulting in an approximate time complexity of:
 
-\[
-O(P \times N \times J)
-\]
+O(2^P)
 
 where:
 - *P* = population size  
-- *N* = number of frames per gait  
-- *J* = number of joints per individual  
 
-As both *P* and *N* increased, the runtime scaled **exponentially in practice**, creating a severe performance bottleneck and making the approach unsuitable for real-time or large-scale optimisation.
+As *P* increased, the runtime scaled **exponentially in practice**, creating a severe performance bottleneck and making the approach unsuitable for real-time or large-scale optimisation.
 
 ---
 
