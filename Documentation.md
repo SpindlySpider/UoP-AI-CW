@@ -457,11 +457,27 @@ end
 
 ## Future Improvements
 
-1. Introduce **weighted joint importance** to emphasize load-bearing joints.  
-2. Incorporate **energy efficiency** and **stability** into a multi-objective fitness function.  
-3. Allow **multiple target gaits** to evolve more diverse movement styles.  
-4. Replace fixed generation limits with **adaptive convergence detection**.  
-5. Combine the Genetic Algorithm with **reinforcement learning** for enhanced adaptability.
+1. Introduce **weighted joint importance** to emphasize load-bearing joints.   
+2. Allow **multiple target gaits** to evolve more diverse movement styles.  
+3. Replace fixed generation limits with **adaptive convergence detection**.  
+4. Combine the Genetic Algorithm with **reinforcement learning** for enhanced adaptability.
 
 ---
+
+## References
+
+1. **YouTube – Spider Locomotion Analysis**  
+   [https://www.youtube.com/watch?v=NV8a4QJfHVg](https://www.youtube.com/watch?v=NV8a4QJfHVg)
+
+2. **YouTube – Robot Spider Walking Mechanics**  
+   [https://www.youtube.com/watch?v=GtHzpX0FCFY](https://www.youtube.com/watch?v=GtHzpX0FCFY)
+
+3. **IEEE Xplore – Evolutionary Gait Generation for Multi-Legged Robots**  
+   [https://ieeexplore.ieee.org/document/4650677](https://ieeexplore.ieee.org/document/4650677)
+
+4. **PubMed Central – Genetic Algorithm Applications in Robotics**  
+   [https://pmc.ncbi.nlm.nih.gov/articles/PMC6935789/](https://pmc.ncbi.nlm.nih.gov/articles/PMC6935789/)
+
+---
+
 
