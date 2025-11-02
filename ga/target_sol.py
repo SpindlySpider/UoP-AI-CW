@@ -5,15 +5,15 @@ import output
 import matplotlib.pyplot as plt
 from custom_types import Individual
 
-def produce_target(gait_length:int, period, coxa_mag, tf_v_shift, tf_mag) -> Individual:
+def produce_target(gait_length:int, period, coxa_amplitude, tf_v_shift, tf_amplitude) -> Individual:
     '''
     Produce target gait based on sine wave parameters
     Args:
         gait_length (int): The length of the gait
         period (float): The period of the sine wave
-        coxa_mag (float): The magnitude of the coxa joint movement
+        coxa_amplitude (float): The amplitude of the coxa joint movement
         tf_v_shift (float): The vertical shift of the tibia-femur joint
-        tf_mag (float): The magnitude of the tibia-femur joint movement
+        tf_amplitude (float): The amplitude of the tibia-femur joint movement
     '''
     best: Individual = []
 
@@ -39,7 +39,7 @@ def produce_target(gait_length:int, period, coxa_mag, tf_v_shift, tf_mag) -> Ind
             # determine if coxa joint
             if joint % 3 ==0:
                 # coxa joint rotation
-                target:float = (coxa_mag*(math.sin(period*idx)))
+                target:float = (coxa_amplitude*(math.sin(period*idx)))
                 # invert direction if right side
                 target = (-target) if coxa_right else target
                 # append to frame
@@ -57,7 +57,7 @@ def produce_target(gait_length:int, period, coxa_mag, tf_v_shift, tf_mag) -> Ind
                     sin_val = (-sin_val)
 
                 # compute target value for tibia-femur joint
-                target:float = (tf_mag*(math.sin(sin_val))) - tf_v_shift
+                target:float = (tf_amplitude*(math.sin(sin_val))) - tf_v_shift
 
                 if target <= -50:
                     target = -50
@@ -72,10 +72,10 @@ def random_sol(gait_length:int) -> Individual:
         gait_length (int): The length of the gait
     '''
     period = round(random.uniform(0.05,1),3)
-    c_mag = round(random.uniform(5,23),3)
+    coxa_amplitude = round(random.uniform(5,23),3)
     tf_v_shift = round(random.uniform(40,50),3)
-    tf_mag = round(random.uniform(10,30),3)
-    optimal_solution = produce_target(gait_length,period,c_mag,tf_v_shift,tf_mag)
+    tf_amplitude = round(random.uniform(10,30),3)
+    optimal_solution = produce_target(gait_length,period,coxa_amplitude,tf_v_shift,tf_amplitude)
     return optimal_solution
 
 def generate_graph(individual):

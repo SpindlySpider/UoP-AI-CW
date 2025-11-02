@@ -1,4 +1,4 @@
-from custom_types import Chromosome, Individual,Population
+from custom_types import Population
 import random
 
 def crossover(parents:Population,gait_length:int,crossover_rate:float) -> Population:
@@ -113,21 +113,21 @@ def mutate(population:Population,mut_rate:float) -> Population:
         # for each gene in each chromosome in each individual, check if it should be mutated
         for c_idx,chromosome in enumerate(individual):
             # unpack chromosome into separate genes
-            magnitude,period,horizontal_offset,negative,vertical_offset = chromosome
+            amplitude,period,horizontal_offset,negative,vertical_offset = chromosome
             # put genes into a list for easier mutation
-            val_arr = [magnitude,period,horizontal_offset,negative,vertical_offset]
+            val_arr = [amplitude,period,horizontal_offset,negative,vertical_offset]
             # check each gene for mutation
             for g_idx in range(4):
-                # will either be mag, p, offset, n
+                # will either be amplitude, period, offset, negative
                 # check if gene should be mutated
                 if random.random() <= mut_rate:
-                    # mutate gene: magnitude and V offset
+                    # mutate gene: amplitude and vertical offset
                     if g_idx == 0 or g_idx == 4:
                         new_gene = round(random.uniform(val_arr[g_idx]-10,val_arr[g_idx]+10),9)
                         new_gene = new_gene if new_gene <= 50 else 50
                         new_gene = new_gene if new_gene >= -50 else -50
                         val_arr[g_idx] = new_gene
-                    # mutate gene: horizontal offset period
+                    # mutate gene: horizontal offset and period 
                     elif g_idx < 3:
                         new_gene = round(random.uniform(val_arr[g_idx]-0.5,val_arr[g_idx]+0.5),9)
                         new_gene = new_gene if new_gene <= 10 else 10
