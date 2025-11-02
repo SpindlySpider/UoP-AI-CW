@@ -9,7 +9,7 @@ def gen_individual(gait_length:int) -> Individual:
         # generate values for each sine wave for each joint
         period: Period = random.uniform(-5,5)
         h_offset: H_offset = random.uniform(-5,5)
-        amplitude: Amplitude = random.uniform(0,30)
+        amplitude: Amplitude = random.uniform(0,55)
         negative: Negative = bool(random.randint(0,1))
         v_offset: V_offset = random.uniform(-50,50)
         chromosome: Chromosome = (amplitude,period,h_offset,negative,v_offset)
