@@ -559,15 +559,13 @@ end
 | **Parameter Sensitivity** | Tested robustness by varying mutation rates and population sizes |
 
 ## Convergence Tracking
+
 ![alt text](image.png)
 ![alt text](image-1.png)
 
-
 ## Visual Verification
-<video width="640" height="480" controls>
-  <source src="spider_walking.mp4" type="video/mp4">
-  Your browser does not support the video tag.
-</video>
+
+![Spider Walking Animation](spider_walking.gif)
 
 
 ---
