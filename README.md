@@ -57,7 +57,7 @@ To test an individual I added this to matlab
 v = readmatrix('ga/results.txt')
 A = deg2rad(v)
 
-for idx = 1:300
+for idx = 1:size(v,1)
     plot_spider_pose(A(idx,:))
     pause(0.001)
 end
