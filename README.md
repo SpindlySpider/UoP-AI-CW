@@ -208,7 +208,10 @@ Where:
 
 For a coxa range of **30°–70°**,  
 \( A = 20 \), \( D = 50 \), producing smooth oscillations between 30° and 70°.
-![alt text](image-3.png)
+
+<p align="center">
+  <img src="image-3.png" alt="Spider oscillation image">
+</p>
 
 Adjacent legs were programmed to move in opposite phases by negating the input `x` for every even-numbered coxa, creating alternating motion:
 
@@ -216,7 +219,9 @@ Adjacent legs were programmed to move in opposite phases by negating the input `
 coxa1_t = 20 * sin(0.5 * 22) + 50 = 30.0002
 coxa2_t = 20 * sin(0.5 * -22) + 50 = 69.9998
 ```
-![alt text](image-2.png)
+<p align="center">
+  <img src="image-2.png" alt="Spider negative oscillation image">
+</p>
 
 This configuration resulted in realistic alternating leg movement, with even and odd legs moving out of phase.
 
