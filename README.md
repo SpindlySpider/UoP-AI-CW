@@ -562,10 +562,15 @@ end
 ![alt text](image.png)
 ![alt text](image-1.png)
 
+After experimenting with different generation counts, the algorithm consistently achieved optimal fitness scores at approximately 600 generations.
+
 ## Visual Verification
 
-![Spider Walking Animation](spider_walking.gif)
+<p align="center">
+  <img src="spider_walking.gif" alt="Spider Walking Animation">
+</p>
 
+This animation showcases an optimized walking gait evolved by the Genetic Algorithm, demonstrating smooth and coordinated leg movement. The MATLAB code to reproduce this visualization is provided in the **MATLAB Visualization** section above.
 
 ---
 

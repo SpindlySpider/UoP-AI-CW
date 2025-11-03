@@ -16,7 +16,7 @@ def main():
     A max population size and gait length can be defined to control the search space.
     '''
     # define number of generations to run GA for
-    generations:int =  600
+    generations:int =  2500
     # define the set of frames in the gait cycle
     gait_length:int = 40
     # define search space
