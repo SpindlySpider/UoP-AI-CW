@@ -521,7 +521,8 @@ function v_rot = rotate_vector(v, axis, angle)
     v_rot = (R * v')';
 end
 
-v = readmatrix('ga/sol.txt');
+
+v = readmatrix('sol.txt');
 A = deg2rad(v);
 
 for idx = 1:size(v,1)
@@ -570,10 +571,12 @@ end
 
 ## Future Improvements
 
-1. Introduce **weighted joint importance** to emphasize load-bearing joints.   
-2. Allow **multiple target gaits** to evolve more diverse movement styles.  
-3. Replace fixed generation limits with **adaptive convergence detection**.  
-4. Combine the Genetic Algorithm with **reinforcement learning** for enhanced adaptability.
+1. **Introduce Elitism**  
+   Preserve the top-performing individuals in each generation to ensure that the best solutions are always carried forward.
+2. **Evolve Multiple Target Gaits**  
+   Enable the evolution of diverse movement styles (e.g., running, jumping, crawling) rather than optimizing for a single gait. This promotes richer, more adaptable locomotion behaviors—such as a spider capable of both running and jumping.
+3. **Implement Adaptive Convergence Detection**  
+   Replace fixed generation limits with a dynamic stopping criterion. The algorithm should automatically terminate when the population’s average fitness stabilizes (e.g., minimal improvement across several generations), preventing wasted computation and improving efficiency.
 
 ---
 

@@ -123,14 +123,12 @@ def mutate(population:Population,mut_rate:float) -> Population:
                     # mutate gene: amplitude and vertical offset
                     if g_idx == 0 or g_idx == 4:
                         new_gene = round(random.uniform(val_arr[g_idx]-10,val_arr[g_idx]+10),9)
-                        new_gene = new_gene if new_gene <= 50 else 50
-                        new_gene = new_gene if new_gene >= -50 else -50
+                        new_gene = max(-50, min(50, new_gene))
                         val_arr[g_idx] = new_gene
                     # mutate gene: horizontal offset and period 
                     elif g_idx < 3:
                         new_gene = round(random.uniform(val_arr[g_idx]-0.5,val_arr[g_idx]+0.5),9)
-                        new_gene = new_gene if new_gene <= 10 else 10
-                        new_gene = new_gene if new_gene >= -10 else -10
+                        new_gene = max(-10, min(10, new_gene))
                         val_arr[g_idx] = new_gene
                     # mutate gene: negative
                     else:

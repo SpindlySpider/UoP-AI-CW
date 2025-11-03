@@ -1,4 +1,4 @@
-from fitness import fitness
+from fitness import Fitness
 from fitness_graph import plot_fitness_graph
 import initial_pop as pop
 import selection
@@ -24,7 +24,7 @@ def main():
     # generate initial population using a function from the initial_pop module(python file)
     population = pop.gen_population(max_pop, gait_length)
     # create fitness object using the class from fitness module(python file)
-    fit = fitness(gait_length)
+    fit = Fitness(gait_length)
     # lists to store the best fitness scores over generations for plotting
     fitness_over_time = []
     # list to store average fitness scores over generations for plotting
