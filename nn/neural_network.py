@@ -1,4 +1,5 @@
 import numpy as np
+from activation_functions import *
 from numpy._core.numerictypes import float64
 from numpy._typing import NDArray
 
@@ -32,11 +33,13 @@ class Neural_network():
             self.bias[layer] = np.random.rand(1,self.layers[layer+1])
 
 
-    def feed_forward(self,input_vector:list[float]):
+    def feed_forward(self,input_vector:list[float]) -> NDArray[float64]:
         """
         Predict the next angles for the joints
         Parameters:
             input_vector (list[float]): This should be a list of angles which has a length of 24
+        Returns:
+            final layer of NN output, for the next joint prediction.
         """
         # set the first output as first vector
         output = input_vector
@@ -45,12 +48,12 @@ class Neural_network():
         for i, w in enumerate(self.weights):
             next_output = np.dot(output,w)
             # activation function
-            # output= sigmoid(next_output)
+            output= sigmoid(next_output)
             self.outputs[i+1] = output
         # return final output
         return output
 
-    def back_propagation(self,error:NDArray[float64]) -> NDArray[float64]:
+    def back_propagation(self,error:NDArray[float64]) :
         """
         Method goes backwards through layers and calculate errors needed to update weights
         Parameters:
@@ -61,15 +64,15 @@ class Neural_network():
             # get previous layer 
             output = self.outputs[i+1]
 
-            # derivative = error*sigmoid_derivitive(output)
+            derivative = error*sigmoid_derivitive(output)
 
             # reshape array into appropriate size
-            # derivative_fixed = derivative.reshape(derivative.shape[0],-1).T 
+            derivative_fixed = derivative.reshape(derivative.shape[0],-1).T 
             layer_output = self.outputs[i]
             layer_output = layer_output.reshape(layer_output.shape[0],-1)
             # reshape to get column array for multiplication
 
-            # self.derivatives[i] = np.dot(layer_output,derivative_fixed)
+            self.derivatives[i] = np.dot(layer_output,derivative_fixed)
 
             error = np.dot(self.derivatives, self.weights[i].T)
             # update error for next layer of network
