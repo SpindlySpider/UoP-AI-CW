@@ -13,3 +13,8 @@ maybe this could look like, set of frames from part 1, then NN predicts rest and
 oh actually set of frames 300x24, and half are given to the NN, the closer it gets to actual ones the better.
 
 could optimize using less set of frames since A and B are the same
+
+# Plan
+NN takes in a single pose and then predicts/ outputs the next pose in the sequence, we will train the NN on target sol
+
+for saving the NN we could pickle the class obj and load it later to serialize it?
