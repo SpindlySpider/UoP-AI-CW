@@ -318,7 +318,7 @@ If Python is not installed, download it from the [official Python website](https
 Use the following command to install all dependencies:
 
 ```bash
-pip install numpy matplotlib
+pip install -r requirements.txt
 ```
 
 ---
