@@ -107,7 +107,7 @@ def mutate(population:Population,mut_rate:float) -> Population:
     Returns:
         Population: The new population of individuals after mutation.
     '''
-    # mutate should generate a new frame, not a individual float
+ 
     # for each individual in the population, check each gene in each chromosome
     for in_idx,individual in enumerate(population):
         # for each gene in each chromosome in each individual, check if it should be mutated
