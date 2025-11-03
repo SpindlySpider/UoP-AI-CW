@@ -4,14 +4,16 @@ from numpy._core.numerictypes import float64
 from numpy._typing import NDArray
 
 class Neural_network():
-    def __init__(self, hidden_layers:list[int] = [24,24],num_outputs:int = 24,num_inputs:int=24) -> None:
+    def __init__(self, hidden_layers:list[int] = [24,24],num_outputs:int = 24,num_inputs:int=24,learning_rate:float=0.05) -> None:
         """
         Initializes the neural network
         Parameters:
             hidden_layers (list[int]): Size of hidden layers, each entry is a layer
             num_outputs (int): Number of outputs, defaults to 24 as we want to predict the next position.
             num_inputs (int): Number of inputs, defaults to 24 for pose.
+            learning_rate (float): rate of learning
         """
+        self.learning_rate = learning_rate
         # weights and bias in a list, each index corresponds to a layers weights and bias
         self.weights: list[NDArray[float64]] = []
         self.bias: list[NDArray[float64]] = []
@@ -61,7 +63,7 @@ class Neural_network():
         """
         # starts at last index goes down to first
         for i in range(len(self.derivatives),0,-1):
-            # get previous layer 
+            # get previous layer
             output = self.outputs[i+1]
 
             derivative = error*sigmoid_derivitive(output)
@@ -77,13 +79,10 @@ class Neural_network():
             error = np.dot(self.derivatives, self.weights[i].T)
             # update error for next layer of network
 
-    def gradient_descent(self,learning_rate:float=0.05):
+    def gradient_descent(self):
         """
         Method used to update weights based on derivatives calculated in back propagation
-        Parameters:
-            learning_rate (float): The learning rate to apply to updating weights
         """
         for i in range(len(self.weights)):
-            derivatives = self.derivatives[i]
-            # update the weight by adding derivative
-            self.weights += derivatives*learning_rate
+            # update the weight by adding derivative*learning_rate
+            self.weights[i] += self.derivatives[i]*self.learning_rate
