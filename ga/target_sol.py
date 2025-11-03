@@ -46,7 +46,6 @@ def produce_target(gait_length:int, period, coxa_amplitude, tf_v_shift, tf_ampli
                 frame.append(target)
             # determine if tibia-femur joint
             else:
-                # value obtained through experimentation.
                 # match period so that gait syncs up
                 sin_val:float = (period*idx)+period_offset
 

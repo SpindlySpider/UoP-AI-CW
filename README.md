@@ -243,7 +243,7 @@ Instead of evaluating every frame and joint directly, each gene represented a se
 
 | Parameter | Description | Range | Purpose |
 |------------|-------------|--------|----------|
-| **Amplitude** | Controls joint movement magnitude | (-55, 30) | Enables variation in swing intensity |
+| **Amplitude** | Controls joint movement amplitude | (-55, 30) | Enables variation in swing intensity |
 | **Period** | Controls oscillation frequency | (-5, 5) | Determines speed of movement |
 | **h_offset** | Phase shift of sine wave | (-5, 5) | Synchronises or offsets limbs |
 | **negative** | Boolean flag to invert wave | {True, False} | Enables mirrored or opposing motion |
@@ -318,7 +318,7 @@ If Python is not installed, download it from the [official Python website](https
 Use the following command to install all dependencies:
 
 ```bash
-pip install numpy matplotlib
+pip install -r requirements.txt
 ```
 
 ---
