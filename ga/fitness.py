@@ -46,7 +46,7 @@ class Fitness:
         joint_names:list[str] = ["coxa", "femur", "tibia"]
 
         # Generate gait (predicted joint movements) for this individual
-        gait = gen_gait(individual, self.gait_length)
+        gait:Gait = gen_gait(individual, self.gait_length)
 
         # Limit comparison to the first 50 time steps for efficiency
         length = self.gait_length if self.gait_length < 50 else 50
