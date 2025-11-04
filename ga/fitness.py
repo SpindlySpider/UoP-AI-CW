@@ -76,7 +76,7 @@ class Fitness:
             fit_dict[joint] = j
 
         # Combine fitness across all joint types equally
-        fit_val = fit_dict["coxa"] + fit_dict["femur"] + fit_dict["tibia"]
+        fit_val: float = fit_dict["coxa"] + fit_dict["femur"] + fit_dict["tibia"]
 
         return fit_val
 
