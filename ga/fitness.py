@@ -57,7 +57,7 @@ class Fitness:
                 joint: int = joint_names[gene_idx % 3]
                 target_val:float = self.target_individual[chromosome_idx][gene_idx]
                 pred_val:float = gait[chromosome_idx][gene_idx]
-                err = (target_val - pred_val) ** 2
+                err:float = (target_val - pred_val) ** 2
                 fit_dict[joint] += err
 
             # Evaluate right side joints (indices 13–18, mirror pattern)
