@@ -49,7 +49,7 @@ class Fitness:
         gait:Gait = gen_gait(individual, self.gait_length)
 
         # Limit comparison to the first 50 time steps for efficiency
-        length = self.gait_length if self.gait_length < 50 else 50
+        length: int = self.gait_length if self.gait_length < 50 else 50
 
         for chromosome_idx in range(length):
             # Evaluate left side joints (indices 0–5)
