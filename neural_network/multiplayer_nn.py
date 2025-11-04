@@ -1,4 +1,5 @@
 import numpy as np
+from matrix_converter import read_matrix_from_file
 from random import random
 
 class Full_NN(object):
@@ -102,24 +103,34 @@ class Full_NN(object):
         return msq
     
 if __name__ == "__main__":
-    training_input = np.array([[random()/2 for _ in range(2)] for _ in range(1000)])
+    data = read_matrix_from_file('results.txt', 300, 24)
 
-    targets = np.array([[i[0] * i[1]] for i in training_input])
+    print(data)
 
-    nn = Full_NN(2, [5,5], 1)
+    training_input = data[1::2]
 
-    nn.train_nn(training_input, targets, 10, 0.1)
+    print(training_input)
+    #training_input = np.array([[random()/2 for _ in range(2)] for _ in range(1000)])
 
-    input = np.array([0.3,0.2])
+    #targets = np.array([[i[0] * i[1]] for i in training_input])
+    targets = data[0::2]
 
-    target = np.array([0.06])
+    print(targets)
 
-    NN_output = nn.FF(input)
+    #nn = Full_NN(2, [5,5], 1)
 
-    print("=============== Testing the Network Screen Output ===============")
-    print ("Test input is ", input)
-    print()
-    print("Target output is ",target)
-    print()
-    print("Neural Network actual output is ",NN_output, "there is an (not MSQE) of ",target-NN_output)
-    print("=================================================================") 
+    #nn.train_nn(training_input, targets, 10, 0.1)
+
+    #input = np.array([0.3,0.2])
+
+    #target = np.array([0.06])
+
+    #NN_output = nn.FF(input)
+
+    #print("=============== Testing the Network Screen Output ===============")
+    #print ("Test input is ", input)
+    #print()
+    #print("Target output is ",target)
+    #print()
+    #print("Neural Network actual output is ",NN_output, "there is an (not MSQE) of ",target-NN_output)
+    #print("=================================================================") 
