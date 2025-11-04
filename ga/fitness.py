@@ -43,7 +43,7 @@ class Fitness:
         """
         # Track cumulative error per joint type
         fit_dict: dict[str, float] = {"coxa": 0, "femur": 0, "tibia": 0}
-        joint_names = ["coxa", "femur", "tibia"]
+        joint_names:list[str] = ["coxa", "femur", "tibia"]
 
         # Generate gait (predicted joint movements) for this individual
         gait = gen_gait(individual, self.gait_length)
