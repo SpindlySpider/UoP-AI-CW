@@ -99,7 +99,7 @@ def gen_gait(individual: Individual, gait_length: int) -> Gait:
 
     for idx in range(gait_length):
         gait.append([])
-        prev_limb = []
+        prev_limb:list[float] = []
 
         for chromosome in individual:
             mag, period, offset, neg, v_offset = chromosome
