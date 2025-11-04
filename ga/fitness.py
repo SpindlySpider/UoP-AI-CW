@@ -56,7 +56,7 @@ class Fitness:
             for gene_idx in range(6):
                 joint: int = joint_names[gene_idx % 3]
                 target_val:float = self.target_individual[chromosome_idx][gene_idx]
-                pred_val = gait[chromosome_idx][gene_idx]
+                pred_val:float = gait[chromosome_idx][gene_idx]
                 err = (target_val - pred_val) ** 2
                 fit_dict[joint] += err
 
