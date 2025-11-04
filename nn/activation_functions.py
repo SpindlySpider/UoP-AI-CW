@@ -5,7 +5,6 @@ def sigmoid(x): #Sigmoid activation function
     return y
 
 def sigmoid_derivitive(x):
-    sig_derivitive = x*(1.0-x)
-    return sig_derivitive
+    return x*(1.0-x)
 
 # could add ReLu here and see how it does :) 

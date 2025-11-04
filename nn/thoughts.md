@@ -14,6 +14,10 @@ oh actually set of frames 300x24, and half are given to the NN, the closer it ge
 
 could optimize using less set of frames since A and B are the same
 
+---
+
+This line of thought was completely wrong, we need to produce a NN which takes a vector of size 24 and outputs a vector of size 24, what it does is up to us, but to me what makes the most sense is you put in a frame, and then GA, tries to workout what to do next. e.g. you put in frame 0 the prediction should be frame 1, you put in frame 50 and next frame should be frame 51.
+
 # Plan
 NN takes in a single pose and then predicts/ outputs the next pose in the sequence, we will train the NN on target sol
 
