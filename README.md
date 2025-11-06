@@ -812,7 +812,7 @@ end
 ```
 
 **Explanation:**
-- `readmatrix()` loads the gait data from `result.txt`. (Replace with the name of your file containing the matrix)  
+- `readmatrix()` loads the gait data from `sol.txt`.  
 - `deg2rad()` converts joint angles to radians.  
 - The loop visualizes each time step, animating the spider’s movement.
 
