@@ -64,6 +64,8 @@ The final objective is a **stable, coordinated, and efficient gait**.
 Each **individual** in the population represents a complete gait.  
 Each gait (chromosome) consists of **8 legs × 3 joints = 24 genes**.
 
+Each side (left and right) has two unique sine waves per joint, for a total of six. The pattern follows an A, B, A, B sequence, meaning the rear legs on each side simply repeat the motion of the front legs instead of mirroring them.
+
 #### Gene Encoding
 Each joint’s motion is represented by a **sine-wave function** characterized by five parameters:
 
@@ -86,11 +88,11 @@ Each joint’s motion is represented by a **sine-wave function** characterized b
 
 ### Fitness Function Design
 
-#### 1. Overview
+#### Overview
 The **fitness function** measures how well a gait replicates a desired motion pattern.  
 A higher fitness value indicates better gait performance.
 
-#### 2. Evaluation Method
+#### Evaluation Method
 The **Mean Squared Error (MSE)** between predicted joint angles and a pre-generated *target gait* is used:
 
 $$
@@ -105,7 +107,7 @@ $$
 
 Lower error → higher fitness.
 
-#### 3. Design Rationale
+#### Design Rationale
 
 | Aspect | Decision | Rationale | Trade-offs |
 |---------|-----------|------------|-------------|
@@ -118,9 +120,143 @@ Lower error → higher fitness.
 
 ---
 
+#### Code
+
+[See lines 5–123 of `fitness.py`](https://github.com/SpindlySpider/UoP-AI-CW/blob/main/ga/fitness.py)
+
+```
+from custom_types import Individual, Gait
+import math
+import target_sol
+
+class Fitness:
+    """
+    A class to evaluate the fitness of an individual gait using a target gait as reference.
+
+    The fitness is calculated based on the Mean Squared Error (MSE) between the generated
+    gait (from the individual's chromosomes) and a target gait solution. Lower error means
+    a higher fitness score.
+
+    Attributes:
+        target_individual (Gait): A reference gait used for comparison.
+        gait_length (int): The number of time steps representing one gait cycle.
+    """
+
+    def __init__(self, gait_length: int):
+        """
+        Initialize the fitness evaluator.
+
+        Parameters:
+            gait_length (int): The number of time steps in the gait cycle.
+
+        Notes:
+            The target gait is generated once during initialization to avoid recomputation.
+        """
+        self.target_individual = target_sol.random_sol(gait_length)
+        self.gait_length = gait_length
+
+    def get_fitness(self, individual: Individual) -> float:
+        """
+        Compute the fitness of a given individual by comparing it to the target gait.
+
+        The comparison uses Mean Squared Error (MSE) for each joint (coxa, femur, tibia),
+        normalized and inverted so that higher fitness corresponds to lower error.
+
+        Parameters:
+            individual (Individual): The individual whose gait is to be evaluated.
+
+        Returns:
+            float: The total fitness value for the individual. Higher is better.
+        """
+        # Track cumulative error per joint type
+        fit_dict: dict[str, float] = {"coxa": 0, "femur": 0, "tibia": 0}
+        joint_names = ["coxa", "femur", "tibia"]
+
+        # Generate gait (predicted joint movements) for this individual
+        gait = gen_gait(individual, self.gait_length)
+
+        # Limit comparison to the first 50 time steps for efficiency
+        length = self.gait_length if self.gait_length < 50 else 50
+
+        for chromosome_idx in range(length):
+            # Evaluate left side joints (indices 0–5)
+            for gene_idx in range(6):
+                joint = joint_names[gene_idx % 3]
+                target_val = self.target_individual[chromosome_idx][gene_idx]
+                pred_val = gait[chromosome_idx][gene_idx]
+                err = (target_val - pred_val) ** 2
+                fit_dict[joint] += err
+
+            # Evaluate right side joints (indices 13–18, mirror pattern)
+            for gene_idx in range(13, 19):
+                joint = joint_names[gene_idx % 3]
+                target_val = self.target_individual[chromosome_idx][gene_idx]
+                pred_val = gait[chromosome_idx][gene_idx]
+                err = (target_val - pred_val) ** 2
+                fit_dict[joint] += err
+
+        # Normalize errors and invert (1 / (1 + MSE)) for fitness
+        for joint in joint_names:
+            j = fit_dict[joint]
+            j = (j / (4 * self.gait_length))  # Average per joint
+            j = 1 / (1 + j)                   # Invert to make higher = better
+            fit_dict[joint] = j
+
+        # Combine fitness across all joint types equally
+        fit_val = fit_dict["coxa"] + fit_dict["femur"] + fit_dict["tibia"]
+
+        return fit_val
+
+
+def gen_gait(individual: Individual, gait_length: int) -> Gait:
+    """
+    Generate a gait sequence from an individual's chromosomes.
+
+    Each chromosome defines a sine wave controlling a joint's motion.
+    The gait sequence is built by evaluating these sine functions over time.
+
+    Parameters:
+        individual (Individual): The list of chromosomes defining the gait.
+        gait_length (int): The number of time steps to simulate.
+
+    Returns:
+        Gait: A list of lists containing predicted joint angles over time.
+    """
+    gait: Gait = []
+
+    for idx in range(gait_length):
+        gait.append([])
+        prev_limb = []
+
+        for chromosome in individual:
+            amplitude, period, offset, neg, v_offset = chromosome
+
+            # Compute sine value for current timestep
+            sin_val: float = (period * idx) + offset
+            sin_val = -sin_val if neg else sin_val
+            predict: float = (amplitude * math.sin(sin_val)) + v_offset
+
+            # Clamp joint angle to minimum threshold
+            predict = predict if predict > -50 else -50
+
+            prev_limb.append(predict)
+            gait[idx].append(predict)
+
+            # Duplicate values for symmetric legs (6 joints mirrored)
+            if len(prev_limb) == 6:
+                gait[idx] = gait[idx] + prev_limb[:3] + prev_limb[3:]
+                prev_limb = []
+
+    return gait
+```
+
 ### Selection
 
-**Tournament selection** was chosen for its simplicity and control over selection pressure.
+### Selection Methods
+
+Both **tournament selection** and **roulette wheel selection** were implemented.  
+**Tournament selection** was ultimately chosen due to its simplicity and the precise control it offers over selection pressure, making it a reliable and efficient method for guiding the evolutionary process.
+
 
 #### Method
 1. Randomly select a subset of individuals (`num_selected`).
@@ -135,14 +271,121 @@ Lower error → higher fitness.
 
 ---
 
+```
+
+def tournament(population: Population, fitness: list[float], num_selected: int) -> Population:
+    """
+    Selects individuals using tournament selection.
+
+    For each parent to select, 'num_selected' individuals are randomly sampled
+    from the population, and the one with the highest fitness is chosen.
+
+    Parameters
+    ----------
+    population : Population
+        The current population of individuals.
+    fitness : list[float]
+        List of fitness values corresponding to each individual.
+    num_selected : int
+        Number of individuals to compare in each tournament.
+
+    Returns
+    -------
+    Population
+        A new list of selected individuals of the same size as the input population.
+    """
+    selected_parents: Population = []
+    pop_size: int = len(population)
+
+    for _ in range(pop_size):
+        # Randomly pick individuals for the tournament
+        selected_idx = [random.randint(0, pop_size - 1) for _ in range(num_selected)]
+
+        # Choose the one with the highest fitness
+        best_idx = max(selected_idx, key=lambda i: fitness[i])
+        selected_parents.append(population[best_idx])
+
+    return selected_parents
+
+```
+
 ### Reproduction
 
-#### 1. Crossover
-A **uniform crossover** is implemented:
-- Swaps amplitude and vertical offset, horizontal offset and period, and negative flag values between two parents.
-- Produces two offspring per crossover operation.
+#### Crossover
+Both **normal crossover** and **uniform crossover** were implemented and tested for performance. After evaluation, **uniform crossover** was chosen as it consistently produced offspring with higher genetic diversity, resulting in faster convergence and improved optimisation quality.
 
-#### 2. Mutation
+The **uniform crossover** implementation:
+- Swaps **amplitude** and **vertical offset**, **horizontal offset** and **period**, as well as **negative flag** values between two parents.  
+- Generates **two offspring** per crossover operation.
+
+#### Code
+
+[See lines 41-98 of `reproduce.py`](https://github.com/SpindlySpider/UoP-AI-CW/blob/main/ga/reproduce.py)
+
+```
+def uniform_crossover(parents:Population,gait_length:int,crossover_rate:float) -> Population:
+    '''
+    Performs uniform crossover on a population of individuals. 
+    Args:
+        parents (Population): The population of individuals to perform crossover on.
+        gait_length (int): The number of frames in the gait cycle.
+        crossover_rate (float): The probability of performing crossover on a pair of parents.
+    Returns:
+        Population: The new population of individuals after crossover.
+    '''
+    # explanation found here: 
+    # - https://en.wikipedia.org/wiki/Crossover_(evolutionary_algorithm)
+    # - https://www.geeksforgeeks.org/machine-learning/crossover-in-genetic-algorithm/
+    # size of the population
+    pop_size: int = len(parents)
+    # list to hold new offspring
+    offspring: Population = []
+    gene_chance = 0.5
+    # check if odd number of parents
+    if pop_size % 2 != 0:
+        # ensure even num of parents
+        offspring.append(parents.pop())
+        pop_size -= 1
+
+    # perform crossover in pairs
+    for i in range(0, pop_size-1,2):
+        # get two adjacent individuals that will be parents
+        p1,p2 = parents[i], parents[i+1]
+        # store offspring
+        o1,o2 = [],[]
+        # check if crossover should occur
+        if random.random() <= crossover_rate:
+            # perform uniform crossover by swapping genes based on gene chance
+            for joint_idx in range(12):
+                # store chromosomes for offspring
+                c1,c2 = [],[]
+                for gene_idx in range(5):
+                    # for each gene choose if it should come from p1 or p2
+                    #check if the gene should be swapped
+                    if random.random() >= gene_chance:
+                        # swap over gene
+                        c1.append(p2[joint_idx][gene_idx])
+                        c2.append(p1[joint_idx][gene_idx])
+                    else:
+                        c1.append(p1[joint_idx][gene_idx])
+                        c2.append(p2[joint_idx][gene_idx])
+                # append chromosome to offspring
+                o1.append(c1)
+                o2.append(c2)
+            # append offspring to new population
+            offspring.append(o1)
+            offspring.append(o2)
+        else:
+            # dont cross over put parents in new pop
+            offspring.append(p1)
+            offspring.append(p2)
+
+    return offspring   # uniform crossover test as single point not working well.
+
+```
+
+
+#### Mutation
 Each gene undergoes random variation within local bounds:
 
 | Parameter | Mutation Range | Example |
@@ -153,12 +396,57 @@ Each gene undergoes random variation within local bounds:
 
 This ensures **diversity** and prevents **premature convergence**.
 
+#### Code
+
+[See lines 101–139 of `reproduce.py`](https://github.com/SpindlySpider/UoP-AI-CW/blob/main/ga/reproduce.py)
+
+```
+def mutate(population:Population,mut_rate:float) -> Population:
+    '''
+    Performs mutation on a population of individuals.
+    Args:
+        population (Population): The population of individuals to mutate.
+        mut_rate (float): The probability of mutating each gene.
+    Returns:
+        Population: The new population of individuals after mutation.
+    '''
+    # for each individual in the population, check each gene in each chromosome
+    for in_idx,individual in enumerate(population):
+        # for each gene in each chromosome in each individual, check if it should be mutated
+        for c_idx,chromosome in enumerate(individual):
+            # unpack chromosome into separate genes
+            amplitude,period,horizontal_offset,negative,vertical_offset = chromosome
+            # put genes into a list for easier mutation
+            val_arr = [amplitude,period,horizontal_offset,negative,vertical_offset]
+            # check each gene for mutation
+            for g_idx in range(4):
+                # will either be amplitude, period, offset, negative
+                # check if gene should be mutated
+                if random.random() <= mut_rate:
+                    # mutate gene: amplitude and vertical offset
+                    if g_idx == 0 or g_idx == 4:
+                        new_gene = round(random.uniform(val_arr[g_idx]-10,val_arr[g_idx]+10),9)
+                        new_gene = max(-50, min(50, new_gene))
+                        val_arr[g_idx] = new_gene
+                    # mutate gene: horizontal offset and period 
+                    elif g_idx < 3:
+                        new_gene = round(random.uniform(val_arr[g_idx]-0.5,val_arr[g_idx]+0.5),9)
+                        new_gene = max(-10, min(10, new_gene))
+                        val_arr[g_idx] = new_gene
+                    # mutate gene: negative
+                    else:
+                        val_arr[g_idx] = not val_arr[g_idx]
+                    population[in_idx][c_idx] = tuple(val_arr)
+
+
+    return population
+```
+
 ---
 
 ### Termination
 
-The algorithm terminates after **600 generations**, balancing **runtime constraints** and **solution quality**.  
-This limit was determined empirically based on available computational power.
+The algorithm terminates once the best individual's fitness score reaches or exceeds **1.0**.
 
 ---
 
@@ -224,20 +512,6 @@ coxa2_t = 20 * sin(0.5 * -22) + 50 = 69.9998
 </p>
 
 This configuration resulted in realistic alternating leg movement, with even and odd legs moving out of phase.
-
----
-
-### Computational Limitations
-
-While biologically accurate, this method proved to be **computationally expensive**.  
-The algorithm evaluated all **frames**, **joints**, and **individuals** in the population, resulting in an approximate time complexity of:
-
-O(2^P)
-
-where:
-- *P* = population size  
-
-As *P* increased, the runtime scaled **exponentially in practice**, creating a severe performance bottleneck and making the approach unsuitable for real-time or large-scale optimisation.
 
 ---
 
@@ -335,8 +609,9 @@ Execute the main program to start the Genetic Algorithm and evolve gait patterns
 ```bash
 python main.py
 ```
-
+The code generates a results.txt file that contains a 300x24 matrix that can be imported into matlab.
 ---
+
 
 ### 4. Generate a Target Gait (Without GA)
 
@@ -527,7 +802,7 @@ function v_rot = rotate_vector(v, axis, angle)
 end
 
 
-v = readmatrix('sol.txt');
+v = readmatrix('results.txt');
 A = deg2rad(v);
 
 for idx = 1:size(v,1)
@@ -537,7 +812,7 @@ end
 ```
 
 **Explanation:**
-- `readmatrix()` loads the gait data from `sol.txt`.  
+- `readmatrix()` loads the gait data from `result.txt`. (Replace with the name of your file containing the matrix)  
 - `deg2rad()` converts joint angles to radians.  
 - The loop visualizes each time step, animating the spider’s movement.
 
@@ -567,7 +842,9 @@ end
 ![alt text](image.png)
 ![alt text](image-1.png)
 
-After experimenting with different generation counts, the algorithm consistently achieved optimal fitness scores at approximately 600 generations.
+After experimenting with different generation counts, it was observed that the number of generations required to reach the optimal fitness score of **1.0** varied significantly.  
+The graph above illustrates two examples: one where the fitness score was achieved within a few generations, and another where it required substantially more iterations.
+
 
 ## Visual Verification
 
@@ -585,8 +862,8 @@ This animation showcases an optimized walking gait evolved by the Genetic Algori
    Preserve the top-performing individuals in each generation to ensure that the best solutions are always carried forward.
 2. **Evolve Multiple Target Gaits**  
    Enable the evolution of diverse movement styles (e.g., running, jumping, crawling) rather than optimizing for a single gait. This promotes richer, more adaptable locomotion behaviors—such as a spider capable of both running and jumping.
-3. **Implement Adaptive Convergence Detection**  
-   Replace fixed generation limits with a dynamic stopping criterion. The algorithm should automatically terminate when the population’s average fitness stabilizes (e.g., minimal improvement across several generations), preventing wasted computation and improving efficiency.
+3. **Integrate Adaptive Mutation Rates**  
+   Implement a mutation rate that adjusts dynamically based on population diversity or generation progress. Higher mutation rates can be applied when the population begins to converge prematurely, helping to maintain diversity
 
 ---
 

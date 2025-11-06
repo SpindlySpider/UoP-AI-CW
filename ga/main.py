@@ -15,8 +15,8 @@ def main():
     Draws a fitness graph at the end showing best and average fitness scores over generations.
     A max population size and gait length can be defined to control the search space.
     '''
-    # define number of generations to run GA for
-    generations:int =  2500
+    # define fitness target score
+    fitness_score_target:float = 1.0
     # define the set of frames in the gait cycle
     gait_length:int = 40
     # define search space
@@ -30,7 +30,9 @@ def main():
     # list to store average fitness scores over generations for plotting
     avg_fitness_over_time = []
     # run GA for set number of generations defined above
-    for gen in range(generations):
+    gen:int = 0
+    current_best_fitness:float = 0.0
+    while current_best_fitness < fitness_score_target:
         # stores the fitness score of each individual in the population
         # stores the index of the best individual in current population
         fitness_list = []  
@@ -44,7 +46,9 @@ def main():
             fitness_list.append(individual_fitness)
         # get index of best individual in current population
         best_idx = fitness_list.index(max(fitness_list))
+        current_best_fitness = fitness_list[best_idx]
         # print information about current generation
+        gen += 1
         print("generation:",gen,"| best index: ",best_idx, "| fitness: ",fitness_list[best_idx])
         
         avg_fitness = sum(fitness_list) / len(fitness_list)
@@ -56,11 +60,13 @@ def main():
         # perform crossover and mutation to generate new individuals using functions from reproduce module(python file)
         population = reproduce.uniform_crossover(population,gait_length,0.7)
         population = reproduce.mutate(population,0.025)
+
+
     # output the best individual found after the genetic algorithm is terminated
     output.output_gait("results.txt",population[best_idx],300)
     
     # plot fitness graph using the function from fitness_graph module(python file)
-    plot_fitness_graph(fitness_over_time, avg_fitness_over_time, generations)
+    plot_fitness_graph(fitness_over_time, avg_fitness_over_time, gen)
 
 
 if __name__ == "__main__":
