@@ -537,7 +537,7 @@ end
 ```
 
 **Explanation:**
-- `readmatrix()` loads the gait data from `sol.txt`.  
+- `readmatrix()` loads the gait data from `sol.txt`, gait data can also be loaded from `results.txt` after main.py as been run.  
 - `deg2rad()` converts joint angles to radians.  
 - The loop visualizes each time step, animating the spider’s movement.
 
