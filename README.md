@@ -271,6 +271,8 @@ Both **tournament selection** and **roulette wheel selection** were implemented.
 
 ---
 
+[See lines 51-83 of ga/`selection.py`](https://github.com/SpindlySpider/UoP-AI-CW/blob/main/ga/selection.py)
+
 ```
 
 def tournament(population: Population, fitness: list[float], num_selected: int) -> Population:
