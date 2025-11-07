@@ -122,7 +122,7 @@ Lower error → higher fitness.
 
 #### Code
 
-[See lines 5–123 of `fitness.py`](https://github.com/SpindlySpider/UoP-AI-CW/blob/main/ga/fitness.py)
+[See lines 5–123 of ga/`fitness.py`](https://github.com/SpindlySpider/UoP-AI-CW/blob/main/ga/fitness.py)
 
 ```
 from custom_types import Individual, Gait
@@ -320,7 +320,7 @@ The **uniform crossover** implementation:
 
 #### Code
 
-[See lines 41-98 of `reproduce.py`](https://github.com/SpindlySpider/UoP-AI-CW/blob/main/ga/reproduce.py)
+[See lines 41-98 of ga/`reproduce.py`](https://github.com/SpindlySpider/UoP-AI-CW/blob/main/ga/reproduce.py)
 
 ```
 def uniform_crossover(parents:Population,gait_length:int,crossover_rate:float) -> Population:
@@ -398,7 +398,7 @@ This ensures **diversity** and prevents **premature convergence**.
 
 #### Code
 
-[See lines 101–139 of `reproduce.py`](https://github.com/SpindlySpider/UoP-AI-CW/blob/main/ga/reproduce.py)
+[See lines 101–139 of ga/`reproduce.py`](https://github.com/SpindlySpider/UoP-AI-CW/blob/main/ga/reproduce.py)
 
 ```
 def mutate(population:Population,mut_rate:float) -> Population:
@@ -446,7 +446,11 @@ def mutate(population:Population,mut_rate:float) -> Population:
 
 ### Termination
 
-The algorithm terminates once the best individual's fitness score reaches or exceeds **1.0**.
+
+The algorithm stops when **either** of the following is true:
+
+- The **best individual’s fitness** is **≥ 1.000**.  
+- The **best individual’s fitness** (rounded to **three decimal places**) remains unchanged for **100 consecutive generations**.
 
 ---
 
@@ -812,7 +816,7 @@ end
 ```
 
 **Explanation:**
-- `readmatrix()` loads the gait data from `sol.txt`.  
+- `readmatrix()` loads the gait data from `results.txt`.  
 - `deg2rad()` converts joint angles to radians.  
 - The loop visualizes each time step, animating the spider’s movement.
 
@@ -842,9 +846,14 @@ end
 ![alt text](image.png)
 ![alt text](image-1.png)
 
-After experimenting with different generation counts, it was observed that the number of generations required to reach the optimal fitness score of **1.0** varied significantly.  
-The graph above illustrates two examples: one where the fitness score was achieved within a few generations, and another where it required substantially more iterations.
+It was observed that the number of generations required to achieve the optimal fitness score of **1.0** varied considerably between runs. This variation was primarily influenced by the initial population; in some cases, the algorithm failed to reach the optimal fitness score entirely.
 
+To prevent unnecessary computation when no further improvement occurs, the Genetic Algorithm is designed to terminate early if the best candidate’s fitness score remains unchanged for **100 consecutive generations**.
+
+The graph above illustrates this behaviour with two distinct examples:
+
+- One run successfully converging to the optimal fitness score within a small number of generations.
+- Another requiring substantially more iterations to achieve convergence.
 
 ## Visual Verification
 

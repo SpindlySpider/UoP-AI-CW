@@ -46,14 +46,23 @@ def main():
             fitness_list.append(individual_fitness)
         # get index of best individual in current population
         best_idx = fitness_list.index(max(fitness_list))
+        # update current best fitness
         current_best_fitness = fitness_list[best_idx]
         # print information about current generation
         gen += 1
         print("generation:",gen,"| best index: ",best_idx, "| fitness: ",fitness_list[best_idx])
-        
+
+        # calculate average fitness for current generation
         avg_fitness = sum(fitness_list) / len(fitness_list)
+        # appen  d best and average fitness to their respective lists
         fitness_over_time.append(fitness_list[best_idx])
         avg_fitness_over_time.append(avg_fitness)
+
+        if len(fitness_over_time) >= 100:
+            last_100_avg = sum(fitness_over_time[-100:]) / 100
+            if round(last_100_avg , 3) == round(current_best_fitness, 3):
+                print("Fitness target consistently met over 100 generations with the best fitness score being:", current_best_fitness)
+                break
 
         # select individuals for next generation using the functions from selection module(python file)
         population = selection.tournament(population,fitness_list,10)
