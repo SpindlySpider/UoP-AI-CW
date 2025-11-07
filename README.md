@@ -69,7 +69,7 @@ The final objective is a **stable, coordinated, and efficient gait**.
 ### Initialization
 
 Each **individual** in the population represents a complete gait.  
-Each gait (chromosome) consists of **8 legs × 3 joints = 24 genes**.
+Each gait (chromosome) consists of **8 legs × 3 joints = 24 genes**, repeated **300** times.
 
 Each side (left and right) has two unique sine waves per joint, for a total of six. The pattern follows an A, B, A, B sequence, meaning the rear legs on each side simply repeat the motion of the front legs instead of mirroring them.
 
