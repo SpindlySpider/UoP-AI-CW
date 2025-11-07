@@ -3,9 +3,9 @@ import math
 from numpy import random
 import output
 import matplotlib.pyplot as plt
-from custom_types import Individual
+from custom_types import Individual, Period
 
-def produce_target(gait_length:int, period, coxa_amplitude, tf_v_shift, tf_amplitude) -> Individual:
+def produce_target(gait_length:int, period:Period, coxa_amplitude:float, tf_v_shift:float, tf_amplitude:float) -> Individual:
     '''
     Produce target gait based on sine wave parameters
     Args:
@@ -70,11 +70,11 @@ def random_sol(gait_length:int) -> Individual:
     Args:
         gait_length (int): The length of the gait
     '''
-    period = round(random.uniform(0.05,1),3)
-    coxa_amplitude = round(random.uniform(5,23),3)
-    tf_v_shift = round(random.uniform(40,50),3)
-    tf_amplitude = round(random.uniform(10,30),3)
-    optimal_solution = produce_target(gait_length,period,coxa_amplitude,tf_v_shift,tf_amplitude)
+    period:Period = round(random.uniform(0.05,1),3)
+    coxa_amplitude: float = round(random.uniform(5,23),3)
+    tf_v_shift: float = round(random.uniform(40,50),3)
+    tf_amplitude: float = round(random.uniform(10,30),3)
+    optimal_solution: Individual = produce_target(gait_length,period,coxa_amplitude,tf_v_shift,tf_amplitude)
     return optimal_solution
 
 def generate_graph(individual):

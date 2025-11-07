@@ -1,4 +1,4 @@
-from custom_types import Population
+from custom_types import Population, Individual
 import random
 
 def crossover(parents:Population,gait_length:int,crossover_rate:float) -> Population:
@@ -24,7 +24,8 @@ def crossover(parents:Population,gait_length:int,crossover_rate:float) -> Popula
     # perform crossover in pairs
     for i in range(0, pop_size-1,2):
         # get two adjacent individuals that will be parents
-        p1,p2 = parents[i], parents[i+1]
+        p1: Individual = parents[i]
+        p2: Individual = parents[i+1]
         # check if crossover should occur
         if random.random() <= crossover_rate:
             # perform single point crossover by selecting a random cross point and swapping genes
@@ -55,7 +56,7 @@ def uniform_crossover(parents:Population,gait_length:int,crossover_rate:float) -
     pop_size: int = len(parents)
     # list to hold new offspring
     offspring: Population = []
-    gene_chance = 0.5
+    gene_chance: float = 0.5
     # check if odd number of parents
     if pop_size % 2 != 0:
         # ensure even num of parents
@@ -65,15 +66,18 @@ def uniform_crossover(parents:Population,gait_length:int,crossover_rate:float) -
     # perform crossover in pairs
     for i in range(0, pop_size-1,2):
         # get two adjacent individuals that will be parents
-        p1,p2 = parents[i], parents[i+1]
+        p1: Individual = parents[i]
+        p2: Individual = parents[i+1]
         # store offspring
-        o1,o2 = [],[]
+        o1: list[float] = []
+        o2: list[float] = []
         # check if crossover should occur
         if random.random() <= crossover_rate:
             # perform uniform crossover by swapping genes based on gene chance
             for joint_idx in range(12):
                 # store chromosomes for offspring
-                c1,c2 = [],[]
+                c1: list[float] = []
+                c2: list[float] = []
                 for gene_idx in range(5):
                     # for each gene choose if it should come from p1 or p2
                     #check if the gene should be swapped
@@ -114,7 +118,7 @@ def mutate(population:Population,mut_rate:float) -> Population:
             # unpack chromosome into separate genes
             amplitude,period,horizontal_offset,negative,vertical_offset = chromosome
             # put genes into a list for easier mutation
-            val_arr = [amplitude,period,horizontal_offset,negative,vertical_offset]
+            val_arr: list[float] = [amplitude,period,horizontal_offset,negative,vertical_offset]
             # check each gene for mutation
             for g_idx in range(4):
                 # will either be amplitude, period, offset, negative
@@ -122,12 +126,12 @@ def mutate(population:Population,mut_rate:float) -> Population:
                 if random.random() <= mut_rate:
                     # mutate gene: amplitude and vertical offset
                     if g_idx == 0 or g_idx == 4:
-                        new_gene = round(random.uniform(val_arr[g_idx]-10,val_arr[g_idx]+10),9)
+                        new_gene: float = round(random.uniform(val_arr[g_idx]-10,val_arr[g_idx]+10),9)
                         new_gene = max(-50, min(50, new_gene))
                         val_arr[g_idx] = new_gene
                     # mutate gene: horizontal offset and period 
                     elif g_idx < 3:
-                        new_gene = round(random.uniform(val_arr[g_idx]-0.5,val_arr[g_idx]+0.5),9)
+                        new_gene: float = round(random.uniform(val_arr[g_idx]-0.5,val_arr[g_idx]+0.5),9)
                         new_gene = max(-10, min(10, new_gene))
                         val_arr[g_idx] = new_gene
                     # mutate gene: negative

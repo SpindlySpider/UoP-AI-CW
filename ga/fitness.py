@@ -25,8 +25,8 @@ class Fitness:
         Notes:
             The target gait is generated once during initialization to avoid recomputation.
         """
-        self.target_individual = target_sol.random_sol(gait_length)
-        self.gait_length = gait_length
+        self.target_individual: Gait = target_sol.random_sol(gait_length)
+        self.gait_length: int = gait_length
 
     def get_fitness(self, individual: Individual) -> float:
         """
@@ -43,10 +43,10 @@ class Fitness:
         """
         # Track cumulative error per joint type
         fit_dict: dict[str, float] = {"coxa": 0, "femur": 0, "tibia": 0}
-        joint_names = ["coxa", "femur", "tibia"]
+        joint_names: list[str] = ["coxa", "femur", "tibia"]
 
         # Generate gait (predicted joint movements) for this individual
-        gait = gen_gait(individual, self.gait_length)
+        gait: Gait = gen_gait(individual, self.gait_length)
 
         # Limit comparison to the first 50 time steps for efficiency
         length = self.gait_length if self.gait_length < 50 else 50
@@ -54,29 +54,29 @@ class Fitness:
         for chromosome_idx in range(length):
             # Evaluate left side joints (indices 0–5)
             for gene_idx in range(6):
-                joint = joint_names[gene_idx % 3]
-                target_val = self.target_individual[chromosome_idx][gene_idx]
-                pred_val = gait[chromosome_idx][gene_idx]
-                err = (target_val - pred_val) ** 2
+                joint: str = joint_names[gene_idx % 3]
+                target_val: float = self.target_individual[chromosome_idx][gene_idx]
+                pred_val: float = gait[chromosome_idx][gene_idx]
+                err: float = (target_val - pred_val) ** 2
                 fit_dict[joint] += err
 
             # Evaluate right side joints (indices 13–18, mirror pattern)
             for gene_idx in range(13, 19):
-                joint = joint_names[gene_idx % 3]
-                target_val = self.target_individual[chromosome_idx][gene_idx]
-                pred_val = gait[chromosome_idx][gene_idx]
-                err = (target_val - pred_val) ** 2
+                joint: str = joint_names[gene_idx % 3]
+                target_val: float = self.target_individual[chromosome_idx][gene_idx]
+                pred_val: float = gait[chromosome_idx][gene_idx]
+                err: float = (target_val - pred_val) ** 2
                 fit_dict[joint] += err
 
         # Normalize errors and invert (1 / (1 + MSE)) for fitness
         for joint in joint_names:
-            j = fit_dict[joint]
+            j: float = fit_dict[joint]
             j = (j / (4 * self.gait_length))  # Average per joint
             j = 1 / (1 + j)                   # Invert to make higher = better
             fit_dict[joint] = j
 
         # Combine fitness across all joint types equally
-        fit_val = fit_dict["coxa"] + fit_dict["femur"] + fit_dict["tibia"]
+        fit_val: float = fit_dict["coxa"] + fit_dict["femur"] + fit_dict["tibia"]
 
         return fit_val
 
@@ -99,7 +99,7 @@ def gen_gait(individual: Individual, gait_length: int) -> Gait:
 
     for idx in range(gait_length):
         gait.append([])
-        prev_limb = []
+        prev_limb: list[float] = []
 
         for chromosome in individual:
             amplitude, period, offset, neg, v_offset = chromosome

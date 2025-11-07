@@ -23,8 +23,15 @@
 |------|-------------|
 | **GA (Genetic Algorithm)** | A search heuristic inspired by natural selection, used to optimize solutions. |
 | **Gait** | A pattern of limb movement during locomotion. |
-| **Chromosome** | Encoded representation of a solution (here, a gait). |
-| **Gene** | Individual parameter within a chromosome controlling a specific joint motion. |
+| **Chromosome** | A tuple encapsulating sine wave parameters. |
+| **Gene** | ## Gene  
+An individual parameter within a chromosome that governs a specific aspect of joint motion.
+
+- **Amplitude** *(float)*: Maximum rotational displacement of a joint  
+- **Period** *(float)*: Controls the speed of the gait cycle  
+- **H_offset** *(float)*: Horizontal phase offset of limb movement  
+- **Negative** *(bool)*: Inverts rotation along the x-axis, allowing limbs to move independently rather than in unison  
+- **V_offset** *(float)*: Angular offset applied to the femur joints |
 | **Fitness Function** | Function used to evaluate how well a solution performs the desired task. |
 
 ---

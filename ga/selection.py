@@ -21,27 +21,27 @@ def roulette(population: Population, fitness: list[float]) -> Population:
     Population
         A new list of selected individuals of the same size as the input population.
     """
-    total_fit = sum(fitness)
+    total_fit: float = sum(fitness)
     if total_fit == 0:
         return random.sample(population, len(population))
 
-    cumulative_sum = []
-    running_total = 0.0
+    cumulative_sum: list[float] = []
+    running_total: float = 0.0
     selected_parents: Population = []
 
     # Build cumulative distribution
     for fit_value in fitness:
-        normalized_fit = fit_value / total_fit
+        normalized_fit: float = fit_value / total_fit
         running_total += normalized_fit
         cumulative_sum.append(running_total)
 
     # Select individuals based on cumulative probability
     for _ in range(len(population)):
-        selection = random.random()
+        selection: float = random.random()
         for i, cumulative_value in enumerate(cumulative_sum):
             if selection < cumulative_value:
                 # Select the individual just before exceeding the random number
-                individual_index = i - 1 if i > 0 else 0
+                individual_index: int = i - 1 if i > 0 else 0
                 selected_parents.append(population[individual_index])
                 break
 
@@ -74,10 +74,10 @@ def tournament(population: Population, fitness: list[float], num_selected: int) 
 
     for _ in range(pop_size):
         # Randomly pick individuals for the tournament
-        selected_idx = [random.randint(0, pop_size - 1) for _ in range(num_selected)]
+        selected_idx: list[int] = [random.randint(0, pop_size - 1) for _ in range(num_selected)]
 
         # Choose the one with the highest fitness
-        best_idx = max(selected_idx, key=lambda i: fitness[i])
+        best_idx: int = max(selected_idx, key=lambda i: fitness[i])
         selected_parents.append(population[best_idx])
 
     return selected_parents
