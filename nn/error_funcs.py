@@ -1,6 +1,7 @@
 import numpy as np
 from numpy._core.numerictypes import float64
 from numpy._typing import NDArray
+
 def mse(target_list:NDArray[float64],predict_list:NDArray[float64]) -> float:
     """
     Calculates the mean squared error
