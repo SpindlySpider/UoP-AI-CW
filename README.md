@@ -69,7 +69,7 @@ The final objective is a **stable, coordinated, and efficient gait**.
 ### Initialization
 
 Each **individual** in the population represents a complete gait.  
-Each gait (chromosome) consists of **8 legs × 3 joints = 24 genes**, repeated **300** times.
+Each chromosome consists of  5 parameters (amp,p,offset,e.t.c.) controlling the oscillation of a joint. Per limb there is 3 joints. Finally there are 2 unique limbs per side on this spider. So in total **5x3x2x2 = 60 genes**
 
 Each side (left and right) has two unique sine waves per joint, for a total of six. The pattern on each side follows an A, B, A, B sequence, meaning the front legs follow the 3rd legs and the 2nd legs follow the rear legs.
 
