@@ -622,7 +622,7 @@ pip install -r requirements.txt
 Execute the main program to start the Genetic Algorithm and evolve gait patterns:
 
 ```bash
-python main.py
+python ga/main.py
 ```
 The code generates a results.txt file that contains a 300x24 matrix that can be imported into matlab.
 ---
