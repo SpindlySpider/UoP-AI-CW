@@ -326,7 +326,7 @@ def tournament(population: Population, fitness: list[float], num_selected: int) 
 Both **normal crossover** and **uniform crossover** were implemented and tested for performance. After evaluation, **uniform crossover** was chosen as it consistently produced offspring with higher genetic diversity, resulting in faster convergence and improved optimisation quality.
 
 The **uniform crossover** implementation:
-- Swaps **amplitude** and **vertical offset**, **horizontal offset** and **period**, as well as **negative flag** values between two parents.  
+- Randomly swaps  corresponding **amplitude**, **vertical offset**, **horizontal offset** and **period**, as well as **negative flag** values between two parents.  
 - Generates **two offspring** per crossover operation.
 
 #### Code
