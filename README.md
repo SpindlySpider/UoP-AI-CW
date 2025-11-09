@@ -78,11 +78,13 @@ Each joint’s motion is represented by a **sine-wave function** characterized b
 
 | Parameter | Description | Range | Design Rationale |
 |------------|-------------|--------|------------------|
-| **amplitude** | Amplitude of sine wave controlling joint motion | (-55, 30) | Enables both subtle and large joint swings |
+| **amplitude** | Amplitude of sine wave controlling joint motion | (-55, 55) | Enables both subtle and large joint swings |
 | **period** | Frequency of oscillation | (-5, 5) | Allows fast or slow movement cycles |
 | **h_offset** | Phase shift of the sine wave | (-5, 5) | Coordinates timing differences between limbs |
 | **negative** | Boolean flag inverting the sine wave | {True, False} | Adds diversity without extra dimensions |
 | **v_offset** | Baseline joint angle | (-50, 50) | Adjusts resting joint positions |
+
+The wide range of possible values for these parameters creates a high-dimensional search space, providing the Genetic Algorithm (GA) with a broad solution landscape to explore when optimising candidate solutions.
 
 #### Representation Rationale
 - **Sine-wave encoding** produces smooth, periodic motion aligned with natural walking.
