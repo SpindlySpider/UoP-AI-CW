@@ -78,7 +78,7 @@ Each joint’s motion is represented by a **sine-wave function** characterized b
 
 | Parameter | Description | Range | Design Rationale |
 |------------|-------------|--------|------------------|
-| **amplitude** | Amplitude of sine wave controlling joint motion | (-55, 55) | Enables both subtle and large joint swings |
+| **amplitude** | Amplitude of sine wave controlling joint motion | (0, 30) | Enables both subtle and large joint swings |
 | **period** | Frequency of oscillation | (-5, 5) | Allows fast or slow movement cycles |
 | **h_offset** | Phase shift of the sine wave | (-5, 5) | Coordinates timing differences between limbs |
 | **negative** | Boolean flag inverting the sine wave | {True, False} | Adds diversity without extra dimensions |
@@ -133,7 +133,7 @@ Lower error → higher fitness.
 
 [See lines 5–123 of ga/`fitness.py`](https://github.com/SpindlySpider/UoP-AI-CW/blob/main/ga/fitness.py)
 
-```
+```python
 from custom_types import Individual, Gait
 import math
 import target_sol
@@ -282,8 +282,7 @@ Both **tournament selection** and **roulette wheel selection** were implemented.
 
 [See lines 51-83 of ga/`selection.py`](https://github.com/SpindlySpider/UoP-AI-CW/blob/main/ga/selection.py)
 
-```
-
+```python
 def tournament(population: Population, fitness: list[float], num_selected: int) -> Population:
     """
     Selects individuals using tournament selection.
@@ -333,7 +332,7 @@ The **uniform crossover** implementation:
 
 [See lines 41-98 of ga/`reproduce.py`](https://github.com/SpindlySpider/UoP-AI-CW/blob/main/ga/reproduce.py)
 
-```
+```python
 def uniform_crossover(parents:Population,gait_length:int,crossover_rate:float) -> Population:
     '''
     Performs uniform crossover on a population of individuals. 
@@ -411,7 +410,7 @@ This ensures **diversity** and prevents **premature convergence**.
 
 [See lines 101–139 of ga/`reproduce.py`](https://github.com/SpindlySpider/UoP-AI-CW/blob/main/ga/reproduce.py)
 
-```
+```python
 def mutate(population:Population,mut_rate:float) -> Population:
     '''
     Performs mutation on a population of individuals.
@@ -537,7 +536,7 @@ Instead of evaluating every frame and joint directly, each gene represented a se
 
 | Parameter | Description | Range | Purpose |
 |------------|-------------|--------|----------|
-| **Amplitude** | Controls joint movement amplitude | (0, 55) | Enables variation in swing intensity |
+| **Amplitude** | Controls joint movement amplitude | (5, 30) | Enables variation in swing intensity |
 | **Period** | Controls oscillation frequency | (-5, 5) | Determines speed of movement |
 | **h_offset** | Phase shift of sine wave | (-5, 5) | Synchronises or offsets limbs |
 | **negative** | Boolean flag to invert wave | {True, False} | Enables mirrored or opposing motion |
@@ -636,7 +635,74 @@ To generate a **reference gait** without using the Genetic Algorithm:
 python target_sol.py
 ```
 
-The resulting gait data will be saved for later comparison and testing. The code generates a sol.txt file that contains a 300x24 matrix that can be imported into matlab.
+The generated gait data is automatically saved for future comparison and analysis.  
+The script produces a **`sol.txt`** file containing a **300 × 24 matrix**, fully compatible with **MATLAB** for import and further processing.
+
+Gait behavior can be customized using adjustable parameters, allowing for a wide range of motion patterns to be produced.  
+These parameters can be modified directly through the:
+
+[See lines 8-66 of ga/`target_sol.py`](https://github.com/SpindlySpider/UoP-AI-CW/blob/main/ga/target_sol.py)
+```python
+def produce_target(gait_length:int, period:Period, coxa_amplitude:float, tf_v_shift:float, tf_amplitude:float) -> Individual:
+    '''
+    Produce target gait based on sine wave parameters
+    Args:
+        gait_length (int): The length of the gait
+        period (float): The period of the sine wave
+        coxa_amplitude (float): The amplitude of the coxa joint movement
+        tf_v_shift (float): The vertical shift of the tibia-femur joint
+        tf_amplitude (float): The amplitude of the tibia-femur joint movement
+    '''
+    best: Individual = []
+
+    # offset to sync up tibia-femur with coxa rotation
+    period_offset:float = 2
+
+    # generate frames based on the gait length
+    for idx in range(gait_length):
+        # joint's target for the frame current frame
+        frame:list[float] = []
+        # generate for 24 joints
+        for joint in range(24):
+            # determine which leg and joint
+            leg_num:int = joint // 3
+            # determine if the joint is on the left or right side
+            even_limb:int = leg_num % 2 == 0 
+            # determine if coxa joint is right or left
+            coxa_right:bool = even_limb
+            # left side joints need to be inverted
+            if joint < 11:
+                # if the joint is on the left side invert right
+                coxa_right = not even_limb
+            # determine if coxa joint
+            if joint % 3 ==0:
+                # coxa joint rotation
+                target:float = (coxa_amplitude*(math.sin(period*idx)))
+                # invert direction if right side
+                target = (-target) if coxa_right else target
+                # append to frame
+                frame.append(target)
+            # determine if tibia-femur joint
+            else:
+                # match period so that gait syncs up
+                sin_val:float = (period*idx)+period_offset
+
+                # determine if joint is on the left side
+                if even_limb:
+                    # invert direction of sin wave if it is an even limb
+                    # this is so it syncs up with coxa rotation
+                    sin_val = (-sin_val)
+
+                # compute target value for tibia-femur joint
+                target:float = (tf_amplitude*(math.sin(sin_val))) - tf_v_shift
+
+                if target <= -50:
+                    target = -50
+                frame.append(target)
+        best.append(frame)
+    return best
+
+```
 
 ---
 
