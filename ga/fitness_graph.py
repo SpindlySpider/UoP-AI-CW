@@ -11,7 +11,8 @@ def plot_fitness_graph(fitness_values, avg_fitness_values, generations):
     plt.grid(True)
     plt.tight_layout()
     plt.show()
-
+plt.legend()
+plt.savefig(f"fitness-over-{generations}-gens.png")
 
 
 
