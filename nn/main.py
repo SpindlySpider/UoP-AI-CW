@@ -15,7 +15,7 @@ def main():
     nn = Neural_network(hidden_layers=hidden_layers,learning_rate=learning_rate,activation_functions=activation_functions)
 
     # get training data
-    data = input_data.generate_train_test_data()
+    data = input_data.generate_train_test_data(0.8,1000,3)
     train_in, train_out = data["training"]
     test_in, test_out = data["test"]
 
