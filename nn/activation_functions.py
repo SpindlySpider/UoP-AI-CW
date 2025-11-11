@@ -1,27 +1,17 @@
 import numpy as np
 
-def sigmoid(x): #Sigmoid activation function
-    y=1.0/(1+np.exp(-x))
-    return y
+sigmoid = lambda x: 1/(1+np.exp(-x))
+sigmoid_derivitive = lambda x: x*(1-x)
 
-def sigmoid_derivitive(x):
-    return x*(1.0-x)
+linear = lambda x : x
+linear_derivative = lambda x: 1
+
+tanh = lambda x : (np.exp(2*x)-1) / (np.exp(2*x) + 1)
+tanh_derititive = lambda x : 1 - (tanh(x)**2)
 
 # could add ReLu here and see how it does :) 
 
-def linear(x):
-    return x
-
-def linear_derivative(x):
-    return 1
-
-def tanh(x):
-    return (np.exp(2*x)-1)  / (np.exp(2*x) + 1)
-
-def tanh_derititive(x):
-    return 1 - (tanh(x)**2)
-
-# used to track what derititive function to use
+# used to map functions to their respective derivative function
 ACTIVATION_DERITIVIVE_MAP = {
     sigmoid:sigmoid_derivitive,
     linear: linear_derivative,
