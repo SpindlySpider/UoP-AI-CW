@@ -23,8 +23,8 @@ class Neural_network():
         # used to store each layers activation function
         self.activations:list[function] = activation_functions
 
-        self.outputs: list[NDArray[float64] = [np.zeros((self.layers[l])) for l in range(len(self.layers))]
-        self.delta:list[NDArray[float64] = []
+        self.outputs: list[NDArray[float64]] = [np.zeros((self.layers[l])) for l in range(len(self.layers))]
+        self.delta:list[NDArray[float64]] = []
 
         for layer in range(len(self.layers)-1):
             # Init layer weights, bias and derivatives
