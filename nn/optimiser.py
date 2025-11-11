@@ -10,9 +10,6 @@ def gradient_descent(nn:Neural_network) -> Neural_network:
         nn.bias[i] = nn.bias[i] - (nn.delta[i]*nn.learning_rate)
     return nn
 
-def stochastic_gradient_descent(nn:Neural_network) -> Neural_network:
-    pass
-
 def adam(nn:Neural_network) -> Neural_network:
     """
     Optimiser which uses momentum and RMSprop to adjust learning rate during training
