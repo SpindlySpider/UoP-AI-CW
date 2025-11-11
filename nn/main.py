@@ -1,3 +1,4 @@
+import serialize
 from training import train_NN, generate_training_data
 from activation_functions import *
 from neural_network import Neural_network
@@ -13,7 +14,8 @@ def main():
     learning_rate = 0.01
     nn = Neural_network(hidden_layers=hidden_layers,learning_rate=learning_rate,activation_functions=activation_functions)
 
-    nn = train_NN(nn,inputs,outputs,1000,1)
+    nn = train_NN(nn,inputs,outputs,800,1)
+    serialize.save(nn)
 
 if __name__ == "__main__":
     main()

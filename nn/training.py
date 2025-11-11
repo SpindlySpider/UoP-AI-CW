@@ -47,6 +47,7 @@ def train_NN(nn:Neural_network,input_list:NDArray[float64],target_list:NDArray[f
                 # so we transpose the numpy array so instead of batch_size x outputs (24)
                 # it is instead outputs (24) x batch size, then we can do MSE for each row and get a mean value for each output
                 mse_error = np.append(mse_error,mse(targets[output_idx],predict[output_idx]))
+                # somthing wrong with this ? causing error to flip up to like 9
             nn.back_propagation(mse_error)
             nn = optimiser.gradient_descent(nn)
         print(f"epoch {epoch} | mean loss {np.average(mse_error)}")
