@@ -4,7 +4,7 @@ from numpy._core.numerictypes import float64
 from numpy._typing import NDArray
 
 class Neural_network():
-    def __init__(self, hidden_layers:list[int] = [24],num_outputs:int = 24,num_inputs:int=24,learning_rate:float=0.5) -> None:
+    def __init__(self, hidden_layers:list[int] = [24],num_outputs:int = 24,num_inputs:int=24,learning_rate:float=0.5, activation_functions:list = [sigmoid]) -> None:
         """
         Initializes the neural network
         Parameters:
@@ -20,6 +20,8 @@ class Neural_network():
         self.derivatives: list[NDArray[float64]] = []
         # used to get size for weights and bias
         self.layers: list[int]= [num_inputs] + hidden_layers + [num_outputs]
+        # used to store each layers activation function
+        self.activations:list[function] = activation_functions
 
         self.outputs: list[NDArray[float64]] = [np.zeros(self.layers[l]) for l in range(len(self.layers))]
 
@@ -53,7 +55,8 @@ class Neural_network():
         for i, w in enumerate(self.weights):
             next_output = np.dot(output,w)
             # activation function
-            output = sigmoid(next_output)
+            # output = sigmoid(next_output)
+            output = self.activations[i](next_output)
             self.outputs[i+1] = output
         return output
 
@@ -70,7 +73,10 @@ class Neural_network():
             # the output of last layer it is still + 1, but works out since there are 3 layers over all of weights between input hidden and out
             output = self.outputs[i+1]
 
-            delta = error*sigmoid_derivitive(output)
+            # get derititive function for this layers activation
+            derivative_function:function = ACTIVATION_DERITIVIVE_MAP[self.activations[i]]
+
+            delta = error*derivative_function(output)
 
             delta_fixed = delta.reshape(delta.shape[0],-1).T 
 
