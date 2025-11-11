@@ -4,6 +4,7 @@ from neural_network import Neural_network
 import numpy as np
 from error_funcs import mse
 import optimiser
+import curses
 
 def train_NN(nn:Neural_network,input_list:NDArray[float64],target_list:NDArray[float64],epochs:int, batch_size:int) -> Neural_network:
     """
@@ -17,8 +18,11 @@ def train_NN(nn:Neural_network,input_list:NDArray[float64],target_list:NDArray[f
     Returns:
         Trained neural network
     """
-
     # useful doc: https://www.geeksforgeeks.org/deep-learning/batch-size-in-neural-network/
+    curses.filter()
+    curses.initscr()
+    x = curses.COLS
+    screen =  curses.newwin(15, x, 0, 0)
     for epoch in range(epochs):
         for b in range(0,len(input_list)-batch_size,batch_size):
             # make sure that we have consistant element sizes - batch size from max
@@ -41,7 +45,12 @@ def train_NN(nn:Neural_network,input_list:NDArray[float64],target_list:NDArray[f
                 mse_error = np.append(mse_error,mse(targets[output_idx],predict[output_idx]))
             nn.back_propagation(mse_error)
             nn = optimiser.gradient_descent(nn)
-        print(f"epoch {epoch} | mean loss {np.average(mse_error)}")
+        #NOTE: let me know if the cli stuff is too messy, we can move the ncurses into its own function :)
+        percent = round((epoch/epochs)*40)
+        status = f"|{percent*'#'}{(40-percent)*'-'}| epoch: {epoch}/{epochs} | mean loss: {np.average(mse_error)} |"
+        screen.addstr(0,2,status)
+        screen.refresh()
+    curses.endwin()
     return nn
 
 
