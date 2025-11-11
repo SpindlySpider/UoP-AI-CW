@@ -1,7 +1,6 @@
 import math
 
 from numpy import random
-import output
 import matplotlib.pyplot as plt
 from custom_types import  Individual,Gait
 

@@ -53,7 +53,7 @@ class Neural_network():
             final layer of NN output, for the next joint prediction.
         """
         # set the first output as input vector
-        output = input_vector
+        output:NDArray[float64] = input_vector
         self.outputs[0] = output
 
         for i, w in enumerate(self.weights):
@@ -69,7 +69,6 @@ class Neural_network():
         Parameters:
             error (NDArray[float64]): Error
         """
-        # this only works for 1 value, since error is a list of errors how is this calculated?
         for i in reversed(range(len(self.derivatives))):
             # work backwards with index from last layer to first
             output = self.outputs[i+1]
@@ -77,8 +76,8 @@ class Neural_network():
             # workout which function should be used for this layer
             derivative_function:function = ACTIVATION_DERITIVIVE_MAP[self.activations[i]]
 
-            # need to save this for the bias
             delta = error*derivative_function(output)
+            # save delta / error signal to update bias later
             self.delta[i] = delta
 
             delta_fixed = delta.reshape(delta.shape[0],-1).T
@@ -87,7 +86,8 @@ class Neural_network():
             layer_output = self.outputs[i]
             layer_output = layer_output.reshape(layer_output.shape[0],-1)
 
-            # erroring here because output[2] has a format of 24*3*24
+            # save derivatives for GD later
             self.derivatives[i] = np.dot(layer_output,delta_fixed)
 
+            # Set error for next layer to back propagate
             error = np.dot(delta, self.weights[i].T)
