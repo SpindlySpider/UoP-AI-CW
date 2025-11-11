@@ -39,7 +39,6 @@ def main():
         population = reproduce.mutate(population,0.02)
     output.output("results.txt",population[best_idx])
 
-    print(fitness_over_time)
 
     plot_fitness_graph(fitness_over_time, avg_fitness_over_time, generations)
 
