@@ -1,8 +1,5 @@
 import numpy as np
 
-
-
-
 def sigmoid(x): #Sigmoid activation function
     y=1.0/(1+np.exp(-x))
     return y
@@ -19,10 +16,10 @@ def linear_derivative(x):
     return 1
 
 def tanh(x):
-    return np.tanh(x)
+    return (np.exp(2*x)-1)  / (np.exp(2*x) + 1)
 
 def tanh_derititive(x):
-    return 1 - (np.tanh(x)**2)
+    return 1 - (tanh(x)**2)
 
 # used to track what derititive function to use
 ACTIVATION_DERITIVIVE_MAP = {

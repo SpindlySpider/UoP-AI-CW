@@ -8,13 +8,16 @@ import numpy as np
 def main():
     inputs,outputs = generate_training_data(1000)
     inputs,outputs = np.array(inputs), np.array(outputs)
+    # need to save training data to see how it does on unknown data
+
+    # need to convert float 64 to 128, causing overflow errors
     hidden_layers = [24,24,48,48,24]
     # apply activation functions per layer
     activation_functions = [tanh,tanh,tanh,tanh,tanh,linear]
     learning_rate = 0.01
     nn = Neural_network(hidden_layers=hidden_layers,learning_rate=learning_rate,activation_functions=activation_functions)
 
-    nn = train_NN(nn,inputs,outputs,800,1)
+    nn = train_NN(nn,inputs,outputs,1000,1)
     serialize.save(nn)
 
 if __name__ == "__main__":

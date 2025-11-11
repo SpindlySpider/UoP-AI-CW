@@ -1,6 +1,6 @@
 import numpy as np
 from activation_functions import *
-from numpy._core.numerictypes import float64
+from numpy._core.numerictypes import float128,float64
 from numpy._typing import NDArray
 
 class Neural_network():
@@ -15,15 +15,15 @@ class Neural_network():
         """
         self.learning_rate = learning_rate
         # weights and bias in a list, each index corresponds to a layers weights and bias
-        self.weights: list[NDArray[float64]] = []
-        self.bias: list[NDArray[float64]] = []
-        self.derivatives: list[NDArray[float64]] = []
+        self.weights: list[NDArray[float128]] = []
+        self.bias: list[NDArray[float128]] = []
+        self.derivatives: list[NDArray[float128]] = []
         # used to get size for weights and bias
         self.layers: list[int]= [num_inputs] + hidden_layers + [num_outputs]
         # used to store each layers activation function
         self.activations:list[function] = activation_functions
 
-        self.outputs: list[NDArray[float64]] = [np.zeros(self.layers[l]) for l in range(len(self.layers))]
+        self.outputs: list[NDArray[float128]] = [np.zeros(self.layers[l],dtype=np.float128) for l in range(len(self.layers))]
 
         for layer in range(len(self.layers)-1):
             # Init layer weights, bias and derivatives
@@ -33,7 +33,7 @@ class Neural_network():
             # Create input*output sized matrix for weights
             self.weights[layer] = np.random.rand(self.layers[layer],self.layers[layer+1])
             # Copy matrix format for derivatives, fill with zeros.
-            self.derivatives[layer] = np.zeros((self.layers[layer],self.layers[layer+1]))
+            self.derivatives[layer] = np.zeros((self.layers[layer],self.layers[layer+1]),dtype=np.float128)
             # Create bias for each perceptron
             self.bias[layer] = np.random.rand(1,self.layers[layer+1])
 
@@ -54,6 +54,7 @@ class Neural_network():
 
         for i, w in enumerate(self.weights):
             next_output = np.dot(output,w)
+            # add bias too
             # activation function
             # output = sigmoid(next_output)
             output = self.activations[i](next_output)
