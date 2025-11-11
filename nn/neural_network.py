@@ -1,6 +1,6 @@
 import numpy as np
 from activation_functions import *
-from numpy._core.numerictypes import float128,float64
+from numpy._core.numerictypes import float64
 from numpy._typing import NDArray
 
 class Neural_network():
@@ -15,27 +15,33 @@ class Neural_network():
         """
         self.learning_rate = learning_rate
         # weights and bias in a list, each index corresponds to a layers weights and bias
-        self.weights: list[NDArray[float128]] = []
-        self.bias: list[NDArray[float128]] = []
-        self.derivatives: list[NDArray[float128]] = []
+        self.weights: list[NDArray[float64]] = []
+        self.bias: list[NDArray[float64]] = []
+        self.derivatives: list[NDArray[float64]] = []
         # used to get size for weights and bias
         self.layers: list[int]= [num_inputs] + hidden_layers + [num_outputs]
         # used to store each layers activation function
         self.activations:list[function] = activation_functions
 
-        self.outputs: list[NDArray[float128]] = [np.zeros(self.layers[l],dtype=np.float128) for l in range(len(self.layers))]
+        self.outputs: list[NDArray[float64] = [np.zeros((self.layers[l])) for l in range(len(self.layers))]
+        self.delta:list[NDArray[float64] = []
 
         for layer in range(len(self.layers)-1):
             # Init layer weights, bias and derivatives
             self.weights.append(np.array([]))
             self.bias.append(np.array([]))
             self.derivatives.append(np.array([]))
+            self.delta.append(np.array([]))
             # Create input*output sized matrix for weights
             self.weights[layer] = np.random.rand(self.layers[layer],self.layers[layer+1])
             # Copy matrix format for derivatives, fill with zeros.
-            self.derivatives[layer] = np.zeros((self.layers[layer],self.layers[layer+1]),dtype=np.float128)
+            self.derivatives[layer] = np.zeros((self.layers[layer],self.layers[layer+1]))
             # Create bias for each perceptron
-            self.bias[layer] = np.random.rand(1,self.layers[layer+1])
+            self.bias[layer] = np.random.rand(self.layers[layer+1])
+
+            # Fill out null values for delta, so we can access later for bias update.
+            self.delta[layer] = np.zeros((self.layers[layer]))
+
 
 
     def feed_forward(self,input_vector:NDArray[float64]) -> NDArray[float64]:
@@ -50,13 +56,9 @@ class Neural_network():
         output = input_vector
         self.outputs[0] = output
 
-        # need to workout how to transpose for 
-
         for i, w in enumerate(self.weights):
-            next_output = np.dot(output,w)
-            # add bias too
-            # activation function
-            # output = sigmoid(next_output)
+            next_output = np.dot(output,w) + self.bias[i]
+
             output = self.activations[i](next_output)
             self.outputs[i+1] = output
         return output
@@ -70,16 +72,16 @@ class Neural_network():
         # this only works for 1 value, since error is a list of errors how is this calculated?
         for i in reversed(range(len(self.derivatives))):
             # work backwards with index from last layer to first
-            # get previous layer
-            # the output of last layer it is still + 1, but works out since there are 3 layers over all of weights between input hidden and out
             output = self.outputs[i+1]
 
-            # get derititive function for this layers activation
+            # workout which function should be used for this layer
             derivative_function:function = ACTIVATION_DERITIVIVE_MAP[self.activations[i]]
 
+            # need to save this for the bias
             delta = error*derivative_function(output)
+            self.delta[i] = delta
 
-            delta_fixed = delta.reshape(delta.shape[0],-1).T 
+            delta_fixed = delta.reshape(delta.shape[0],-1).T
 
             # current layer output
             layer_output = self.outputs[i]
