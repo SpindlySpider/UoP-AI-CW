@@ -29,7 +29,7 @@ def shuffle_data(input:list,label:list) -> tuple[NDArray,NDArray]:
     shuffled_in, shuffled_label = np.array(input)[permutated_idxs],np.array(label)[permutated_idxs]
     return (shuffled_in,shuffled_label)
 
-def generate_train_test_data(train_ratio:float = 0.8,data_points:int=1000,variations:int=1) -> dict[str:tuple[Gait,Gait]]:
+def generate_train_test_data(train_ratio:float = 0.8,data_points:int=30,variations:int=1) -> dict[str:tuple[Gait,Gait]]:
     """
     Generates training and test data to train NN
     Parameters:
@@ -44,7 +44,7 @@ def generate_train_test_data(train_ratio:float = 0.8,data_points:int=1000,variat
     input: Gait = []
     label: Gait = []
     # make sure all walks have low frequency
-    period:float = 0.2
+    period:float = 0.1
     for _ in range(variations):
         c_amp = round(random.uniform(5,23),3)
         tf_v_shift = round(random.uniform(40,50),3)
@@ -53,13 +53,13 @@ def generate_train_test_data(train_ratio:float = 0.8,data_points:int=1000,variat
         _input, _label = generate_training_data(data_points,period,c_amp,tf_v_shift,tf_amp)
         input = input + _input
         label = label + _label
-    slice_idx:int = round(data_points * train_ratio)
+    slice_idx:int = round((data_points*variations) * train_ratio)
     input,label = shuffle_data(input,label)
 
     #TODO: make this type actually represent the np.array thing
     data:dict[str: tuple[Gait,Gait]] = {"training":(),"test":()}
     # slice and convert to numpy array
-    data["training"] = (np.array(input[:slice_idx]), np.array(label[:slice_idx]))
-    data["test"] = (np.array(input[slice_idx:]), np.array(label[slice_idx:]))
+    data["training"] = (np.array(input[0:slice_idx]), np.array(label[0:slice_idx]))
+    data["test"] = (np.array(input[slice_idx:-1]), np.array(label[slice_idx:-1]))
     #TODO: randomize data
     return data

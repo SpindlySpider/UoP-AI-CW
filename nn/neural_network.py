@@ -48,19 +48,21 @@ class Neural_network():
         """
         Predict the next angles for the joints
         Parameters:
-            input_vector (list[float]): This should be a list of angles which has a length of 24
+            input_vector (list[float]): This should be a list of angles which has a length of 24 x batch size
         Returns:
             final layer of NN output, for the next joint prediction.
         """
-        # set the first output as input vector
+        # set first layer to input vector
         output:NDArray[float64] = input_vector
         self.outputs[0] = output
 
         for i, w in enumerate(self.weights):
-            next_output = np.dot(output,w) + self.bias[i]
-
+            # next_output = np.dot(output, w) + self.bias[i]
+            next_output = np.dot(output, w) 
+            # save unactivated output of this layer
+            next_output = np.round(next_output,10)
+            self.outputs[i+1] = next_output
             output = self.activations[i](next_output)
-            self.outputs[i+1] = output
         return output
 
     def back_propagation(self,error:NDArray[float64]) :
@@ -76,18 +78,22 @@ class Neural_network():
             # workout which function should be used for this layer
             derivative_function:function = ACTIVATION_DERITIVIVE_MAP[self.activations[i]]
 
-            delta = error*derivative_function(output)
+            # error value here needs to be derititve of MSE
+            delta = error * derivative_function(output)
+            # print(delta.shape)
             # save delta / error signal to update bias later
             self.delta[i] = delta
 
-            delta_fixed = delta.reshape(delta.shape[0],-1).T
+            # set to previous layer
+            activated_output = self.activations[i](self.outputs[i])
 
-            # current layer output
-            layer_output = self.outputs[i]
-            layer_output = layer_output.reshape(layer_output.shape[0],-1)
+            self.derivatives[i] = np.dot(activated_output.T, delta) * (1/ error.shape[0])
 
-            # save derivatives for GD later
-            self.derivatives[i] = np.dot(layer_output,delta_fixed)
+            # self.derivatives[i] = np.dot(self.outputs[i].T, delta) * (1/ error.shape[0])
+            # this must be breaking it because it would be weights not error?
+            # self.derivatives[i] = np.dot(self.outputs[i].T, delta)
+            # self.derivatives[i] = np.dot(self.outputs[i].T, delta)
+
 
             # Set error for next layer to back propagate
             error = np.dot(delta, self.weights[i].T)

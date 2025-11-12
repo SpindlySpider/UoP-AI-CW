@@ -1,6 +1,8 @@
 from numpy.typing import NDArray
+import graph_results
 from numpy._core.numerictypes import float64
 from neural_network import Neural_network
+import input_data
 import numpy as np
 from error_funcs import mse
 import optimiser
@@ -19,38 +21,52 @@ def train_NN(nn:Neural_network,input_list:NDArray[float64],target_list:NDArray[f
         Trained neural network
     """
     # useful doc: https://www.geeksforgeeks.org/deep-learning/batch-size-in-neural-network/
-    curses.filter()
-    curses.initscr()
-    x = curses.COLS
-    screen =  curses.newwin(15, x, 0, 0)
+    # curses.filter()
+    # curses.initscr()
+    # x = curses.COLS
+    # screen =  curses.newwin(15, x, 0, 0)
+    # last_mse_error = 0
+
+    loss_per_epoch = []
     for epoch in range(epochs):
+        # shuffle data
+        input_list,target_list = input_data.shuffle_data(input_list,target_list)
+        mse_der_error:NDArray[float64] = np.array([])
+        mse_loss: float = 0
         for b in range(0,len(input_list)-batch_size,batch_size):
-            # make sure that we have consistant element sizes - batch size from max
-            mse_error:NDArray[float64] = np.array([])
             # feed forward b many times
-            batch_idxs = [idx for idx in range(b,b+batch_size)]
-            predicts: list = []
-            for i in batch_idxs:
-                # get all predictions for this batch
-                input = input_list[i]
-                predicts.append(nn.feed_forward(input))
-            # transform predict and target from batch_sizex24 to 24xbatch_size
-            targets = target_list[b:b+batch_size].T
-            predict = np.array(predicts).T
-            for output_idx in range(targets.shape[0]):
-                # calculate error for each output (24)
-                # we want to pass in each row of outputs compared to targets
-                # so we transpose the numpy array so instead of batch_size x outputs (24)
-                # it is instead outputs (24) x batch size, then we can do MSE for each row and get a mean value for each output
-                mse_error = np.append(mse_error,mse(targets[output_idx],predict[output_idx]))
-            nn.back_propagation(mse_error)
+            mse_der_error = np.array([])
+
+            targets = target_list[b:b+batch_size]
+            inputs = input_list[b:b+batch_size]
+            predict = nn.feed_forward(inputs)
+            # print(predict.shape)
+
+            # get error for this batch
+            mse_der_error =  predict - targets
+
+            # add mse for this batch
+            mse_loss += np.average(mse(targets,predict))
+
+            nn.back_propagation(mse_der_error)
             nn = optimiser.gradient_descent(nn)
+
+        loss_per_epoch.append((mse_loss/(len(input_list) / batch_size))*100)
         #NOTE: let me know if the cli stuff is too messy, we can move the ncurses into its own function :)
-        percent = round((epoch/epochs)*40)
-        status = f"|{percent*'#'}{(40-percent)*'-'}| epoch: {epoch}/{epochs} | mean loss: {np.average(mse_error)} |"
-        screen.addstr(0,2,status)
-        screen.refresh()
-    curses.endwin()
+
+
+        # needs to be mse_loss/number of batches in batch
+        print("mean loss",loss_per_epoch[-1])
+
+        # print("mean loss", np.average((mse_loss)*100))
+        # print("mean loss", last_mse_error)
+
+    #     percent = round((epoch/epochs)*40)
+    #     status = f"|{percent*'#'}{(40-percent)*'-'}| epoch: {epoch}/{epochs} | mean loss: {np.average(mse_der_error)} |"
+    #     screen.addstr(0,2,status)
+    #     screen.refresh()
+    # curses.endwin()
+    graph_results.plot_fitness_graph(loss_per_epoch,epochs)
     return nn
 
 
@@ -65,5 +81,6 @@ def test_NN(nn:Neural_network,input_list:NDArray[float64],target_list:NDArray[fl
     predicts = []
     for input in input_list:
         predicts.append(nn.feed_forward(input))
+    print(predicts.shape)
     error = mse(target_list,predicts)
     print(f"tested nn on {len(input_list)} dataset |  MSE loss is: {error}")
