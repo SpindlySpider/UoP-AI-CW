@@ -24,8 +24,7 @@
 | **GA (Genetic Algorithm)** | A search heuristic inspired by natural selection, used to optimize solutions. |
 | **Gait** | A pattern of limb movement during locomotion. |
 | **Chromosome** | A tuple encapsulating sine wave parameters. |
-| **Gene** | ## Gene  
-An individual parameter within a chromosome that governs a specific aspect of joint motion.
+| **Gene** | An individual parameter within a chromosome that governs a specific aspect of joint motion.
 
 - **Amplitude** *(float)*: Maximum rotational displacement of a joint  
 - **Period** *(float)*: Controls the speed of the gait cycle  
