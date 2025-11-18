@@ -30,7 +30,8 @@
 - **Period** *(float)*: Controls the speed of the gait cycle  
 - **H_offset** *(float)*: Horizontal phase offset of limb movement  
 - **Negative** *(bool)*: Inverts rotation along the x-axis, allowing limbs to move independently rather than in unison  
-- **V_offset** *(float)*: Angular offset applied to the femur joints | **Fitness Function** | Function used to evaluate how well a solution performs the desired task. |
+- **V_offset** *(float)*: Angular offset applied to the femur joints 
+- **Fitness Function**: Function used to evaluate how well a solution performs the desired task. 
 
 ---
 
