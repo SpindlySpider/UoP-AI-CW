@@ -7,10 +7,12 @@ from neural_network import Neural_network
 
 def main():
     # define hidden layer sizes
-    hidden_layers = [24,24,48,24]
+    hidden_layers = [24,48,48,24]
     # apply activation functions per layer
     # Using non linear functions for NN to find patterns, then linear to regress the result.
-    activation_functions = [relu for _ in range(len(hidden_layers))] + [linear]
+    # relu needs unactivated output of layer
+    # activation_functions = [relu for _ in range(len(hidden_layers))] + [linear]
+    activation_functions = [tanh,tanh,tanh,tanh,linear]
     learning_rate = 0.01
     nn = Neural_network(hidden_layers=hidden_layers,learning_rate=learning_rate,activation_functions=activation_functions)
 

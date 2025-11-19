@@ -43,7 +43,12 @@ def train_NN(nn:Neural_network,input_list:NDArray[float64],target_list:NDArray[f
             # print(predict.shape)
 
             # get error for this batch
-            mse_der_error =  predict - targets
+            # mse_avg_der_error =  np.average(predict - targets,axis=0)
+            # mse_der_error =  predict - targets
+            mse_der_error =   targets-predict
+            # mse_der_error = mse_der_error.reshape(mse_der_error.shape[0],-1)
+
+            # print("mse errors",mse_der_error.shape,mse_avg_der_error.shape)
 
             # add mse for this batch
             mse_loss += np.average(mse(targets,predict))

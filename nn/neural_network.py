@@ -33,14 +33,14 @@ class Neural_network():
             self.derivatives.append(np.array([]))
             self.delta.append(np.array([]))
             # Create input*output sized matrix for weights
-            self.weights[layer] = np.random.rand(self.layers[layer],self.layers[layer+1])
+            self.weights[layer] = np.random.rand(self.layers[layer],self.layers[layer+1]) - 0.5
             # Copy matrix format for derivatives, fill with zeros.
             self.derivatives[layer] = np.zeros((self.layers[layer],self.layers[layer+1]))
             # Create bias for each perceptron
             self.bias[layer] = np.random.rand(self.layers[layer+1])
 
             # Fill out null values for delta, so we can access later for bias update.
-            self.delta[layer] = np.zeros((self.layers[layer]))
+            self.delta[layer] = np.zeros((self.layers[layer+1]))
 
 
 
@@ -57,12 +57,10 @@ class Neural_network():
         self.outputs[0] = output
 
         for i, w in enumerate(self.weights):
-            # next_output = np.dot(output, w) + self.bias[i]
-            next_output = np.dot(output, w) 
-            # save unactivated output of this layer
-            next_output = np.round(next_output,10)
-            self.outputs[i+1] = next_output
+            next_output = np.dot(output, w) + self.bias[i]
+            # next_output = np.dot(output, w) 
             output = self.activations[i](next_output)
+            self.outputs[i+1] = output
         return output
 
     def back_propagation(self,error:NDArray[float64]) :
@@ -79,21 +77,21 @@ class Neural_network():
             derivative_function:function = ACTIVATION_DERITIVIVE_MAP[self.activations[i]]
 
             # error value here needs to be derititve of MSE
+            # is the output here causing it to be batch size error?
             delta = error * derivative_function(output)
-            # print(delta.shape)
             # save delta / error signal to update bias later
-            self.delta[i] = delta
+            # reshape delta for matrix multiplication and transpose
+            # delta_fixed = delta.reshape(delta.shape[0],-1).T
+
+            self.delta[i] = np.mean(delta,axis=0)
 
             # set to previous layer
-            activated_output = self.activations[i](self.outputs[i])
 
-            self.derivatives[i] = np.dot(activated_output.T, delta) * (1/ error.shape[0])
+            next_layer = self.outputs[i]
 
-            # self.derivatives[i] = np.dot(self.outputs[i].T, delta) * (1/ error.shape[0])
-            # this must be breaking it because it would be weights not error?
-            # self.derivatives[i] = np.dot(self.outputs[i].T, delta)
-            # self.derivatives[i] = np.dot(self.outputs[i].T, delta)
-
+            self.derivatives[i] = np.dot(next_layer.T, delta)
+            self.derivatives[i] = self.derivatives[i]/error.shape[0]
 
             # Set error for next layer to back propagate
+            # this bit breaks?
             error = np.dot(delta, self.weights[i].T)
