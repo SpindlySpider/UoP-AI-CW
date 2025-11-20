@@ -5,7 +5,7 @@ import random
 from target_sol import produce_target
 
 #TODO: once sen doc PR merged changed this to use proper typing, like `period:Period` and that
-def generate_training_data(gait_length:int = 1000,period:float = 0.2,coxa_amp = 20,tf_v_shift=45,tf_amp=25) -> tuple[Gait,Gait]:
+def generate_training_data(gait_length:int = 1000,period:float = 0.2,coxa_amp = 20,tf_v_shift=45,tf_amp=25, normalize:bool = True, min:float = -50, max:float = 30) -> tuple[Gait,Gait]:
     """
     Generates training data to feed the NN
     Generates a gait, then splits input(N) and then output(N+1)
@@ -15,6 +15,9 @@ def generate_training_data(gait_length:int = 1000,period:float = 0.2,coxa_amp = 
         tuple with input data and output data, same indexes correspond to input and labeled output
     """
     total_gait:Gait = produce_target(gait_length,period,coxa_amp,tf_v_shift,tf_amp)
+    for i in range(len(total_gait)):
+        for j in range(len(total_gait[i])):
+            total_gait[i][j] = (total_gait[i][j] + 50)/80
     inputs:list[list[float]] = []
     outputs:list[list[float]] = []
     for i in range(gait_length -1):

@@ -3,6 +3,14 @@
 Hello, quick document to describe descisions made. 
 will need to be refactored.
 
+
+
+# TODO
+- [ ] refactor / improve this doc and add it to main readme
+- [ ] maybe change `load_and_predict.py` into predict.py or somthing where you can load NN weights
+- [ ] still has an issue of output size = batch size and predict is 3 x outputs - fix this
+- [ ] get custom types from GA as well as target_sol. moved the files in here for convience but they really should be taken from GA source.
+
 # Initial working NN 
 At git commit: `60a8dce3073c4a276c082b58b9cf7bf2f73d5374`
 Has batch sizes so we can train using mini batches which reduces overfitting.
@@ -22,3 +30,6 @@ once all the data is normalized and the NN is trained, we need to denormalize th
 -50 and 30 are from the amplitude range of angles from target solution.
 
 ## results
+
+with training data normalized it is much better
+![image](normalized-50-epoch-batch-size-1.png)

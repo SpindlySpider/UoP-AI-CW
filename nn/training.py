@@ -29,7 +29,7 @@ def train_NN(nn:Neural_network,input_list:NDArray[float64],target_list:NDArray[f
 
     loss_per_epoch = []
     for epoch in range(epochs):
-        # shuffle data for each batch
+        # shuffle data for each batch so NN doesnt learn order
         input_list,target_list = input_data.shuffle_data(input_list,target_list)
         mse_der_error:NDArray[float64] = np.array([])
         mse_loss: float = 0
@@ -84,5 +84,5 @@ def test_NN(nn:Neural_network,input_list:NDArray[float64],target_list:NDArray[fl
     predicts = []
     for input in input_list:
         predicts.append(nn.feed_forward(input))
-    error = mse(target_list,predicts)
+    error = mse(target_list.T,predicts.T)
     print(f"tested nn on {len(input_list)} dataset |  MSE loss is: {error}")
