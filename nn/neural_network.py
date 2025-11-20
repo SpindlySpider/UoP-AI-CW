@@ -22,10 +22,8 @@ class Neural_network():
         self.bias = [[] for _ in range(len(self.layers)-1)]
         self.delta = [[] for _ in range(len(self.layers)-1)]
 
-        # should be layers x outputs per layer
         self.unactivated_outputs = [np.zeros((1,x)) for x in self.layers]
         self.outputs = [np.zeros((1,x)) for x in self.layers]
-        print(len(self.unactivated_outputs),self.unactivated_outputs[0].shape)
 
         for layer_idx in range(len(self.layers)-1):
             next_idx = layer_idx + 1
@@ -49,18 +47,12 @@ class Neural_network():
         self.unactivated_outputs[0] = output
         self.outputs[0] = output
         for i in range(len(self.weights)):
-            # ignore first layer but forward pass for the rest
-            # print("weights and output shape",self.weights[i].shape,output.shape)
-            # print("bias shape",self.bias[i].shape)
-
             next_out = np.dot(output, self.weights[i]) + self.bias[i]
-
 
             # set output of layer after input layer
             self.unactivated_outputs[i+1] = next_out
             output = self.activations[i](next_out)
             self.outputs[i+1] = output
-            # print("---passed 1 weight layer ---")
         return output
 
     def back_propagation(self,error:NDArray[float64],verbose:bool = False) :
@@ -69,9 +61,7 @@ class Neural_network():
         Parameters:
             error (NDArray[float64]): Error
         """
-        # https://www.geeksforgeeks.org/machine-learning/backpropagation-in-neural-network/
         if verbose: print("========starting back prop========")
-        # must get error for each output NN
         for i in range(len(self.weights)-1,-1,-1):
             if verbose: print(f"----start {i} layer bp ---")
 
@@ -100,7 +90,5 @@ class Neural_network():
 
             if verbose: print(f"setting error matrix to size {error.shape}")
 
-
             if verbose: print(f"--{i} layer passed bp---")
-
         if verbose: print("========finished back prop========")

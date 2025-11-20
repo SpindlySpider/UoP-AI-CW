@@ -10,4 +10,6 @@ def plot_loss_graph( avg_loss, epochs, batch_size):
     plt.grid(True)
     plt.tight_layout()
     plt.legend()
-    plt.savefig(f"loss-over-{epochs}-epoch-batch-size-{batch_size}.png")
+    filename = f"loss-over-{epochs}-epoch-batch-size-{batch_size}.png"
+    plt.savefig(filename)
+    print("saved average loss over epochs to:",filename)

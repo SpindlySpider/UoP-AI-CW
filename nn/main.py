@@ -11,16 +11,16 @@ def main():
     # apply activation functions per layer
     # Using non linear functions for NN to find patterns, then linear to regress the result.
     activation_functions = [tanh for _ in range(len(hidden_layers))] + [linear]
-    learning_rate = 0.001
+    learning_rate = 0.002
     nn = Neural_network(hidden_layers=hidden_layers,learning_rate=learning_rate,activation_functions=activation_functions)
 
     # get training data
-    data = input_data.generate_train_test_data(0.80,150,100)
+    data = input_data.generate_train_test_data(0.8,100,150)
     train_in, train_out = data["training"]
     test_in, test_out = data["test"]
 
     # train and save resulting NN
-    nn = train_NN(nn,train_in,train_out,100,1)
+    nn = train_NN(nn,train_in,train_out,50,1)
     serialize.save(nn)
 
     # test trained nn with unseen input data

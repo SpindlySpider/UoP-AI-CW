@@ -8,7 +8,7 @@ from error_funcs import mse
 import optimiser
 import curses
 
-def train_NN(nn:Neural_network,input_list:NDArray[float64],target_list:NDArray[float64],epochs:int, batch_size:int) -> Neural_network:
+def train_NN(nn:Neural_network,input_list:NDArray[float64],target_list:NDArray[float64],epochs:int, batch_size:int, curses_enabled:bool = True) -> Neural_network:
     """
     Train neural network to predict next pose
     Parameters:
@@ -21,11 +21,11 @@ def train_NN(nn:Neural_network,input_list:NDArray[float64],target_list:NDArray[f
         Trained neural network
     """
     # useful doc: https://www.geeksforgeeks.org/deep-learning/batch-size-in-neural-network/
-    # curses.filter()
-    # curses.initscr()
-    # x = curses.COLS
-    # screen =  curses.newwin(15, x, 0, 0)
-    # last_mse_error = 0
+    if curses_enabled:
+        curses.filter()
+        curses.initscr()
+        x = curses.COLS
+        screen =  curses.newwin(15, x, 0, 0)
 
     loss_per_epoch = []
     for epoch in range(epochs):
@@ -39,37 +39,35 @@ def train_NN(nn:Neural_network,input_list:NDArray[float64],target_list:NDArray[f
 
             targets = target_list[b:b+batch_size]
             inputs = input_list[b:b+batch_size]
+
             predict = nn.feed_forward(inputs)
 
             mse_der_error =   predict.T - targets.T
-            # print("mse before shape",mse_der_error.shape)
+            # reshape to batch size x outputs
             mse_der_error =   mse_der_error.reshape(mse_der_error.shape[0],-1).T
-            # print("mse after shape",mse_der_error.shape)
-            # reshape to 1 x outputs
 
-
-
+            # loss for plotting
             mse_loss += mse(targets.T,predict.T)
 
+            # BP and GD
             nn.back_propagation(mse_der_error)
             nn = optimiser.gradient_descent(nn)
 
-        # print(np.average(mse_der_error))
-        loss_per_epoch.append((mse_loss/(len(input_list) // batch_size))*100)
-        #NOTE: let me know if the cli stuff is too messy, we can move the ncurses into its own function :)
+        #NOTE: this MSE loss maybe completely wrong, please can somone check it works :)
+        # addtionally let me know if the curses stuff is too much
+        loss_per_epoch.append(mse_loss/((len(input_list) // batch_size)))
 
 
-        # needs to be mse_loss/number of batches in batch
-        print("mean loss",loss_per_epoch[-1])
+        if curses_enabled:
+            percent = round((epoch/epochs)*40)
+            status = f"|{percent*'#'}{(40-percent)*'-'}| epoch: {epoch}/{epochs} | mean loss: {loss_per_epoch[-1]} |"
+            screen.addstr(0,2,status)
+            screen.refresh()
+        else:
+            print("mean loss",loss_per_epoch[-1])
 
-        # print("mean loss", np.average((mse_loss)*100))
-        # print("mean loss", last_mse_error)
-
-    #     percent = round((epoch/epochs)*40)
-    #     status = f"|{percent*'#'}{(40-percent)*'-'}| epoch: {epoch}/{epochs} | mean loss: {np.average(mse_der_error)} |"
-    #     screen.addstr(0,2,status)
-    #     screen.refresh()
-    # curses.endwin()
+    if curses_enabled:
+        curses.endwin()
 
     graph_results.plot_loss_graph(loss_per_epoch,epochs,batch_size)
     return nn
