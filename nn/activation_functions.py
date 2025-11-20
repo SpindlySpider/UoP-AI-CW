@@ -2,6 +2,9 @@ import numpy as np
 
 lower = -50
 upper = 30
+# clip is here so that values do not become too small or big for exp
+
+
 # not using lambda functions here as pickle cannot serialize anonymous functions
 def sigmoid(x): return 1/(1+np.exp(-x))
 def sigmoid_derivitive(x):return x*(1-x)

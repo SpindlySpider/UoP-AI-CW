@@ -29,7 +29,7 @@ def train_NN(nn:Neural_network,input_list:NDArray[float64],target_list:NDArray[f
 
     loss_per_epoch = []
     for epoch in range(epochs):
-        # shuffle data
+        # shuffle data for each batch
         input_list,target_list = input_data.shuffle_data(input_list,target_list)
         mse_der_error:NDArray[float64] = np.array([])
         mse_loss: float = 0
@@ -40,23 +40,22 @@ def train_NN(nn:Neural_network,input_list:NDArray[float64],target_list:NDArray[f
             targets = target_list[b:b+batch_size]
             inputs = input_list[b:b+batch_size]
             predict = nn.feed_forward(inputs)
-            # print(predict.shape)
 
-            # get error for this batch
-            # mse_avg_der_error =  np.average(predict - targets,axis=0)
-            # mse_der_error =  predict - targets
-            mse_der_error =   targets-predict
-            # mse_der_error = mse_der_error.reshape(mse_der_error.shape[0],-1)
+            mse_der_error =   predict.T - targets.T
+            # print("mse before shape",mse_der_error.shape)
+            mse_der_error =   mse_der_error.reshape(mse_der_error.shape[0],-1).T
+            # print("mse after shape",mse_der_error.shape)
+            # reshape to 1 x outputs
 
-            # print("mse errors",mse_der_error.shape,mse_avg_der_error.shape)
 
-            # add mse for this batch
-            mse_loss += np.average(mse(targets,predict))
+
+            mse_loss += mse(targets.T,predict.T)
 
             nn.back_propagation(mse_der_error)
             nn = optimiser.gradient_descent(nn)
 
-        loss_per_epoch.append((mse_loss/(len(input_list) / batch_size))*100)
+        # print(np.average(mse_der_error))
+        loss_per_epoch.append((mse_loss/(len(input_list) // batch_size))*100)
         #NOTE: let me know if the cli stuff is too messy, we can move the ncurses into its own function :)
 
 
@@ -71,7 +70,8 @@ def train_NN(nn:Neural_network,input_list:NDArray[float64],target_list:NDArray[f
     #     screen.addstr(0,2,status)
     #     screen.refresh()
     # curses.endwin()
-    graph_results.plot_fitness_graph(loss_per_epoch,epochs)
+
+    graph_results.plot_loss_graph(loss_per_epoch,epochs,batch_size)
     return nn
 
 
@@ -86,6 +86,5 @@ def test_NN(nn:Neural_network,input_list:NDArray[float64],target_list:NDArray[fl
     predicts = []
     for input in input_list:
         predicts.append(nn.feed_forward(input))
-    print(predicts.shape)
     error = mse(target_list,predicts)
     print(f"tested nn on {len(input_list)} dataset |  MSE loss is: {error}")
