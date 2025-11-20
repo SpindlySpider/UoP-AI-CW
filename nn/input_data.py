@@ -47,11 +47,12 @@ def generate_train_test_data(train_ratio:float = 0.8,data_points:int=30,variatio
     input: Gait = []
     label: Gait = []
     # make sure all walks have low frequency
-    period:float = 0.04
+    # period:float = 0.2
     for _ in range(variations):
-        c_amp = round(random.uniform(5,23),3)
-        tf_v_shift = round(random.uniform(40,50),3)
-        tf_amp = round(random.uniform(10,30),3)
+        period:float = round(random.uniform(0.1,1),3)
+        c_amp = round(random.uniform(20,23),3)
+        tf_v_shift = round(random.uniform(45,50),3)
+        tf_amp = round(random.uniform(20,30),3)
 
         _input, _label = generate_training_data(data_points,period,c_amp,tf_v_shift,tf_amp)
         input = input + _input

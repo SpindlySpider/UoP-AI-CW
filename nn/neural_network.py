@@ -28,9 +28,9 @@ class Neural_network():
         for layer_idx in range(len(self.layers)-1):
             next_idx = layer_idx + 1
             # make weights current layer x next layer, so we have fully connected layer wij -> output1 ect
-            self.weights[layer_idx] = np.random.rand(self.layers[layer_idx],self.layers[next_idx])
+            self.weights[layer_idx] = np.random.rand(self.layers[layer_idx],self.layers[next_idx]) -0.5
             self.derivatives[layer_idx] = np.random.rand(self.layers[layer_idx],self.layers[next_idx])
-            self.bias[layer_idx] = np.zeros((1,self.layers[next_idx]))
+            self.bias[layer_idx] = np.zeros((1,self.layers[next_idx])) - 0.5
             self.delta[layer_idx] = np.zeros((1,self.layers[next_idx]))
 
 

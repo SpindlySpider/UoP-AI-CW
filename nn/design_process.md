@@ -33,3 +33,8 @@ once all the data is normalized and the NN is trained, we need to denormalize th
 
 with training data normalized it is much better
 ![image](normalized-50-epoch-batch-size-1.png)
+
+## issue
+run into the problem that it always predicts the same thingg, it is probbaly because it has learnt it as the safest option, So I will try to reduce the number of hidden layers and see if that fixes it
+
+reduced number of hidden layers to 1 64, increase period so that there is variation there

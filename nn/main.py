@@ -7,12 +7,12 @@ from neural_network import Neural_network
 
 def main():
     # define hidden layer sizes
-    hidden_layers = [24,24,32,24]
+    hidden_layers = [64,32]
     # apply activation functions per layer
     # Using non linear functions for NN to find patterns, then linear to regress the result.
     # activation_functions = [tanh for _ in range(len(hidden_layers))] + [linear]
     activation_functions = [sigmoid for _ in range(len(hidden_layers))] + [sigmoid]
-    learning_rate = 0.03
+    learning_rate = 0.01
     nn = Neural_network(hidden_layers=hidden_layers,learning_rate=learning_rate,activation_functions=activation_functions)
 
     # get training data
