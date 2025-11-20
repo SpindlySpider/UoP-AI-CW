@@ -5,15 +5,15 @@ import output
 import matplotlib.pyplot as plt
 from custom_types import Individual, Period
 
-def produce_target(gait_length:int, period:Period, coxa_amplitude:float, tf_v_shift:float, tf_amplitude:float) -> Individual:
+def produce_target(gait_length:int, period:Period, coxa_amplitude:float, tibia_femur_v_shift:float, tibia_femur_amplitude:float) -> Individual:
     '''
     Produce target gait based on sine wave parameters
     Args:
         gait_length (int): The length of the gait
         period (float): The period of the sine wave
         coxa_amplitude (float): The amplitude of the coxa joint movement
-        tf_v_shift (float): The vertical shift of the tibia-femur joint
-        tf_amplitude (float): The amplitude of the tibia-femur joint movement
+        tibia_femur_v_shift (float): The vertical shift of the tibia-femur joint
+        tibia_femur_amplitude (float): The amplitude of the tibia-femur joint movement
     '''
     best: Individual = []
 
@@ -56,7 +56,7 @@ def produce_target(gait_length:int, period:Period, coxa_amplitude:float, tf_v_sh
                     sin_val = (-sin_val)
 
                 # compute target value for tibia-femur joint
-                target:float = (tf_amplitude*(math.sin(sin_val))) - tf_v_shift
+                target:float = (tibia_femur_amplitude*(math.sin(sin_val))) - tibia_femur_v_shift
 
                 if target <= -50:
                     target = -50
@@ -72,9 +72,9 @@ def random_sol(gait_length:int) -> Individual:
     '''
     period:Period = round(random.uniform(0.05,1),3)
     coxa_amplitude: float = round(random.uniform(5,23),3)
-    tf_v_shift: float = round(random.uniform(40,50),3)
-    tf_amplitude: float = round(random.uniform(10,30),3)
-    optimal_solution: Individual = produce_target(gait_length,period,coxa_amplitude,tf_v_shift,tf_amplitude)
+    tibia_femur_v_shift: float = round(random.uniform(40,50),3)
+    tibia_femur_amplitude: float = round(random.uniform(10,30),3)
+    optimal_solution: Individual = produce_target(gait_length,period,coxa_amplitude,tibia_femur_v_shift,tibia_femur_amplitude)
     return optimal_solution
 
 def generate_graph(individual):
@@ -112,8 +112,6 @@ def generate_graph(individual):
     plt.close()
 
 if __name__ == "__main__":
-
     solution = optimal_solution = random_sol(300)
-    print(solution)
     generate_graph(optimal_solution)
     output.output("sol.txt",optimal_solution)

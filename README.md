@@ -77,7 +77,7 @@ Each joint’s motion is represented by a **sine-wave function** characterized b
 
 | Parameter | Description | Range | Design Rationale |
 |------------|-------------|--------|------------------|
-| **amplitude** | Amplitude of sine wave controlling joint motion | (0, 30) | Enables both subtle and large joint swings |
+| **amplitude** | The amplitude of the sine wave controlling joint motion is currently shared across the coxa, tibia, and femur. In [`target_sol.py`](https://github.com/SpindlySpider/UoP-AI-CW/blob/main/ga/target_sol.py), this parameter is separated into two independent amplitudes: one dedicated to the coxa and another applied to both the tibia and femur. | (0, 30) | Enables both subtle and large joint swings |
 | **period** | Frequency of oscillation | (-5, 5) | Allows fast or slow movement cycles |
 | **h_offset** | Phase shift of the sine wave | (-5, 5) | Coordinates timing differences between limbs |
 | **negative** | Boolean flag inverting the sine wave | {True, False} | Adds diversity without extra dimensions |
