@@ -1,8 +1,8 @@
 from numpy.typing import NDArray
-from custom_types import Gait
+from ga.custom_types import Gait
 import numpy as np
 import random
-from target_sol import produce_target
+from ga.target_sol import produce_target
 
 #TODO: once sen doc PR merged changed this to use proper typing, like `period:Period` and that
 def generate_training_data(gait_length:int = 1000,period:float = 0.2,coxa_amp = 20,tf_v_shift=45,tf_amp=25, normalize:bool = True, min:float = -50, max:float = 30) -> tuple[Gait,Gait]:

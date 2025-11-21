@@ -1,8 +1,8 @@
-import serialize
-import input_data
-from training import *
-from activation_functions import *
-from neural_network import Neural_network
+import nn.serialize as serialize
+import nn.input_data as input_data
+from nn.training import *
+from nn.activation_functions import *
+from nn.neural_network import Neural_network
 
 
 def main():

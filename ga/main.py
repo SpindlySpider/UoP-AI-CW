@@ -1,13 +1,10 @@
-from fitness import Fitness
-from fitness_graph import plot_fitness_graph
-import initial_pop as pop
-import selection
-import reproduce
-import output
+from ga.fitness import Fitness
+from ga.fitness_graph import plot_fitness_graph
+import ga.initial_pop as pop
+import ga.selection as selection
+import ga.reproduce as reproduce
+import ga.output as output
 from custom_types import Population
-
-
-
 
 def main():
     '''

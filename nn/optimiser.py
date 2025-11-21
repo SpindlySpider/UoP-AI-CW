@@ -1,4 +1,4 @@
-from neural_network import Neural_network
+from nn.neural_network import Neural_network
 import numpy as np
 
 def gradient_descent(nn:Neural_network) -> Neural_network:

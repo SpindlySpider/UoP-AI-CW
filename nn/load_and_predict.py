@@ -1,4 +1,4 @@
-import serialize
+import nn.serialize
 import random as rd
 import numpy as np
 

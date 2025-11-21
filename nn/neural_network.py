@@ -1,5 +1,5 @@
 import numpy as np
-from activation_functions import *
+from nn.activation_functions import *
 from numpy._core.numerictypes import float64
 from numpy._typing import NDArray
 

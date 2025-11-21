@@ -1,7 +1,7 @@
 """
 Module used to serilize NN class load and dump
 """
-from neural_network import Neural_network
+from nn.neural_network import Neural_network
 import pickle
 
 def save(nn:Neural_network,out:str="nn.pickle"):

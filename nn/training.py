@@ -1,11 +1,11 @@
 from numpy.typing import NDArray
-import graph_results
+import nn.graph_results as graph_results
 from numpy._core.numerictypes import float64
-from neural_network import Neural_network
-import input_data
+from nn.neural_network import Neural_network
+import nn.input_data as input_data
 import numpy as np
-from error_funcs import mse
-import optimiser
+from nn.error_funcs import mse
+import nn.optimiser as optimiser
 import curses
 
 def train_NN(nn:Neural_network,input_list:NDArray[float64],target_list:NDArray[float64],epochs:int, batch_size:int, curses_enabled:bool = False) -> Neural_network:
@@ -86,7 +86,7 @@ def test_NN(nn:Neural_network,input_list:NDArray[float64],target_list:NDArray[fl
     for input in input_list:
         predicts.append(nn.feed_forward(input))
     predicts = np.array(predicts)
+    # reshape predicts as they retain batch size
     predicts = predicts.reshape(predicts.shape[0],-1)
-    print("t:",target_list.shape,"p",predicts.shape)
     error = mse(target_list,predicts)
     print(f"tested nn on {len(input_list)} dataset |  MSE loss is: {error}")
