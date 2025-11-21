@@ -6,7 +6,7 @@ import random as rd
 import numpy as np
 
 minimum_angle = -50
-max_angle = 30
+maximum_angle = 30
 angle_diff = abs(minimum_angle) + abs(maximum_angle)
 
 def predict(nn:Neural_network,input:list[float]) -> list[float]:

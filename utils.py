@@ -55,7 +55,10 @@ def modify_default(choice_dict:dict[str,any],defaults:dict):
             print("new value must be of type",new_val_type)
             new_val = input("new value > ")
             try:
-                modified_default[choice] = new_val_type(new_val)
+                if new_val:
+                    modified_default[choice] = new_val_type(new_val)
+                else:
+                    print("value empty, not saved")
             except:
                 print("conversion failed, value not saved")
 
@@ -69,9 +72,10 @@ def get_defaults(defaults):
     """
     helper function to get default configuration for GA and allow for user modification of values.
     """
-    print("starting ga with these defaults:")
+    print("starting with these defaults:")
     keys = defaults.keys()
     display_defaults(defaults)
+    print("="*20)
     user_in = input("would you like to change anything? (y/N): ")
     if user_in.upper() == "Y":
         choices = {

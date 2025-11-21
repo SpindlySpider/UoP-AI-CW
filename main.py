@@ -1,12 +1,11 @@
 import nn.main as nn
+import nn.load_and_predict as predict
 import sys
 import ga.main as ga
 from utils import *
 
 
 def main():
-    #NOTE: maybe use dict instead as it would allow for great specification of choices and following choices.
-    # also would be easier to visulise choice tree rather than a bunch of if statements IMO
     options = {
         "prompt":"What would you like to run?:",
         "options":["genetic algorithm","neural network","exit"]
@@ -15,20 +14,37 @@ def main():
     if choice == "exit":
         sys.exit(0)
 
-    #TODO: print default configuration and let user modify if they want for both,
-    # display default values for all and let user modify as required + verify its not bad value
-    # for example: 
-    #   ga: generations (if we still have that), population size, gait length, crossover rate, mutation rate, graphs
-    #   nn: hidden layer list, learning rate, activation funcs?, how much training data to gen, graphs,
-    # also make the if statement less ugly lol
-
-
     if choice == "genetic algorithm":
         defaults = get_defaults(ga.defaults)
         ga.main(**defaults)
     else:
         #TODO: ask if user wants to train a new NN, or load a NN and train? or predict with existing NN
-        nn.main()
+        options = {
+            "prompt":"Would you like to train or predict using existing model?:",
+            "options":["train","predict","exit"]
+        }
+        choice = get_choice(options)
+        if choice == "exit":
+            sys.exit(0)
+        elif choice == "train":
+            defaults = get_defaults(nn.defaults)
+            nn.main(**defaults)
+        else:
+            #TODO: allow use to input list
+            options = {
+                "prompt":"Random input or enter your own",
+                "options":["random","manual input"]
+            }
+            choice = get_choice(options)
+            input = []
+            #TODO: user need to be able to input nn location to load, and number of next predicts e.g. gait length, where to save to
+
+            if choice == "random":
+                input = [rd.randint(-100,100) for _ in range(24)]
+            else:
+                input = []
+            predict.load_and_predict(input)
+            # predict using model
     print("="*20)
 
 
