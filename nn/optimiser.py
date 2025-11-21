@@ -1,4 +1,5 @@
 from neural_network import Neural_network
+import numpy as np
 
 def gradient_descent(nn:Neural_network) -> Neural_network:
     """
@@ -10,7 +11,8 @@ def gradient_descent(nn:Neural_network) -> Neural_network:
     """
     for i in range(len(nn.weights)):
         nn.weights[i] = nn.weights[i] - nn.derivatives[i]*nn.learning_rate
-        nn.bias[i] = nn.bias[i] - nn.delta[i]*nn.learning_rate
+        # np.average for averaging bias over batches
+        nn.bias[i] = nn.bias[i] - np.average(nn.delta[i],axis=0)*nn.learning_rate
     return nn
 
 def adam(nn:Neural_network) -> Neural_network:

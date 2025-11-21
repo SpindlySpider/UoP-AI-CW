@@ -1,19 +1,21 @@
 import serialize
+import random as rd
 import numpy as np
 
 # NOTE: can somone make this into an actual function / class lol
 
-input = [0.0,-50,-50,-0.0,-19.220740530193638,-19.220740530193638,0.0,-50,-50,-0.0,-19.220740530193638,-19.220740530193638,-0.0,-50,-50,0.0,-19.220740530193638,-19.220740530193638,-0.0,-50,-50,0.0,-19.220740530193638,-19.220740530193638]
-# input = [0 for _ in range(24)]
-# input = [20,7,45,9,3,12,67,-76,-2,5,-21,60,36,58,43,10,-39,-49,-25,50,100,-10073,570,90]
+# input = [0.0,-50,-50,-0.0,-19.220740530193638,-19.220740530193638,0.0,-50,-50,-0.0,-19.220740530193638,-19.220740530193638,-0.0,-50,-50,0.0,-19.220740530193638,-19.220740530193638,-0.0,-50,-50,0.0,-19.220740530193638,-19.220740530193638]
+# input = [-50 for _ in range(24)]
+input = [rd.randint(-100,100) for _ in range(24)]
 
-gait_length = 80
+gait_length = 300
 
 gait = []
 
 nn = serialize.load()
 
 
+gait.append(input)
 for i in range(gait_length):
     gait.append([])
     input = np.array(input)
@@ -30,7 +32,7 @@ for i in range(gait_length):
     # add to gait
 
     # print(nn.feed_forward(predict))
-    gait[i] = predict[0]
+    gait[i+1] = predict[0]
     input = predict[0]
     # input = None
     # input = np.copy(predict[0])

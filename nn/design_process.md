@@ -8,7 +8,7 @@ will need to be refactored.
 # TODO
 - [ ] refactor / improve this doc and add it to main readme
 - [ ] maybe change `load_and_predict.py` into predict.py or somthing where you can load NN weights
-- [ ] still has an issue of output size = batch size and predict is 3 x outputs - fix this
+- [x] still has an issue of output size = batch size and predict is 3 x outputs - fix this - FIXED !!
 - [ ] get custom types from GA as well as target_sol. moved the files in here for convience but they really should be taken from GA source.
 
 # Initial working NN 
@@ -38,3 +38,10 @@ with training data normalized it is much better
 run into the problem that it always predicts the same thingg, it is probbaly because it has learnt it as the safest option, So I will try to reduce the number of hidden layers and see if that fixes it
 
 reduced number of hidden layers to 1 64, increase period so that there is variation there
+
+---
+update it is fixed. 
+also increased the number of variations which teh NN is trained on meaning different starting joints will predict different walk cycles :)
+
+## another issue
+when feeding forward, the output size is batch size x outputs

@@ -8,7 +8,7 @@ from error_funcs import mse
 import optimiser
 import curses
 
-def train_NN(nn:Neural_network,input_list:NDArray[float64],target_list:NDArray[float64],epochs:int, batch_size:int, curses_enabled:bool = True) -> Neural_network:
+def train_NN(nn:Neural_network,input_list:NDArray[float64],target_list:NDArray[float64],epochs:int, batch_size:int, curses_enabled:bool = False) -> Neural_network:
     """
     Train neural network to predict next pose
     Parameters:
@@ -29,7 +29,7 @@ def train_NN(nn:Neural_network,input_list:NDArray[float64],target_list:NDArray[f
 
     loss_per_epoch = []
     for epoch in range(epochs):
-        # shuffle data for each batch so NN doesnt learn order
+        # shuffle data for each batch so NN doesn't learn order
         input_list,target_list = input_data.shuffle_data(input_list,target_list)
         mse_der_error:NDArray[float64] = np.array([])
         mse_loss: float = 0
@@ -42,6 +42,7 @@ def train_NN(nn:Neural_network,input_list:NDArray[float64],target_list:NDArray[f
 
             predict = nn.feed_forward(inputs)
 
+            # transpose so we are comparing each output e.g. 24 x batch size rather than batch size x 24
             mse_der_error =   predict.T - targets.T
             # reshape to batch size x outputs
             mse_der_error =   mse_der_error.reshape(mse_der_error.shape[0],-1).T
@@ -84,5 +85,8 @@ def test_NN(nn:Neural_network,input_list:NDArray[float64],target_list:NDArray[fl
     predicts = []
     for input in input_list:
         predicts.append(nn.feed_forward(input))
-    error = mse(target_list.T,predicts.T)
+    predicts = np.array(predicts)
+    predicts = predicts.reshape(predicts.shape[0],-1)
+    print("t:",target_list.shape,"p",predicts.shape)
+    error = mse(target_list,predicts)
     print(f"tested nn on {len(input_list)} dataset |  MSE loss is: {error}")

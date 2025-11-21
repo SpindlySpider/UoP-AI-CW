@@ -73,7 +73,9 @@ class Neural_network():
             if verbose: print('derititive selected:',derivative)
 
             error_signal = error * derivative(current_outputs)
+
             self.delta[i] = error_signal
+
             if verbose: print("error signal:",error_signal.shape)
 
             # the layer before the current layer
