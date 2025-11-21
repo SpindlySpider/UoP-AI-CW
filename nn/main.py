@@ -9,7 +9,7 @@ def main():
     # define hidden layer sizes
     hidden_layers = [128,64,32]
     # apply activation functions per layer
-    activation_functions = [sigmoid for _ in range(len(hidden_layers))] + [sigmoid]
+    activation_functions = [sigmoid for _ in range(len(hidden_layers) + 1)]
     learning_rate = 0.01
     nn = Neural_network(hidden_layers=hidden_layers,learning_rate=learning_rate,activation_functions=activation_functions)
 
