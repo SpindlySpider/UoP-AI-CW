@@ -511,7 +511,7 @@ For a coxa range of **30°–70°**,
 \( A = 20 \), \( D = 50 \), producing smooth oscillations between 30° and 70°.
 
 <p align="center">
-  <img src="image-3.png" alt="Spider oscillation image">
+  <img src="/ga/images/image-3.png" alt="Spider oscillation image">
 </p>
 
 Adjacent legs were programmed to move in opposite phases by negating the input `x` for every even-numbered coxa, creating alternating motion:
@@ -521,7 +521,7 @@ coxa1_t = 20 * sin(0.5 * 22) + 50 = 30.0002
 coxa2_t = 20 * sin(0.5 * -22) + 50 = 69.9998
 ```
 <p align="center">
-  <img src="image-2.png" alt="Spider negative oscillation image">
+  <img src="/ga/images/image-2.png" alt="Spider negative oscillation image">
 </p>
 
 This configuration resulted in realistic alternating leg movement, with even and odd legs moving out of phase.
@@ -919,8 +919,8 @@ end
 
 ## Convergence Tracking
 
-![alt text](image.png)
-![alt text](image-1.png)
+![alt text](/ga/images/image.png)
+![alt text](/ga/images/image-1.png)
 
 It was observed that the number of generations required to achieve the optimal fitness score of **1.0** varied considerably between runs. This variation was primarily influenced by the initial population; in some cases, the algorithm failed to reach the optimal fitness score entirely.
 
@@ -934,7 +934,7 @@ The graph above illustrates this behaviour with two distinct examples:
 ## Visual Verification
 
 <p align="center">
-  <img src="spider_walking.gif" alt="Spider Walking Animation">
+  <img src="ga/images/spider_walking.gif" alt="Spider Walking Animation">
 </p>
 
 This animation showcases an optimized walking gait evolved by the Genetic Algorithm, demonstrating smooth and coordinated leg movement. The MATLAB code to reproduce this visualization is provided in the **MATLAB Visualization** section above.

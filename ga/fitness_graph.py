@@ -23,6 +23,8 @@ def plot_fitness_graph(fitness_values, avg_fitness_values, generations):
     plt.ylabel("Fitness Score")
     # Show grid
     plt.grid(True)
+    # Show legend
+    plt.legend()
     # Show tight layout
     plt.tight_layout()
     # Show the plot
