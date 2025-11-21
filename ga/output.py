@@ -1,5 +1,5 @@
 from ga.custom_types import Gait, Individual
-import ga.fitness
+import ga.fitness as fitness
 # use functions here for outputting the final best GA to a string that matlab can take
 # docs here: https://uk.mathworks.com/help/matlab/ref/readmatrix.html
 
