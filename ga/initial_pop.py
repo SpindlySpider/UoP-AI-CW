@@ -1,7 +1,7 @@
 import random
 from custom_types import Chromosome, Individual, Population, Period, H_offset, Amplitude, Negative, V_offset
 
-def gen_individual(gait_length: int) -> Individual:
+def gen_individual() -> Individual:
     """
     Generate a single individual (a full gait pattern) for the genetic algorithm population.
 
@@ -36,7 +36,7 @@ def gen_individual(gait_length: int) -> Individual:
     return individual
 
 
-def gen_population(max_pop: int, gait_length: int) -> Population:
+def gen_population(max_pop: int) -> Population:
     """
     Generate the initial population for the genetic algorithm.
 
@@ -50,6 +50,6 @@ def gen_population(max_pop: int, gait_length: int) -> Population:
     population: Population = []
 
     for _ in range(max_pop):
-        population.append(gen_individual(gait_length))
+        population.append(gen_individual())
 
     return population

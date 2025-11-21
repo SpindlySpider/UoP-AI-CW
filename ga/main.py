@@ -23,7 +23,7 @@ def main():
     # define search space
     max_pop:int = 3000
     # generate initial population using a function from the initial_pop module(python file)
-    population: Population = pop.gen_population(max_pop, gait_length)
+    population: Population = pop.gen_population(max_pop)
     # create fitness object using the class from fitness module(python file)
     fit: Fitness = Fitness(gait_length)
     # lists to store the best fitness scores over generations for plotting
