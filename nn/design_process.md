@@ -1,15 +1,16 @@
 
 
-Hello, quick document to describe descisions made. 
+Hello, quick document to describe decisions made. 
 will need to be refactored.
-
 
 
 # TODO
 - [ ] refactor / improve this doc and add it to main readme
 - [ ] maybe change `load_and_predict.py` into predict.py or somthing where you can load NN weights
 - [x] still has an issue of output size = batch size and predict is 3 x outputs - fix this - FIXED !!
-- [ ] get custom types from GA as well as target_sol. moved the files in here for convience but they really should be taken from GA source.
+- [x] get custom types from GA as well as target_sol. moved the files in here for convience but they really should be taken from GA source.
+- [ ] spider representation in panda3d
+- [ ] make curses menu
 
 # Initial working NN 
 At git commit: `60a8dce3073c4a276c082b58b9cf7bf2f73d5374`
@@ -17,8 +18,8 @@ Has batch sizes so we can train using mini batches which reduces overfitting.
 Current working model using batch size of 1 so instead of mini batches we are training with SGD.
 training data is not normalized and it is leading to NN getting stuck in local minimum when training.
 examples of this can be seen here where the mean loss plateau's:
-![image](50-epoch-batch-size-1-mean-loss.png)
-![image](another-50-epoch-batch-size-1-mean-loss.png)
+![image](./doc-images/50-epoch-batch-size-1-mean-loss.png)
+![image](./doc-images/another-50-epoch-batch-size-1-mean-loss.png)
 
 
 # new normalized training data
@@ -32,7 +33,7 @@ once all the data is normalized and the NN is trained, we need to denormalize th
 ## results
 
 with training data normalized it is much better
-![image](normalized-50-epoch-batch-size-1.png)
+![image](./doc-images/normalized-50-epoch-batch-size-1.png)
 
 ## issue
 run into the problem that it always predicts the same thingg, it is probbaly because it has learnt it as the safest option, So I will try to reduce the number of hidden layers and see if that fixes it
