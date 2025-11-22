@@ -2,40 +2,82 @@ from custom_types import Population
 import random
 
 def roulette(population: Population, fitness: list[float]) -> Population:
-    # create list same size as pop
-    # need to come up with a better way, I think selection is too fine, since there is like 300 individuals or whatever
-    total_fit = sum(fitness)
-    cumulative_sum = []
+    """
+    Selects individuals using a cumulative probability method based on fitness values.
+
+    This method normalizes the fitness values to create a cumulative distribution.
+    For each selection, a random number is drawn and the first individual whose
+    cumulative probability exceeds this number is selected.
+
+    Parameters
+    ----------
+    population : Population
+        The current population of individuals.
+    fitness : list[float]
+        List of fitness values corresponding to each individual.
+
+    Returns
+    -------
+    Population
+        A new list of selected individuals of the same size as the input population.
+    """
+    total_fit: float = sum(fitness)
+    if total_fit == 0:
+        return random.sample(population, len(population))
+
+    cumulative_sum: list[float] = []
+    running_total: float = 0.0
     selected_parents: Population = []
-    running_total = 0
-    # normalize and create list of cumulative values
+
+    # Build cumulative distribution
     for fit_value in fitness:
-        normalized_fit = fit_value/total_fit
+        normalized_fit: float = fit_value / total_fit
         running_total += normalized_fit
         cumulative_sum.append(running_total)
+
+    # Select individuals based on cumulative probability
     for _ in range(len(population)):
-        # select individuals
-        selection = random.random()
-        for i in range(len(cumulative_sum)):
-            # find where selection is bigger and -1 index
-            if (selection < cumulative_sum[i]):
-                individual = i - 1 if i > 0 else 0
-                selected_parents.append(population[individual])
+        selection: float = random.random()
+        for i, cumulative_value in enumerate(cumulative_sum):
+            if selection < cumulative_value:
+                # Select the individual just before exceeding the random number
+                individual_index: int = i - 1 if i > 0 else 0
+                selected_parents.append(population[individual_index])
                 break
+
     return selected_parents
 
 
-def tournament(population: Population,fitness: list[float],num_selected:int) -> Population:
-    # num selected is how many to compare in a tournament
+def tournament(population: Population, fitness: list[float], num_selected: int) -> Population:
+    """
+    Selects individuals using tournament selection.
+
+    For each parent to select, 'num_selected' individuals are randomly sampled
+    from the population, and the one with the highest fitness is chosen.
+
+    Parameters
+    ----------
+    population : Population
+        The current population of individuals.
+    fitness : list[float]
+        List of fitness values corresponding to each individual.
+    num_selected : int
+        Number of individuals to compare in each tournament.
+
+    Returns
+    -------
+    Population
+        A new list of selected individuals of the same size as the input population.
+    """
     selected_parents: Population = []
-    pop_size:int = len(population)
-    # increase size to compare like 5 individuals at a time
+    pop_size: int = len(population)
+
     for _ in range(pop_size):
-        selected_idx = [random.randint(0,pop_size-1) for _ in range(num_selected)]
-        # need to get the highest value in these idxs
-        best = {"idx":0,"val":0}
-        for i in selected_idx:
-            if fitness[i] >= best["val"]:
-                best = {"idx":i,"val":fitness[i]}
-        selected_parents.append(population[best["idx"]])
+        # Randomly pick individuals for the tournament
+        selected_idx: list[int] = [random.randint(0, pop_size - 1) for _ in range(num_selected)]
+
+        # Choose the one with the highest fitness
+        best_idx: int = max(selected_idx, key=lambda i: fitness[i])
+        selected_parents.append(population[best_idx])
+
     return selected_parents
