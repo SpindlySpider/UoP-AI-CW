@@ -3,9 +3,10 @@ from ga.custom_types import Gait
 import numpy as np
 import random
 from ga.target_sol import produce_target
+from ga.custom_types import *
 
-#TODO: once sen doc PR merged changed this to use proper typing, like `period:Period` and that
-def generate_training_data(gait_length:int = 1000,period:float = 0.2,coxa_amp = 20,tf_v_shift=45,tf_amp=25, normalize:bool = True, min:float = -50, max:float = 30) -> tuple[Gait,Gait]:
+
+def generate_training_data(gait_length:int = 1000,period:Period = 0.2,coxa_amp:float = 20,tibia_femur_v_shift:float=45,tibia_femur_amplitude:float=25) -> tuple[Gait,Gait]:
     """
     Generates training data to feed the NN
     Generates a gait, then splits input(N) and then output(N+1)
@@ -14,21 +15,41 @@ def generate_training_data(gait_length:int = 1000,period:float = 0.2,coxa_amp = 
     Returns:
         tuple with input data and output data, same indexes correspond to input and labeled output
     """
-    total_gait:Gait = produce_target(gait_length,period,coxa_amp,tf_v_shift,tf_amp)
+
+    # generate target gait
+    total_gait:Gait = produce_target(gait_length,period,coxa_amp,tibia_femur_v_shift,tibia_femur_amplitude)
+
+    # normalize data between 0 and 1
+    # actual range: coxa [-23, 23], tibia-femur approximately [-75, -20]
+    # use range [-80, 30] to be safe (110 total range)
     for i in range(len(total_gait)):
+        # normalize each joint value
         for j in range(len(total_gait[i])):
-            total_gait[i][j] = (total_gait[i][j] + 50)/80
+            total_gait[i][j] = (total_gait[i][j] + 80) / 110
+    # split into input and output data
     inputs:list[list[float]] = []
     outputs:list[list[float]] = []
+
+    # generate input output pairs
+    # gait_length -1 because output is N+1
     for i in range(gait_length -1):
-        # need to be -1 since output is N+1
         inputs.append(total_gait[i])
         outputs.append(total_gait[i+1])
     return (inputs,outputs)
 
 
 def shuffle_data(input:list,label:list) -> tuple[NDArray,NDArray]:
+    """
+    Shuffles input and label data in the same order
+    Parameters:
+        input (list): Input data
+        label (list): Label data
+    Returns:
+        Shuffled input and label data as numpy arrays
+    """
+    # generate permutated indexes
     permutated_idxs:NDArray = np.random.permutation(len(input))
+    # apply to input and label
     shuffled_in, shuffled_label = np.array(input)[permutated_idxs],np.array(label)[permutated_idxs]
     return (shuffled_in,shuffled_label)
 
@@ -42,28 +63,33 @@ def generate_train_test_data(train_ratio:float = 0.8,data_points:int=30,variatio
     Returns:
         A dictionary which contains the training data and test data. The values are (input,label). Keys are "training","test"
     """
-    #TODO: need to add a way of randomizing training data, this should be pretty easy to do, just need to generate other gaits with diff amp and stuff. but probbaly keep the peroid the same.
-    #TODO: we can also maybe add another parameter to this function such as gait variations? which would specify different gait walk cycles and such. e.g. 2 would generate 2 variations of gait like specified above? so changing amp and off set stuff
+
+    # initialize empty lists
     input: Gait = []
     label: Gait = []
-    # make sure all walks have low frequency
+    
+    # generate variations of gait data
     for _ in range(variations):
-        period:float = round(random.uniform(0.1,1),3)
-        c_amp = round(random.uniform(20,23),3)
-        tf_v_shift = round(random.uniform(45,50),3)
-        tf_amp = round(random.uniform(20,30),3)
+        # randomize gait parameters with wider ranges for better generalization
+        period:float = round(random.uniform(0.1, 1), 3)
+        c_amp = round(random.uniform(15, 23), 3)
+        tibia_femur_v_shift = round(random.uniform(40, 55), 3)
+        tibia_femur_amplitude = round(random.uniform(15, 35), 3)
 
-        _input, _label = generate_training_data(data_points,period,c_amp,tf_v_shift,tf_amp)
+        # generate training data for each variation
+        _input, _label = generate_training_data(data_points,period,c_amp,tibia_femur_v_shift,tibia_femur_amplitude)
         input = input + _input
         label = label + _label
 
+    # determine slicing index
     slice_idx:int = round((data_points*variations) * train_ratio)
+    # shuffle data
     input,label = shuffle_data(input,label)
 
-    #TODO: make this type actually represent the np.array thing
+    # create data dictionary to hold training and test data
     data:dict[str: tuple[Gait,Gait]] = {"training":(),"test":()}
     # slice and convert to numpy array
     data["training"] = (np.array(input[0:slice_idx]), np.array(label[0:slice_idx]))
-    data["test"] = (np.array(input[slice_idx:-1]), np.array(label[slice_idx:-1]))
-    #TODO: randomize data
+    data["test"] = (np.array(input[slice_idx:]), np.array(label[slice_idx:]))
+
     return data
