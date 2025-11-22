@@ -6,7 +6,6 @@ import nn.input_data as input_data
 import numpy as np
 from nn.error_funcs import mse
 import nn.optimiser as optimiser
-import curses
 
 def train_NN(nn:Neural_network,input_list:NDArray[float64],target_list:NDArray[float64],epochs:int, batch_size:int, curses_enabled:bool = False) -> Neural_network:
     """
@@ -21,13 +20,7 @@ def train_NN(nn:Neural_network,input_list:NDArray[float64],target_list:NDArray[f
         Trained neural network
     """
     # useful doc: https://www.geeksforgeeks.org/deep-learning/batch-size-in-neural-network/
-    if curses_enabled:
-        curses.filter()
-        curses.initscr()
-        x = curses.COLS
-        screen =  curses.newwin(15, x, 0, 0)
-
-    loss_per_epoch = []
+    loss_per_epoch:list[float] = []
     for epoch in range(epochs):
         # shuffle data for each batch so NN doesn't learn order
         input_list,target_list = input_data.shuffle_data(input_list,target_list)
@@ -55,21 +48,9 @@ def train_NN(nn:Neural_network,input_list:NDArray[float64],target_list:NDArray[f
             nn = optimiser.gradient_descent(nn)
 
         #NOTE: this MSE loss maybe completely wrong, please can somone check it works :)
-        # addtionally let me know if the curses stuff is too much
         loss_per_epoch.append(mse_loss/((len(input_list) // batch_size)))
 
-
-        if curses_enabled:
-            percent = round((epoch/epochs)*40)
-            status = f"|{percent*'#'}{(40-percent)*'-'}| epoch: {epoch}/{epochs} | mean loss: {loss_per_epoch[-1]} |"
-            screen.addstr(0,2,status)
-            screen.refresh()
-        else:
-            print("mean loss",loss_per_epoch[-1])
-
-    if curses_enabled:
-        curses.endwin()
-
+        print(f"mean loss {loss_per_epoch[-1]} | epoch: {epoch}")
     graph_results.plot_loss_graph(loss_per_epoch,epochs,batch_size)
     return nn
 
