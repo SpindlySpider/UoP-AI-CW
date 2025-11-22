@@ -1,5 +1,6 @@
 import nn.main as nn
 import nn.load_and_predict as predict
+import random
 import sys
 import ga.main as ga
 from utils import *
@@ -40,12 +41,19 @@ def main():
             input = []
 
             if choice == "random":
-                input = [rd.randint(-100,100) for _ in range(24)]
+                input = [random.randint(-100,100) for _ in range(24)]
             else:
-                input = []
+                input = handle_lists(float,24)
 
+            predict_defaults = {
+                "nn_path":"./nn.pickle",
+                "output_file_name":"./predict_results.txt",
+                "input":input,
+                "gait_length":100
+            }
+            defaults = get_defaults(predict_defaults)
             #TODO: user need to be able to input nn location to load, and number of next predicts e.g. gait length, where to save to
-            predict.load_and_predict(input)
+            predict.load_and_predict(**defaults)
             # predict using model
     print("="*20)
 

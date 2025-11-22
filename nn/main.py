@@ -4,9 +4,6 @@ from nn.training import *
 from nn.activation_functions import *
 from nn.neural_network import Neural_network
 
-#TODO: fix hidden layers modifiction and also it would be nice if we could have a activation function selection?
-
-#BUG: hidden layers do not get modified correctly in CLI since it need a list input
 hidden_layers:list[int] = [128,64,32]
 learning_rate:float = 0.01
 nn_save:str = "nn.pickle"
@@ -15,7 +12,7 @@ training_data_ratio:float = 0.95
 data_gait_length: int = 40
 gait_variations:int = 700
 
-training_batch_size:int = 5
+training_batch_size:int = 1
 epochs:int = 100
 
 

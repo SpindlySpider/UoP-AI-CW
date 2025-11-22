@@ -57,8 +57,17 @@ def modify_default(choice_dict:dict[str,any],defaults:dict):
             print("current value:",modified_default[choice])
             new_val_type = type(modified_default[choice])
             print("new value must be of type",new_val_type)
-            # insert condition here for hidden layers
-            new_val = input("new value > ")
+            if new_val_type is list:
+                # default to infinite amount of ints for hidden layers
+                list_length = 0
+                val_type = int
+                if choice == "input":
+                    # if its the predict input set to 24
+                    list_length = 24
+                    val_type = float
+                new_val = handle_lists(val_type,list_length)
+            else:
+                new_val = input("new value > ")
             try:
                 if new_val:
                     modified_default[choice] = new_val_type(new_val)
@@ -108,23 +117,32 @@ def handle_lists(val_type:any,list_length:int=0):
     finished:bool = False
     counter:int = 0
     return_list = []
+    infinite = list_length == 0
+    if not infinite:
+        print(f"enter {list_length} values:")
     while not finished:
-        user_input = input(f"please input value of type () > {val_type}")
+        if infinite:
+            print("keep entering values until you are happy, save and exit with q")
+        user_input = input(f"{counter+1}) please input value of type ({val_type}) > ")
         # if list counter is 0 then, just keep accepting vars until done
-        if list_length != 0:
+        if not infinite:
             # count until counter is done
             try:
                 user_input = val_type(user_input)
                 return_list.append(user_input)
                 counter += 1
+                if counter == list_length:
+                    finished = True
             except:
                 print("failed to input to list - type conversion failed, please try again.")
-                pass
         else:
-
             try:
-                pass
+                if user_input.upper() == "Q":
+                    finished = True
+                else:
+                    user_input = val_type(user_input)
+                    return_list.append(user_input)
+                    counter += 1
             except:
-                pass
-            # keep adding values untill done
-    pass
+                print("failed to input to list - type conversion failed, please try again.")
+    return return_list

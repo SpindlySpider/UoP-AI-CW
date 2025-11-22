@@ -23,7 +23,10 @@ def load(file_name:str="nn.pickle") -> Neural_network:
     Returns:
         Neural network from file.
     """
-    file = open(file_name,"rb")
-    nn = pickle.load(file)
-    file.close()
-    return nn
+    try:
+        file = open(file_name,"rb")
+        nn = pickle.load(file)
+        file.close()
+        return nn
+    except:
+        print(f"error could not load {file_name}: does it exist?")

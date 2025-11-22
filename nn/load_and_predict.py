@@ -40,7 +40,9 @@ def predict_gait(nn:Neural_network, input:list[float],gait_length:int = 100) -> 
     gait.append(np.array(input))
     for i in range(gait_length):
         # predict prev frame, starting from input
-        gait.append(predict(nn,gait[i]))
+        prediction = predict(nn,gait[i])
+        # reshape for output
+        gait.append(prediction.reshape(prediction.shape[1]))
     return gait
 
 def load_and_predict(input:list[float],nn_path:str = "nn.pickle",output_file_name:str = "results.txt",gait_length:int = 100):
@@ -55,7 +57,7 @@ def load_and_predict(input:list[float],nn_path:str = "nn.pickle",output_file_nam
     # load nn
     print(f"predicting next {gait_length} poses")
     nn = serialize.load(nn_path)
-    gait = predict_gait(nn,input)
+    gait = predict_gait(nn,input,gait_length)
     # save predicted gait to file results.txt
     output(output_file_name,gait)
     print(f"predicted gait saved to {output_file_name}")
