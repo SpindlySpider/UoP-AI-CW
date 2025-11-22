@@ -458,7 +458,7 @@ def mutate(population:Population,mut_rate:float) -> Population:
 
 The algorithm stops when **either** of the following is true:
 
-- The **best individual’s fitness** is **≥ 1.000**.In theory, the maximum fitness score produced by the fitness function is 3.0. However, across all test runs the highest score achieved was 1.8, and obtaining a higher score would require additional generations and greater computational resources. A fitness score of 1.0 was found to correspond to a high-quality gate, with higher scores providing only negligible improvements. Consequently, a fitness score of 1.0 was chosen as the stopping criterion for the genetic algorithm.
+- The **best individual’s fitness** is **≥ 1.000**. In theory, the maximum fitness score produced by the fitness function is 3.0. However, across all test runs the highest score achieved was 1.8, and obtaining a higher score would require additional generations and greater computational resources. A fitness score of 1.0 was found to correspond to a high-quality gate, with higher scores providing only negligible improvements. Consequently, a fitness score of 1.0 was chosen as the stopping criterion for the genetic algorithm.
 - The **best individual’s fitness** (rounded to **three decimal places**) remains unchanged for **100 consecutive generations**.
 
 ---
