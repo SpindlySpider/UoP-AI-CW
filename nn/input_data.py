@@ -1,9 +1,16 @@
+import sys
+from pathlib import Path
 from numpy.typing import NDArray
-from ga.custom_types import Gait
 import numpy as np
 import random
+
+# Add parent directory to path
+sys.path.insert(0, str(Path(__file__).parent.parent))
+
+from ga.custom_types import Gait
 from ga.target_sol import produce_target
 from ga.custom_types import *
+
 
 
 def generate_training_data(gait_length:int = 1000,period:Period = 0.2,coxa_amp:float = 20,tibia_femur_v_shift:float=45,tibia_femur_amplitude:float=25) -> tuple[Gait,Gait]:

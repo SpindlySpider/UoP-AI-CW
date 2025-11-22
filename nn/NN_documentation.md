@@ -1,4 +1,4 @@
-# Neural Network for Hexapod Gait Prediction
+# Neural Network for spider Gait Prediction
 
 ## Table of Contents
 1. [Glossary](#glossary)
@@ -73,11 +73,11 @@
 
 ## Overview
 
-This neural network implementation is designed to **predict the next frame of a hexapod robot's gait** given the current joint positions. The network learns temporal patterns in locomotion data to generate smooth, continuous walking gaits through supervised learning on synthetic gait sequences.
+This neural network implementation is designed to **predict the next frame of a spider's gait** given the current joint positions. The network learns temporal patterns in locomotion data to generate smooth, continuous walking gaits through supervised learning on synthetic gait sequences.
 
 ### Problem Statement
 
-Given a hexapod robot with **24 joints** (8 legs × 3 joints per leg: coxa, femur, tibia), the neural network must predict the joint angles for the **next time step** based on the current configuration. This enables:
+Given a spider with **24 joints** (8 legs × 3 joints per leg: coxa, femur, tibia), the neural network must predict the joint angles for the **next time step** based on the current configuration. This enables:
 
 - **Autonomous gait generation** from a single starting pose
 - **Smooth locomotion** through learned temporal patterns
@@ -1117,7 +1117,7 @@ error_degrees = sqrt(0.00137 * 110^2) ≈ 4.1° average error per joint
 **Per-Joint Performance**:
 - Across 24 joints, average error distributed
 - Acceptable for smooth gait generation
-- Within tolerance for hexapod control
+- Within tolerance for spider control
 
 #### Training Time
 
@@ -1317,7 +1317,7 @@ assert np.all(all_angles <= 30)   # ✅ Within upper bound
 
 **1. Real Robot Data Collection**
 - **Benefit**: Train on actual hardware behavior
-- **Method**: Record joint angles from physical hexapod
+- **Method**: Record joint angles from physical spider
 - **Challenge**: Noise, sensor errors, calibration
 
 **2. Physics-Based Simulation**
@@ -1425,7 +1425,7 @@ assert np.all(all_angles <= 30)   # ✅ Within upper bound
 
 ## Conclusion
 
-This neural network implementation provides a robust foundation for hexapod gait prediction through supervised learning on synthetic gait data. The modular architecture enables easy experimentation with different network configurations, optimizers, and training strategies.
+This neural network implementation provides a robust foundation for spider gait prediction through supervised learning on synthetic gait data. The modular architecture enables easy experimentation with different network configurations, optimizers, and training strategies.
 
 ### Key Achievements
 

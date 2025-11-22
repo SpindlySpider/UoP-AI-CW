@@ -1,13 +1,23 @@
 import sys
 from pathlib import Path
 
+# Add parent directory to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-import nn.serialize as serialize
-import nn.input_data as input_data
-from nn.training import *
-from nn.activation_functions import *
-from nn.neural_network import Neural_network
+try:
+    # Try absolute imports (when run from project root or via main.py)
+    import nn.serialize as serialize
+    import nn.input_data as input_data
+    from nn.training import *
+    from nn.activation_functions import *
+    from nn.neural_network import Neural_network
+except ImportError:
+    # Fall back to relative imports (when run directly from nn/ directory)
+    import serialize as serialize
+    import input_data as input_data
+    from training import *
+    from activation_functions import *
+    from neural_network import Neural_network
 
 
 # Define number of layers and neurons per layer

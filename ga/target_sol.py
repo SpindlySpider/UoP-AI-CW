@@ -1,9 +1,18 @@
+import sys
+from pathlib import Path
 import math
-
 from numpy import random
-import ga.output as output
 import matplotlib.pyplot as plt
-from ga.custom_types import Individual, Period
+
+# Add parent directory to path
+sys.path.insert(0, str(Path(__file__).parent.parent))
+
+try:
+    import ga.output as output
+    from ga.custom_types import Individual, Period
+except ImportError:
+    import output as output
+    from custom_types import Individual, Period
 
 def produce_target(gait_length:int, period:Period, coxa_amplitude:float, tibia_femur_v_shift:float, tibia_femur_amplitude:float) -> Individual:
     '''

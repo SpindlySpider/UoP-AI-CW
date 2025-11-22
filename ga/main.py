@@ -1,12 +1,33 @@
-from ga.fitness import Fitness
-from utils import *
 import sys
-from ga.fitness_graph import plot_fitness_graph
-import ga.initial_pop as pop
-import ga.selection as selection
-import ga.reproduce as reproduce
-import ga.output as output
-from ga.custom_types import Population
+from pathlib import Path
+
+# Add parent directory to path for imports
+sys.path.insert(0, str(Path(__file__).parent.parent))
+
+try:
+    # Try absolute imports (when run from project root or via main.py)
+    from ga.fitness import Fitness
+    from ga.fitness_graph import plot_fitness_graph
+    import ga.initial_pop as pop
+    import ga.selection as selection
+    import ga.reproduce as reproduce
+    import ga.output as output
+    from ga.custom_types import Population
+except ImportError:
+    # Fall back to relative imports (when run directly from ga/ directory)
+    from fitness import Fitness
+    from fitness_graph import plot_fitness_graph
+    import initial_pop as pop
+    import selection as selection
+    import reproduce as reproduce
+    import output as output
+    from custom_types import Population
+
+try:
+    from utils import *
+except ImportError:
+    # Define minimal utils if not available
+    pass
 
 # define the set of frames in the gait cycle
 gait_length:int = 40

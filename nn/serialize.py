@@ -1,8 +1,17 @@
 """
 Module used to serilize NN class load and dump
 """
-from nn.neural_network import Neural_network
+import sys
+from pathlib import Path
 import pickle
+
+# Add parent directory to path
+sys.path.insert(0, str(Path(__file__).parent.parent))
+
+try:
+    from nn.neural_network import Neural_network
+except ImportError:
+    from neural_network import Neural_network
 
 def save(nn:Neural_network,out:str="nn.pickle"):
     """

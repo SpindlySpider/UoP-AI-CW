@@ -1,5 +1,15 @@
-from ga.custom_types import Gait, Individual
-import ga.fitness as fitness
+import sys
+from pathlib import Path
+
+# Add parent directory to path
+sys.path.insert(0, str(Path(__file__).parent.parent))
+
+try:
+    from ga.custom_types import Gait, Individual
+    import ga.fitness as fitness
+except ImportError:
+    from custom_types import Gait, Individual
+    import fitness as fitness
 # use functions here for outputting the final best GA to a string that matlab can take
 # docs here: https://uk.mathworks.com/help/matlab/ref/readmatrix.html
 

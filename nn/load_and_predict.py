@@ -1,9 +1,23 @@
-from ga.custom_types import Gait
-from ga.output import output
-from nn.neural_network import Neural_network
-import nn.serialize as serialize
+import sys
+from pathlib import Path
 import random as rd
 import numpy as np
+
+# Add parent directory to path for imports
+sys.path.insert(0, str(Path(__file__).parent.parent))
+from ga.custom_types import Gait
+from ga.output import output
+
+try:
+    # Try absolute imports (when run from project root or via main.py)
+
+    from nn.neural_network import Neural_network
+    import nn.serialize as serialize
+except ImportError:
+    # Fall back to relative imports (when run directly from nn/ directory)
+    sys.path.insert(0, str(Path(__file__).parent.parent / 'ga'))
+    from neural_network import Neural_network
+    import serialize as serialize
 
 minimum_angle = -50
 maximum_angle = 30
