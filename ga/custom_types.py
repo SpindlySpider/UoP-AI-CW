@@ -1,0 +1,9 @@
+Period = float 
+Magnitude = float
+H_offset = float
+V_offset = float
+Negative = bool
+Chromosome = tuple[Magnitude, Period,H_offset,Negative,V_offset]
+Individual = list[Chromosome]
+Population = list[Individual]
+Gait = list[list[float]]
