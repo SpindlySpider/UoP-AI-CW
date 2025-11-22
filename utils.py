@@ -1,3 +1,7 @@
+"""
+This file provides utilities for GA and NN CLI.
+"""
+
 def get_choice(choice_dict:dict[str,any]) -> int | bool:
     """
     Get user choice on what to run
@@ -53,6 +57,7 @@ def modify_default(choice_dict:dict[str,any],defaults:dict):
             print("current value:",modified_default[choice])
             new_val_type = type(modified_default[choice])
             print("new value must be of type",new_val_type)
+            # insert condition here for hidden layers
             new_val = input("new value > ")
             try:
                 if new_val:
@@ -88,3 +93,38 @@ def get_defaults(defaults):
     else:
         print("continuing with defaults")
     return defaults
+
+
+def handle_lists(list_length:int=0, val_type:any):
+    """
+    Handles inputting data into a list,
+    This function will specificially be used for getting values for hidden layers and user input for predict.
+    Parameters:
+        list_length (int): length of list to ask values for, defaults to 0, if 0 then list can be infinitely long
+        val_type (any): what type the list should be full of.
+    Returns:
+        list of size list_length
+    """
+    finished:bool = False
+    counter:int = 0
+    return_list = []
+    while not finished:
+        user_input = input(f"please input value of type () > {val_type}")
+        # if list counter is 0 then, just keep accepting vars until done
+        if list_length != 0:
+            # count until counter is done
+            try:
+                user_input = val_type(user_input)
+                return_list.append(user_input)
+                counter += 1
+            except:
+                print("failed to input to list - type conversion failed, please try again.")
+                pass
+        else:
+
+            try:
+                pass
+            except:
+                pass
+            # keep adding values untill done
+    pass

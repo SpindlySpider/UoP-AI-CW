@@ -15,6 +15,7 @@ def main():
         sys.exit(0)
 
     if choice == "genetic algorithm":
+        # get defaults and unpack configuration.
         defaults = get_defaults(ga.defaults)
         ga.main(**defaults)
     else:
@@ -37,12 +38,13 @@ def main():
             }
             choice = get_choice(options)
             input = []
-            #TODO: user need to be able to input nn location to load, and number of next predicts e.g. gait length, where to save to
 
             if choice == "random":
                 input = [rd.randint(-100,100) for _ in range(24)]
             else:
                 input = []
+
+            #TODO: user need to be able to input nn location to load, and number of next predicts e.g. gait length, where to save to
             predict.load_and_predict(input)
             # predict using model
     print("="*20)
