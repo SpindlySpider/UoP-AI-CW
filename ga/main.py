@@ -1,11 +1,11 @@
 from ga.fitness import Fitness
 from utils import *
 from ga.fitness_graph import plot_fitness_graph
-import ga.inital_pop as pop
+import ga.initial_pop as pop
 import ga.selection as selection
 import ga.reproduce as reproduce
 import ga.output as output
-from custom_types import Population
+from ga.custom_types import Population
 
 # define the set of frames in the gait cycle
 gait_length:int = 40

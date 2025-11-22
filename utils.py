@@ -95,7 +95,7 @@ def get_defaults(defaults):
     return defaults
 
 
-def handle_lists(list_length:int=0, val_type:any):
+def handle_lists(val_type:any,list_length:int=0):
     """
     Handles inputting data into a list,
     This function will specificially be used for getting values for hidden layers and user input for predict.
