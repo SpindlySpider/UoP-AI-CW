@@ -23,7 +23,7 @@ def main():
     model = TorchNet(input_size=24, hidden_sizes=hidden_layers, output_size=24, activation='sigmoid')
 
     # train
-    model, losses = train_torch(model, train_loader, epochs=200, lr=0.01, val_loader=val_loader)
+    model, losses = train_torch(model, train_loader, epochs=100, lr=0.01, val_loader=val_loader)
 
     # save
     save_torch(model, out="nn.pth")
