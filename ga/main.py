@@ -1,5 +1,6 @@
 from ga.fitness import Fitness
 from utils import *
+import sys
 from ga.fitness_graph import plot_fitness_graph
 import ga.initial_pop as pop
 import ga.selection as selection
@@ -66,7 +67,7 @@ def main(gait_length:int = gait_length,population_size:int = population_size,mut
 
         # calculate average fitness for current generation
         avg_fitness: float = sum(fitness_list) / len(fitness_list)
-        # appen  d best and average fitness to their respective lists
+        # append best and average fitness to their respective lists
         fitness_over_time.append(fitness_list[best_idx])
         avg_fitness_over_time.append(avg_fitness)
 
@@ -74,7 +75,7 @@ def main(gait_length:int = gait_length,population_size:int = population_size,mut
             last_100_avg: float = sum(fitness_over_time[-100:]) / 100
             if round(last_100_avg , 3) == round(current_best_fitness, 3):
                 print("Fitness target consistently met over 100 generations with the best fitness score being:", current_best_fitness)
-                break
+                sys.exit(0)
 
         # select individuals for next generation using the functions from selection module(python file)
         population = selection.tournament(population,fitness_list,10)
