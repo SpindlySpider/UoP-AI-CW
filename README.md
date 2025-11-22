@@ -77,7 +77,7 @@ Each joint’s motion is represented by a **sine-wave function** characterized b
 
 | Parameter | Description | Range | Design Rationale |
 |------------|-------------|--------|------------------|
-| **amplitude** | The amplitude of the sine wave controlling joint motion is currently shared across the coxa, tibia, and femur. In [`target_sol.py`](https://github.com/SpindlySpider/UoP-AI-CW/blob/main/ga/target_sol.py), this parameter is separated into two independent amplitudes: one dedicated to the coxa and another applied to both the tibia and femur. | (5, 30) | Enables both subtle and large joint swings |
+| **amplitude** | The amplitude of the sine wave controlling joint motion is currently shared across the coxa, tibia, and femur. In [`target_sol.py`](https://github.com/SpindlySpider/UoP-AI-CW/blob/main/ga/target_sol.py), this parameter is separated into two independent amplitudes: one dedicated to the coxa and another applied to both the tibia and femur. | (-55, 30) | Enables both subtle and large joint swings |
 | **period** | Frequency of oscillation | (-5, 5) | Allows fast or slow movement cycles |
 | **h_offset** | Phase shift of the sine wave | (-5, 5) | Coordinates timing differences between limbs |
 | **negative** | Boolean flag inverting the sine wave | {True, False} | Adds diversity without extra dimensions |
@@ -458,7 +458,7 @@ def mutate(population:Population,mut_rate:float) -> Population:
 
 The algorithm stops when **either** of the following is true:
 
-- The **best individual’s fitness** is **≥ 1.000**.  
+- The **best individual’s fitness** is **≥ 1.000**.In theory, the maximum fitness score produced by the fitness function is 3.0. However, across all test runs the highest score achieved was 1.8, and obtaining a higher score would require additional generations and greater computational resources. A fitness score of 1.0 was found to correspond to a high-quality gate, with higher scores providing only negligible improvements. Consequently, a fitness score of 1.0 was chosen as the stopping criterion for the genetic algorithm.
 - The **best individual’s fitness** (rounded to **three decimal places**) remains unchanged for **100 consecutive generations**.
 
 ---
