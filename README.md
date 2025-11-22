@@ -535,8 +535,8 @@ Instead of evaluating every frame and joint directly, each gene represented a se
 
 | Parameter | Description | Range | Purpose |
 |------------|-------------|--------|----------|
-| **Amplitude** | Controls joint movement amplitude | (5, 30) | Enables variation in swing intensity |
-| **Period** | Controls oscillation frequency | (-5, 5) | Determines speed of movement |
+| **amplitude** | Controls joint movement amplitude | (-55, 30) | Enables variation in swing intensity |
+| **period** | Controls oscillation frequency | (-5, 5) | Determines speed of movement |
 | **h_offset** | Phase shift of sine wave | (-5, 5) | Synchronises or offsets limbs |
 | **negative** | Boolean flag to invert wave | {True, False} | Enables mirrored or opposing motion |
 | **v_offset** | Baseline joint position | (-50, 50) | Adjusts resting posture |
