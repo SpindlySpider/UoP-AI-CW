@@ -37,7 +37,7 @@
 
 ## Overview
 
-The goal of this project is to evolve a **complete gait pattern** — a coordinated walking motion — for a simplified **3D spider model** using a **Genetic Algorithm (GA)**.
+The goal of this project is to evolve a **complete gait pattern** - a coordinated walking motion - for a simplified **3D spider model** using a **Genetic Algorithm (GA)**.
 
 ### Spider Model
 - **8 legs**, each with **3 joints**: coxa, femur, and tibia.  
@@ -195,7 +195,7 @@ class Fitness:
                 err = (target_val - pred_val) ** 2
                 fit_dict[joint] += err
 
-            # Evaluate right side joints (indices 13–18, mirror pattern)
+            # Evaluate right side joints (indices 13-18, mirror pattern)
             for gene_idx in range(13, 19):
                 joint = joint_names[gene_idx % 3]
                 target_val = self.target_individual[chromosome_idx][gene_idx]
