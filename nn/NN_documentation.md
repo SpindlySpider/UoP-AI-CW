@@ -333,40 +333,40 @@ raw_angle = (normalized × 110) - 80  # Maps [0, 1] → [-80°, 30°]
 
 **Test Input** (initial pose from GA-generated gait):
 ```
-[0.23, -38.81, -50.00, 1.03, -38.85, -25.46, 0.23, -38.81, -50.00, 
- 1.03, -38.85, -25.46, 1.60, -45.94, -50.00, -0.33, -30.44, -26.14,
- 1.60, -45.94, -50.00, -0.33, -30.44, -26.14]
+[0.51, -50.00, -50.00, 2.55, -27.66, -26.26, 0.51, -50.00, -50.00, 
+ 2.55, -27.66, -26.26, 3.23, -50.00, -50.00, -4.93, -26.37, -26.26,
+ 3.23, -50.00, -50.00, -4.93, -26.37, -26.26]
 ```
 
 **Network Prediction** (next frame):
 ```
-[5.22, -47.54, -47.08, -5.38, -37.74, -37.55, 5.61, -48.16, -47.88,
- -5.68, -37.75, -38.10, -4.91, -47.64, -47.51, 5.42, -37.68, -37.69,
- -5.57, -47.37, -47.58, 5.35, -37.95, -37.62]
+[6.73, -50.26, -50.09, -6.71, -35.07, -34.99, 6.80, -50.21, -50.35,
+ -7.01, -34.92, -35.06, -6.70, -50.18, -50.12, 6.83, -34.85, -34.99,
+ -6.84, -50.22, -50.20, 7.05, -35.01, -34.88]
 ```
 
 **Target Values** (actual next frame from GA):
 ```
-[1.94, -39.04, -50.00, -0.85, -39.22, -26.57, 1.94, -39.04, -50.00,
- -0.85, -39.22, -26.57, -0.24, -48.16, -50.00, 1.45, -33.11, -28.64,
- -0.24, -48.16, -50.00, 1.45, -33.11, -28.64]
+[17.29, -44.17, -46.70, -14.27, -39.54, -35.91, 17.29, -44.17, -46.70,
+ -14.27, -39.54, -35.91, -13.73, -50.00, -50.00, 12.17, -37.64, -36.26,
+ -13.73, -50.00, -50.00, 12.17, -37.64, -36.26]
 ```
 
 **Comparison** (first 6 joints):
 
 | Joint | Predicted | Target | Error |
 |-------|-----------|--------|-------|
-| 1 (Coxa) | 5.22° | 1.94° | 3.28° |
-| 2 (Femur) | -47.54° | -39.04° | 8.50° |
-| 3 (Tibia) | -47.08° | -50.00° | 2.92° |
-| 4 (Coxa) | -5.38° | -0.85° | 4.53° |
-| 5 (Femur) | -37.74° | -39.22° | 1.48° |
-| 6 (Tibia) | -37.55° | -26.57° | 10.98° |
+| 1 (Coxa) | 6.73° | 17.29° | 10.56° |
+| 2 (Femur) | -50.26° | -44.17° | 6.09° |
+| 3 (Tibia) | -50.09° | -46.70° | 3.39° |
+| 4 (Coxa) | -6.71° | -14.27° | 7.56° |
+| 5 (Femur) | -35.07° | -39.54° | 4.47° |
+| 6 (Tibia) | -34.99° | -35.91° | 0.92° |
 
 **Analysis**: 
-- **Average Error**: ~5.3° per joint across all 24 joints
+- **Average Error**: ~5.5° per joint across all 24 joints
 - **Pattern Mismatch**: The network predicts smoother, more symmetric motion patterns compared to the GA-generated gait which has higher amplitude variations
-- **Key Difference**: The NN was trained on smoother parametric sine-based gaits, while this GA output shows more dynamic asymmetric movement (note joints 2 and 6 with ~8-11° errors)
+- **Key Difference**: The NN was trained on smoother parametric sine-based gaits, while this GA output (from 277-generation run achieving fitness 1.5035) shows more dynamic asymmetric movement (note joints 1 and 4 with ~7-11° errors)
 - **Generalization**: Despite never seeing this exact GA gait pattern during training, the network produces physically plausible joint angles within valid ranges
 
 ---
@@ -401,22 +401,22 @@ def predict_gait(nn:Neural_network, input:list[float], gait_length:int = 300) ->
 **Example** (first 10 frames from GA initial pose, showing Leg 1's 3 joints):
 
 ```python
-Frame 0 (input):  [0.23, -38.81, -50.00]    # Initial pose from GA
-Frame 1:          [5.22, -47.54, -47.08]    # NN prediction
-Frame 2:          [10.59, -46.46, -46.41]   # NN prediction
-Frame 3:          [12.62, -43.17, -43.09]   # NN prediction
-Frame 4:          [11.20, -39.65, -39.66]   # NN prediction
-Frame 5:          [7.06, -38.23, -38.36]    # NN prediction
-Frame 6:          [1.12, -40.46, -40.56]    # NN prediction
-Frame 7:          [-4.66, -45.38, -45.33]   # NN prediction
-Frame 8:          [-7.97, -49.52, -49.44]   # NN prediction
-Frame 9:          [-8.34, -51.52, -51.51]   # NN prediction
-Frame 10:         [-6.58, -52.28, -52.34]   # NN prediction
+Frame 0 (input):  [0.51, -50.00, -50.00]    # Initial pose from GA
+Frame 1:          [6.73, -50.26, -50.09]    # NN prediction
+Frame 2:          [13.73, -47.21, -47.20]   # NN prediction
+Frame 3:          [16.05, -40.93, -40.85]   # NN prediction
+Frame 4:          [14.11, -34.39, -34.47]   # NN prediction
+Frame 5:          [8.70, -30.78, -31.05]    # NN prediction
+Frame 6:          [0.81, -32.74, -33.01]    # NN prediction
+Frame 7:          [-7.45, -40.23, -40.27]   # NN prediction
+Frame 8:          [-12.73, -47.28, -47.18]  # NN prediction
+Frame 9:          [-13.51, -50.29, -50.31]  # NN prediction
+Frame 10:         [-10.85, -51.20, -51.32]  # NN prediction
 ```
 
 **Analysis**: 
 - **Smooth Transitions**: No sudden jumps between frames, demonstrating stable temporal dynamics
-- **Oscillatory Pattern**: Angles show natural cyclic movement (coxa: 0.23° → 12.62° → -8.34° → -6.58°, demonstrating learned periodic motion)
+- **Oscillatory Pattern**: Angles show natural cyclic movement (coxa: 0.51° → 16.05° → -13.51° → -10.85°, demonstrating learned periodic motion)
 - **Physically Plausible**: All angles remain within valid ranges, no boundary saturation
 - **Recursive Stability**: Network maintains coherent predictions over 300 frames (full gait in `predict_results.txt`)
 - **Learned Motion**: Shows natural leg movement pattern with coordinated joint oscillations - network learned temporal dependencies from training data

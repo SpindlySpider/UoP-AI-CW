@@ -902,31 +902,34 @@ fitness score target: 1.5
 
 **Convergence Progress:**
 
-![Example GA Result](images/image.png)
+![Example GA Result](images/fitness-over-277-gens.png)
 
-This example run demonstrates successful convergence to the target fitness score of **1.5** within **119 generations**:
+This example run demonstrates successful convergence to the target fitness score of **1.5** within **277 generations**:
 
 ```
-generation: 1   | best fitness: 0.0518
-generation: 10  | best fitness: 0.2720
-generation: 20  | best fitness: 0.4691
-generation: 30  | best fitness: 0.6368
-generation: 40  | best fitness: 0.7682
-generation: 50  | best fitness: 0.9085
-generation: 60  | best fitness: 1.0118
-generation: 70  | best fitness: 1.0970
-generation: 80  | best fitness: 1.1551
-generation: 90  | best fitness: 1.1886
-generation: 100 | best fitness: 1.3088
-generation: 110 | best fitness: 1.4347
-generation: 119 | best fitness: 1.5066 ✓ (Target reached)
+generation: 1   | best fitness: 0.0396
+generation: 10  | best fitness: 0.1224
+generation: 20  | best fitness: 0.1924
+generation: 30  | best fitness: 0.2559
+generation: 40  | best fitness: 0.3258
+generation: 50  | best fitness: 0.5208
+generation: 60  | best fitness: 0.6323
+generation: 70  | best fitness: 0.7470
+generation: 80  | best fitness: 0.8177
+generation: 90  | best fitness: 0.8838
+generation: 100 | best fitness: 0.9114
+generation: 150 | best fitness: 0.9811
+generation: 200 | best fitness: 1.0233
+generation: 250 | best fitness: 1.3814
+generation: 277 | best fitness: 1.5035 ✓ (Target reached)
 ```
 
 **Key Observations:**
-- **Early exploration phase**: Fitness increased from 0.05 to 0.27 in first 10 generations
-- **Steady progressive improvement**: Generations 10-60 showed consistent incremental gains, crossing the 1.0 threshold at generation 59
-- **Accelerated refinement**: Generations 60-119 demonstrated rapid fitness improvement from 1.01 to 1.51
-- **Total runtime**: 119 generations to achieve optimal gait pattern exceeding target threshold
+- **Early exploration phase**: Fitness increased from 0.04 to 0.12 in first 10 generations
+- **Steady progressive improvement**: Generations 10-100 showed consistent incremental gains, crossing the 1.0 threshold at generation 183
+- **Accelerated refinement**: Generations 234-250 demonstrated rapid fitness improvement from 1.06 to 1.38 due to discovering superior solution space
+- **Final convergence**: Generations 250-277 refined the gait from 1.38 to 1.50
+- **Total runtime**: 277 generations to achieve optimal gait pattern exceeding target threshold
 
 The resulting gait data is saved to `results.txt` as a **300 × 24 matrix** (300 time steps, 24 joint angles), ready for visualization in MATLAB using the code provided below.
 

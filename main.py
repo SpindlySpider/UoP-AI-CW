@@ -2,7 +2,7 @@ import nn.main as nn
 import nn.load_and_predict as predict
 import random
 import sys
-import main as ga
+import ga.main as ga
 from utils import *
 
 
