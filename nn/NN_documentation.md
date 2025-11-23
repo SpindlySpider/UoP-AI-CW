@@ -105,7 +105,7 @@ Both optimizers were tested extensively. Results below show **actual training ru
 
 ---
 
-### Gradient Descent ✅ RECOMMENDED
+### Gradient Descent (✓) RECOMMENDED
 
 **Algorithm**: $W_{new} = W_{old} - \alpha \nabla L$
 
@@ -129,7 +129,7 @@ Both optimizers were tested extensively. Results below show **actual training ru
 
 ---
 
-### Adam Optimizer ⚠️ UNSTABLE (Default Settings)
+### Adam Optimizer (!) UNSTABLE (Default Settings)
 
 **Algorithm**: Adaptive Moment Estimation with momentum
 
@@ -153,7 +153,7 @@ Both optimizers were tested extensively. Results below show **actual training ru
 
 ---
 
-### Adam with Tuned Learning Rate ✅ IMPROVED
+### Adam with Tuned Learning Rate (✓) IMPROVED
 
 **Results with LR = 0.001**:
 
@@ -165,7 +165,7 @@ Both optimizers were tested extensively. Results below show **actual training ru
 
 ---
 
-### Gradient Descent with LR = 0.001 ✅ CONSERVATIVE ALTERNATIVE
+### Gradient Descent with LR = 0.001 (✓) CONSERVATIVE ALTERNATIVE
 
 **Algorithm**: $W_{new} = W_{old} - 0.001 \times \nabla L$ (lower learning rate)
 
@@ -202,10 +202,10 @@ Both optimizers were tested extensively. Results below show **actual training ru
 
 | Optimizer | LR | Result | Verdict |
 |-----------|----|----|---------|
-| **Gradient Descent** | 0.01 | ✅ Stable, fast convergence | **Optimal** |
-| **Gradient Descent** | 0.001 | ✅ Very stable, slower | Conservative alternative |
-| **Adam** | 0.01 | ❌ Unstable, unusable | Too high |
-| **Adam** | 0.001 | ✅ Stable, good convergence | Workable with tuning |
+| **Gradient Descent** | 0.01 | (✓) Stable, fast convergence | **Optimal** |
+| **Gradient Descent** | 0.001 | (✓) Very stable, slower | Conservative alternative |
+| **Adam** | 0.01 | (✗) Unstable, unusable | Too high |
+| **Adam** | 0.001 | (✓) Stable, good convergence | Workable with tuning |
 
 **Final Choice**: **Gradient Descent with LR = 0.01**
 - Best performance (lowest loss: 0.00125)
