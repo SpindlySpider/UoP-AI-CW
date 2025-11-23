@@ -11,6 +11,7 @@ try:
     from nn.training import *
     from nn.activation_functions import *
     from nn.neural_network import Neural_network
+    from nn.optimiser import *
 except ImportError:
     # Fall back to relative imports (when run directly from nn/ directory)
     import serialize as serialize
@@ -18,6 +19,7 @@ except ImportError:
     from training import *
     from activation_functions import *
     from neural_network import Neural_network
+    from optimiser import *
 
 
 # Define number of layers and neurons per layer
@@ -29,7 +31,7 @@ nn_save:str = "nn.pickle"
 # Ratio of data to use for training vs testing
 training_data_ratio:float = 0.95
 # Length of gait data to generate
-data_gait_length: int = 40
+data_gait_length: int = 300
 # Number of gait variations to generate
 gait_variations:int = 700
 
@@ -37,6 +39,7 @@ gait_variations:int = 700
 training_batch_size:int = 1
 # Number of training epochs
 epochs:int = 100
+opt:str = "gradient_descent"
 
 # Default parameters for main function
 defaults = {
@@ -47,11 +50,12 @@ defaults = {
     "data_gait_length":data_gait_length,
     "gait_variations": gait_variations,
     "training_batch_size":training_batch_size,
-    "epochs":epochs
+    "epochs":epochs,
+    "optimiser": opt,
 }
 
 
-def main(hidden_layers=hidden_layers,learning_rate=learning_rate,nn_save=nn_save,training_data_ratio=training_data_ratio,data_gait_length=data_gait_length,gait_variations=gait_variations,training_batch_size=training_batch_size,epochs=epochs):
+def main(hidden_layers=hidden_layers,learning_rate=learning_rate,nn_save=nn_save,training_data_ratio=training_data_ratio,data_gait_length=data_gait_length,gait_variations=gait_variations,training_batch_size=training_batch_size,epochs=epochs,optimiser=opt):
     """Main function to create, train, and test a neural network for gait generation.
     Args:
         hidden_layers (list[int], optional): List defining the number of neurons in each hidden layer. Defaults to hidden_layers.
@@ -76,7 +80,7 @@ def main(hidden_layers=hidden_layers,learning_rate=learning_rate,nn_save=nn_save
     test_in, test_out = data["test"]
 
     # train and save resulting NN
-    nn = train_NN(nn,train_in,train_out,epochs,training_batch_size,False)
+    nn = train_NN(nn,train_in,train_out,epochs,training_batch_size, optimiser)
     serialize.save(nn,nn_save)
 
     # test trained nn with unseen input data

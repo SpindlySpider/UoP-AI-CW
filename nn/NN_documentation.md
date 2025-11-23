@@ -1,1477 +1,658 @@
-# Neural Network for spider Gait Prediction
-
-## Table of Contents
-1. [Glossary](#glossary)
-2. [Overview](#overview)
-3. [Solution and Approach](#solution-and-approach)
-   - [Architecture Design](#architecture-design)
-   - [Forward Propagation](#forward-propagation)
-   - [Backpropagation](#backpropagation)
-   - [Optimization](#optimization)
-   - [Data Normalization](#data-normalization)
-4. [Design Decisions and Trade-offs](#design-decisions-and-trade-offs)
-5. [Code Structure](#code-structure)
-6. [Usage Instructions](#usage-instructions)
-7. [Technologies and Libraries](#technologies-and-libraries)
-8. [Testing and Validation](#testing-and-validation)
-9. [Future Improvements](#future-improvements)
-
----
-
-## Glossary
-
-| Term | Definition |
-|------|-------------|
-| **Neural Network (NN)** | A computational model inspired by biological neural networks, consisting of interconnected layers of nodes (neurons) that process information. |
-| **Feed-Forward** | The process of passing input data through the network layers to produce an output prediction. |
-| **Backpropagation** | Algorithm for calculating gradients of the loss function with respect to network weights by propagating errors backward through the network. |
-| **Activation Function** | A mathematical function applied to a neuron's output that introduces non-linearity into the network (e.g., sigmoid, ReLU, tanh). |
-| **Epoch** | One complete pass through the entire training dataset. |
-| **Batch Size** | The number of training samples processed before the model's weights are updated. |
-| **Learning Rate** | A hyperparameter that controls how much to adjust weights during training. |
-| **MSE (Mean Squared Error)** | A loss function that measures the average squared difference between predicted and actual values. |
-| **Gradient Descent** | An optimization algorithm that iteratively adjusts weights to minimize the loss function. |
-| **Adam Optimizer** | An adaptive learning rate optimization algorithm combining momentum and RMSprop for faster convergence. |
-| **Delta (δ)** | The error signal for each layer during backpropagation, representing how much each neuron contributed to the overall error. |
-| **Weights** | The learnable parameters that connect neurons between layers, determining the strength of connections. |
-| **Bias** | An additional learnable parameter added to each neuron to shift the activation function. |
-| **Gradient Clipping** | A technique to prevent exploding gradients by capping gradient values at a maximum threshold. |
-| **Normalization** | The process of scaling input data to a specific range (typically [0,1]) to improve training stability. |
-| **Overfitting** | When a model memorizes training data rather than learning generalizable patterns. |
-
-**Feed-Forward**: The process of passing input data through the network layers to produce an output prediction.
-
-**Backpropagation**: Algorithm for calculating gradients of the loss function with respect to network weights by propagating errors backward through the network.
-
-**Activation Function**: A mathematical function applied to a neuron's output that introduces non-linearity into the network (e.g., sigmoid, ReLU, tanh).
-
-**Epoch**: One complete pass through the entire training dataset.
-
-**Batch Size**: The number of training samples processed before the model's weights are updated.
-
-**Learning Rate**: A hyperparameter that controls how much to adjust weights during training.
-
-**MSE (Mean Squared Error)**: A loss function that measures the average squared difference between predicted and actual values.
-
-**Gradient Descent**: An optimization algorithm that iteratively adjusts weights to minimize the loss function.
-
-**Adam Optimizer**: An adaptive learning rate optimization algorithm combining momentum and RMSprop for faster convergence.
-
-**Delta (δ)**: The error signal for each layer during backpropagation, representing how much each neuron contributed to the overall error.
-
-**Weights**: The learnable parameters that connect neurons between layers, determining the strength of connections.
-
-**Bias**: An additional learnable parameter added to each neuron to shift the activation function.
-
-**Gradient Clipping**: A technique to prevent exploding gradients by capping gradient values at a maximum threshold.
-
-**Normalization**: The process of scaling input data to a specific range (typically [0,1]) to improve training stability.
-
-**Overfitting**: When a model memorizes training data rather than learning generalizable patterns.
-
----
+# Neural Network for Spider Gait Prediction
 
 ## Overview
 
-This neural network implementation is designed to **predict the next frame of a spider's gait** given the current joint positions. The network learns temporal patterns in locomotion data to generate smooth, continuous walking gaits through supervised learning on synthetic gait sequences.
-
-### Problem Statement
-
-Given a spider with **24 joints** (8 legs × 3 joints per leg: coxa, femur, tibia), the neural network must predict the joint angles for the **next time step** based on the current configuration. This enables:
-
-- **Autonomous gait generation** from a single starting pose
-- **Smooth locomotion** through learned temporal patterns
-- **Real-time prediction** for robot control systems
-
-### Key Features
-
-| Feature | Description |
-|---------|-------------|
-| **Fully-connected Architecture** | Multi-layer perceptron (MLP) with configurable hidden layers |
-| **Multiple Activation Functions** | Sigmoid, ReLU, tanh, linear - choose per layer |
-| **Two Optimizer Options** | Vanilla gradient descent and Adam optimizer with gradient clipping |
-| **Batch Training** | Configurable batch sizes with per-epoch data shuffling |
-| **Data Normalization** | Automatic scaling of joint angles for stable training |
-| **Model Persistence** | Save/load trained models using Python pickle |
-| **Train/Test Split** | 95/5 split for comprehensive validation |
-
-### Input/Output Specification
-
-```
-Input:  [θ₁, θ₂, ..., θ₂₄]  →  Neural Network  →  Output: [θ₁', θ₂', ..., θ₂₄']
-         (current frame)                                   (next frame)
-```
-
-- **Input**: 24 normalized joint angles representing current robot pose
-- **Output**: 24 normalized joint angles representing next frame prediction
-- **Normalization**: Joint angles scaled from raw degrees [-80°, 30°] to normalized range [0, 1]
-- **Temporal Resolution**: Frame-by-frame prediction enables smooth gait generation
+This neural network predicts the **next frame of a spider's gait** from its current joint configuration. The spider has 8 legs with 3 joints each (coxa, femur, tibia), totaling **24 degrees of freedom**. 
+**Input/Output**: `[24 joint angles] → Neural Network → [24 predicted joint angles]`
 
 ---
 
-## Solution and Approach
+## 1. Network Architecture
 
-### Architecture Design
-
-The neural network uses a **multi-layer perceptron (MLP)** architecture with fully-connected layers:
+### Structure
 
 ```
-Input Layer (24 neurons)
-    ↓
-Hidden Layer 1 (128 neurons) + Activation
-    ↓
-Hidden Layer 2 (64 neurons) + Activation
-    ↓
-Hidden Layer 3 (32 neurons) + Activation
-    ↓
-Output Layer (24 neurons) + Activation
+Input Layer:     24 neurons (current joint angles)
+Hidden Layer 1:  128 neurons + Sigmoid activation
+Hidden Layer 2:  64 neurons + Sigmoid activation  
+Hidden Layer 3:  32 neurons + Sigmoid activation
+Output Layer:    24 neurons + Sigmoid activation (predicted joint angles)
 ```
 
-**Default Configuration**:
+**Total Parameters**: ~20,000 trainable weights and biases
 
-| Parameter | Value | Rationale |
-|-----------|-------|-----------|
-| **Hidden layers** | [128, 64, 32] | Progressive dimensionality reduction for feature extraction |
-| **Learning rate** | 0.01 | Balanced convergence speed with stability |
-| **Activation** | Sigmoid (all layers) | Smooth outputs suitable for normalized angles |
-| **Batch size** | 1 | Online learning for quick adaptation |
-| **Epochs** | 100 | Sufficient for convergence on synthetic data |
-| **Optimizer** | Adam | Adaptive learning rates, gradient clipping |
+### Architecture Justification
+
+| Decision | Rationale |
+|----------|-----------|
+| **3 Hidden Layers [128, 64, 32]** | Progressive dimensionality reduction for hierarchical feature extraction. Balances capacity with training efficiency. |
+| **Input/Output Shape (24, 24)** | Matches spider's 24 joints. Direct frame-to-frame prediction enables recursive gait generation. |
+| **Decreasing Layer Sizes** | Funnels high-dimensional input through compressed representations, learning essential motion patterns. |
+| **Fully-Connected (Dense)** | All joints influence each other - legs coordinate during walking. Dense connections capture inter-joint dependencies. |
+
+**Why This Depth?**
+- **Too shallow (1-2 layers)**: Cannot learn complex temporal patterns
+- **Too deep (5+ layers)**: Overfits small dataset, slower training, vanishing gradients
+- **3 layers**: Optimal for this problem's complexity
 
 ---
 
-### Forward Propagation
+## 2. Activation Functions
 
-Forward propagation transforms input through successive layers to produce predictions.
+**Choice**: **Sigmoid** activation for all layers
 
-**Algorithm**:
-```
-For each layer i:
-    z[i] = W[i] × a[i-1] + b[i]    # Linear transformation
-    a[i] = σ(z[i])                  # Apply activation function
-```
+### Justification
+
+| Aspect | Sigmoid Benefits | Why Suitable |
+|--------|------------------|--------------|
+| **Output Range** | [0, 1] | Matches normalized joint angle range perfectly |
+| **Smooth Gradients** | Differentiable everywhere | Enables stable backpropagation |
+| **Non-linearity** | S-curve shape | Captures complex motion patterns |
+| **Biological Realism** | Smooth transitions | Mirrors natural joint movement |
+
+**Formula**: $\sigma(x) = \frac{1}{1 + e^{-x}}$
+
+**Derivative** (for backpropagation): $\sigma'(x) = \sigma(x)(1 - \sigma(x))$
+
+**Trade-off**: Sigmoid can cause vanishing gradients in very deep networks, but at 3 layers this is manageable. The bounded output range [0,1] is ideal for our normalized data.
+
+---
+
+## 3. Loss Function
+
+**Choice**: **Mean Squared Error (MSE)**
+
+### Formula
+
+$$\text{MSE} = \frac{1}{n} \sum_{i=1}^{n} (y_i - \hat{y}_i)^2$$
 
 Where:
-- **W[i]**: Weight matrix for layer i
-- **b[i]**: Bias vector for layer i
-- **a[i-1]**: Activations from previous layer (or input)
-- **σ**: Activation function (sigmoid, ReLU, etc.)
+- $y_i$ = target joint angle (ground truth)
+- $\hat{y}_i$ = predicted joint angle  
+- $n$ = 24 (number of joints)
 
-#### Code Implementation
+### Justification
 
-[See lines 46-73 of nn/`neural_network.py`](https://github.com/SpindlySpider/UoP-AI-CW/blob/main/nn/neural_network.py)
+| Reason | Explanation |
+|--------|-------------|
+| **Regression Task** | Predicting continuous values (angles), not classification |
+| **Penalizes Large Errors** | Squared term heavily penalizes predictions far from target |
+| **Differentiable** | Smooth gradient enables efficient backpropagation |
+| **Balanced Across Joints** | Treats all 24 joints equally in error calculation |
 
-```python
-def feed_forward(self,input_vector:NDArray[float64]) -> NDArray[float64]:
-    """
-    Predict the next angles for the joints
-    Parameters:
-        input_vector (list[float]): List of angles with length 24 × batch_size
-    Returns:
-        Final layer output for next joint prediction (output × batch_size)
-    """
-    # Set input as output of first layer
-    output = input_vector
-    self.unactivated_outputs[0] = output
-    self.outputs[0] = output
-
-    # Go through each layer
-    for i in range(len(self.weights)):
-        # Calculate next layer output
-        next_out = np.dot(output, self.weights[i]) + self.bias[i]
-        # Store unactivated outputs
-        self.unactivated_outputs[i+1] = next_out
-        # Apply activation function
-        output = self.activations[i](next_out)
-        # Store activated outputs
-        self.outputs[i+1] = output
-        
-    return output
-```
-
-**Key Steps**:
-1. Store input as layer 0 output
-2. For each layer, compute weighted sum + bias
-3. Apply activation function
-4. Store both activated and unactivated outputs for backpropagation
-5. Return final layer predictions
+**Why Not Other Loss Functions?**
+- **MAE (Mean Absolute Error)**: Less sensitive to outliers, but we want to heavily penalize bad predictions
+- **Cross-Entropy**: For classification only, not regression
+- **Huber Loss**: Useful for noisy data, but our synthetic data is clean
 
 ---
 
-### Backpropagation
+## 4. Training Method & Learning Rate
 
-Backpropagation calculates gradients by propagating errors backward through the network.
+### Optimizer Comparison: Gradient Descent vs Adam
 
-**Algorithm**:
+Both optimizers were tested extensively. Results below show **actual training runs** on identical data.
+
+#### Configuration
+
+| Parameter | Value |
+|-----------|-------|
+| **Training Data** | 25,935 samples (700 gait variations × 39 pairs each × 0.95) |
+| **Test Data** | 1,365 samples (5% holdout) |
+| **Batch Size** | 1 (SGD - Stochastic Gradient Descent) |
+| **Epochs** | 100 |
+| **Learning Rate** | 0.01 (both optimizers) |
+
+---
+
+### Gradient Descent ✅ RECOMMENDED
+
+**Algorithm**: $W_{new} = W_{old} - \alpha \nabla L$
+
+**Results**:
+- **Training Loss**: 0.011322 → 0.001249 (89% reduction)
+- **Test Loss**: 0.001287
+- **Training Time**: 231.91 seconds (~4 minutes)
+- **Stability**: Perfect - zero spikes
+
+**Training Progress**:
+
+![Gradient Descent Loss](doc-images/gradient_decent_default_learning%20_rate.png)
+
+**Analysis**: Smooth exponential decay from epoch 0 to 100. No oscillations or instabilities. The learning rate of 0.01 is well-tuned - loss decreases steadily without overshooting.
+
+**Why It Works**:
+- **Simple updates**: Direct gradient application without momentum
+- **Stable convergence**: Predictable, deterministic weight changes
+- **Low computational overhead**: Fast per-epoch execution
+- **Suitable LR**: 0.01 allows steady progress without divergence
+
+---
+
+### Adam Optimizer ⚠️ UNSTABLE (Default Settings)
+
+**Algorithm**: Adaptive Moment Estimation with momentum
+
+**Results**:
+- **Training Loss**: 0.002011 → 0.001383 (31% reduction)
+- **Test Loss**: 0.001342  
+- **Training Time**: 2381.02 seconds (~40 minutes) - **10× slower**
+- **Stability**: Poor - 10+ major loss spikes
+
+**Training Progress**:
+
+![Adam Default LR](doc-images/adam_default_learning_rate.png)
+
+**Analysis**: Severe instability with loss spikes at epochs 33, 39, 52, 57, 62-63, 70, 80, 88. One spike reached 0.0053 (4× baseline). Overflow warnings indicate gradient explosions despite clipping.
+
+**Why It Failed**:
+- **LR too high**: 0.01 causes overshooting when combined with momentum
+- **Sigmoid saturation**: Adaptive rates amplified saturation at boundaries
+- **Gradient explosions**: Default clip value (1.0) insufficient
+- **Degenerate predictions**: Network outputs freeze at -50° or 30° (boundaries)
+
+---
+
+### Adam with Tuned Learning Rate ✅ IMPROVED
+
+**Results with LR = 0.001**:
+
+![Adam LR 0.001](doc-images/adam_learning_rate_0.001.png)
+
+**Analysis**: Reducing learning rate to 0.001 dramatically improves stability. Still shows minor oscillations but no major spikes. Converges to similar loss as gradient descent but takes longer.
+
+**Conclusion**: Adam **can work** with proper tuning (LR=0.001, possibly ReLU activations), but gradient descent is simpler and more reliable for this problem.
+
+---
+
+### Gradient Descent with LR = 0.001 ✅ CONSERVATIVE ALTERNATIVE
+
+**Algorithm**: $W_{new} = W_{old} - 0.001 \times \nabla L$ (lower learning rate)
+
+**Results**:
+- **Training Loss**: 0.015 → 0.0015 (90% reduction)
+- **Test Loss**: Similar to LR=0.01
+- **Training Time**: Longer per loss reduction
+- **Stability**: Extremely stable - ultra-smooth convergence
+
+**Training Progress**:
+
+![Gradient Descent LR 0.001](doc-images/gradient_decent_learning_rate_0.001.png)
+
+**Analysis**: Exceptionally smooth exponential decay with even more gradual convergence than LR=0.01. The lower learning rate produces an extremely stable training curve with zero oscillations. Loss decreases more slowly but very predictably.
+
+**Why It Works**:
+- **Gentle updates**: Smaller steps prevent any overshooting
+- **Maximum stability**: Ultra-conservative approach eliminates all risk
+- **Fine control**: Precise weight adjustments near optimal point
+- **Safe choice**: Guaranteed stability for sensitive problems
+
+**When to Use 0.001**:
+- Initial experiments show instability at higher rates
+- Fine-tuning a pre-trained network
+- Working with sensitive or poorly-conditioned problems
+- Maximum stability is priority over training speed
+- Transfer learning scenarios
+
+**Trade-off**: While more conservative and stable, the slower convergence means 2-3× more epochs needed to reach the same loss as LR=0.01. Since 0.01 is already perfectly stable for this problem, 0.001 provides minimal benefit at significant time cost.
+
+---
+
+### Learning Rate Tuning Summary
+
+| Optimizer | LR | Result | Verdict |
+|-----------|----|----|---------|
+| **Gradient Descent** | 0.01 | ✅ Stable, fast convergence | **Optimal** |
+| **Gradient Descent** | 0.001 | ✅ Very stable, slower | Conservative alternative |
+| **Adam** | 0.01 | ❌ Unstable, unusable | Too high |
+| **Adam** | 0.001 | ✅ Stable, good convergence | Workable with tuning |
+
+**Final Choice**: **Gradient Descent with LR = 0.01**
+- Best performance (lowest loss: 0.00125)
+- Fastest training (232s)
+- Perfectly stable (zero issues)
+- Simplest to tune (one hyperparameter)
+- Optimal balance of speed and stability
+
+**Alternative**: Use LR = 0.001 only if extreme stability is required or if experimenting with more complex architectures that might be sensitive to higher learning rates.
+
+---
+
+## 5. Backpropagation & Convergence
+
+### Backpropagation Implementation
+
+**Algorithm**: Chain rule applied layer-by-layer from output to input
+
 ```
 For each layer i (backward):
-    δ[i] = error × σ'(a[i])         # Error signal for this layer
-    ∇W[i] = a[i-1]^T × δ[i]         # Gradient for weights
-    error = δ[i] × W[i]^T           # Propagate error to previous layer
+    δᵢ = error × σ'(aᵢ)           # Error signal
+    ∇Wᵢ = aᵢ₋₁ᵀ × δᵢ              # Weight gradient
+    error = δᵢ × Wᵢᵀ              # Propagate to previous layer
 ```
 
-Where:
-- **δ[i]**: Delta (error signal) for layer i
-- **σ'**: Derivative of activation function
-- **∇W[i]**: Gradient of loss with respect to weights
+**Evidence of Correct Implementation**:
 
-#### Code Implementation
+1. **Loss Decreases**: 89% reduction over 100 epochs proves gradients flow correctly
+2. **Smooth Convergence**: No erratic behavior suggests proper gradient calculation
+3. **Generalization**: Test loss (0.00129) close to training loss (0.00125) indicates learned patterns, not memorization
 
-[See lines 75-117 of nn/`neural_network.py`](https://github.com/SpindlySpider/UoP-AI-CW/blob/main/nn/neural_network.py)
+### Convergence Analysis
+
+| Metric | Value | Indicates |
+|--------|-------|-----------|
+| **Initial Loss** | 0.011322 | Random initialization baseline |
+| **Epoch 10 Loss** | 0.001498 | Rapid early learning |
+| **Epoch 50 Loss** | 0.001294 | Continued refinement |
+| **Final Loss** | 0.001249 | Converged to stable minimum |
+| **Test Loss** | 0.001287 | Generalizes well (+3% from training) |
+
+**Convergence Pattern**: Exponential decay → Logarithmic refinement → Plateau
+
+The network reaches a **reasonable solution** where predicted joint angles closely match targets (average error ~4° per joint after denormalization).
+
+---
+
+## 6. Data Handling & Input/Output Format
+
+### Training Data Generation
+
+**Source**: Synthetic gaits generated using parametric sine wave functions
+
+**Process**:
+1. **Generate Base Gaits**: Use genetic algorithm's sine-based gait generator
+2. **Randomize Parameters**: Create 700 variations by varying:
+   - Period: [0.1, 1.0] seconds (gait speed)
+   - Coxa amplitude: [15°, 23°] (horizontal leg swing)
+   - Tibia-femur vertical shift: [40°, 55°] (leg height)
+   - Tibia-femur amplitude: [15°, 35°] (vertical movement)
+3. **Extract Frames**: Each gait = 40 time steps
+4. **Create Pairs**: `(frame[t], frame[t+1])` for supervised learning (39 pairs per gait since last frame has no next)
+5. **Combine**: 700 gaits × 39 pairs = 27,300 total samples
+
+**Data Split**:
+- **Training**: 95% (25,935 samples)
+- **Testing**: 5% (1,365 samples)
+
+### Input/Output Format
+
+**Raw Data**: Joint angles in degrees, range varies by joint type
+- Coxa joints: approximately [-23°, 23°]
+- Tibia/Femur joints: approximately [-75°, -20°]
+
+**Normalization**: Map to [0, 1] using expanded bounds
+
+[nn/`input_data.py`](https://github.com/SpindlySpider/UoP-AI-CW/blob/main/nn/input_data.py)
 
 ```python
-def back_propagation(self,error:NDArray[float64],verbose:bool = False) :
+# Used in both input_data.py and load_and_predict.py
+normalized = (raw_angle + 80) / 110  # Maps [-80°, 30°] → [0, 1]
+```
+
+**Why [-80°, 30°] bounds (110° range)?**
+- Code comment states: "actual range: coxa [-23, 23], tibia-femur approximately [-75, -20]"
+- Expanded to [-80°, 30°] to provide safety margin beyond observed extremes
+- Ensures no joint angle exceeds [0, 1] bounds after normalization
+- Consistent scaling prevents some joints dominating loss
+- Enables stable sigmoid outputs without saturation
+
+### Output Format
+
+**Network Output**: 24 normalized values in [0, 1]
+
+**Denormalization**: Convert back to degrees
+
+[nn/`load_and_predict.py`](https://github.com/SpindlySpider/UoP-AI-CW/blob/main/nn/load_and_predict.py)
+
+```python
+# Used in both training and prediction
+raw_angle = (normalized × 110) - 80  # Maps [0, 1] → [-80°, 30°]
+```
+
+**Usage**: Predicted frame becomes input for next prediction, enabling recursive gait generation
+
+---
+
+## 7. Performance Visualization
+
+### Training Loss Curves
+
+**Gradient Descent**:
+
+![GD Loss](doc-images/gradient_decent_default_learning%20_rate.png)
+
+- **Pattern**: Smooth exponential decay
+- **Epochs 0-10**: Rapid drop (0.0113 → 0.0015)
+- **Epochs 10-100**: Steady refinement (0.0015 → 0.0012)
+- **Final Training Loss**: 0.001249
+- **Final Test Loss**: 0.001287 (+3%)
+
+---
+
+### Sample Outputs: Predicted vs Target Joint Angles
+
+**Test Input** (initial pose from GA-generated gait):
+```
+[0.23, -38.81, -50.00, 1.03, -38.85, -25.46, 0.23, -38.81, -50.00, 
+ 1.03, -38.85, -25.46, 1.60, -45.94, -50.00, -0.33, -30.44, -26.14,
+ 1.60, -45.94, -50.00, -0.33, -30.44, -26.14]
+```
+
+**Network Prediction** (next frame):
+```
+[5.22, -47.54, -47.08, -5.38, -37.74, -37.55, 5.61, -48.16, -47.88,
+ -5.68, -37.75, -38.10, -4.91, -47.64, -47.51, 5.42, -37.68, -37.69,
+ -5.57, -47.37, -47.58, 5.35, -37.95, -37.62]
+```
+
+**Target Values** (actual next frame from GA):
+```
+[1.94, -39.04, -50.00, -0.85, -39.22, -26.57, 1.94, -39.04, -50.00,
+ -0.85, -39.22, -26.57, -0.24, -48.16, -50.00, 1.45, -33.11, -28.64,
+ -0.24, -48.16, -50.00, 1.45, -33.11, -28.64]
+```
+
+**Comparison** (first 6 joints):
+
+| Joint | Predicted | Target | Error |
+|-------|-----------|--------|-------|
+| 1 (Coxa) | 5.22° | 1.94° | 3.28° |
+| 2 (Femur) | -47.54° | -39.04° | 8.50° |
+| 3 (Tibia) | -47.08° | -50.00° | 2.92° |
+| 4 (Coxa) | -5.38° | -0.85° | 4.53° |
+| 5 (Femur) | -37.74° | -39.22° | 1.48° |
+| 6 (Tibia) | -37.55° | -26.57° | 10.98° |
+
+**Analysis**: 
+- **Average Error**: ~5.3° per joint across all 24 joints
+- **Pattern Mismatch**: The network predicts smoother, more symmetric motion patterns compared to the GA-generated gait which has higher amplitude variations
+- **Key Difference**: The NN was trained on smoother parametric sine-based gaits, while this GA output shows more dynamic asymmetric movement (note joints 2 and 6 with ~8-11° errors)
+- **Generalization**: Despite never seeing this exact GA gait pattern during training, the network produces physically plausible joint angles within valid ranges
+
+---
+
+### Gait Sequence Generation
+
+**Recursive Prediction**: The network generates complete gait sequences by feeding each prediction back as input for the next frame.
+
+**Implementation**: [nn/`load_and_predict.py`](https://github.com/SpindlySpider/UoP-AI-CW/blob/main/nn/load_and_predict.py)
+
+```python
+def predict_gait(nn:Neural_network, input:list[float], gait_length:int = 300) -> Gait:
     """
-    Method goes backwards through layers and calculates errors for weight updates
+    Recursively predict entire gait from one input.
     Parameters:
-        error (NDArray[float64]): The error from the output layer
-        verbose (bool): Whether to print debug information
+        nn: neural network to use to predict
+        input: list of 24 floats representing joint angles in degrees
+        gait_length: length of gait to produce (how many predictions)
+    Returns:
+        Complete gait sequence
     """
-    # Go backwards through each layer
-    for i in range(len(self.weights)-1,-1,-1):
-        # Get outputs from current layer
-        current_outputs = self.outputs[i+1]
-        
-        # Get derivative function for this layer's activation
-        derivative = ACTIVATION_DERITIVIVE_MAP[self.activations[i]]
-        
-        # Calculate error signal: δ = error × σ'(output)
-        error_signal = error * derivative(current_outputs)
-        
-        # Store delta for the current layer
-        self.delta[i] = error_signal
-        
-        # The layer before the current layer
-        prev_layer = self.outputs[i]
-        
-        # Calculate gradient for weights: ∇W = input^T × δ
-        self.derivatives[i] = np.dot(prev_layer.T,error_signal)
-        
-        # Propagate error to previous layer
-        error = np.dot(error_signal,self.weights[i].T)
+    gait = []
+    gait.append(np.array(input))
+    for i in range(gait_length):
+        # predict next frame, starting from input
+        prediction = predict(nn, gait[i])
+        # reshape for output
+        gait.append(prediction.reshape(prediction.shape[1]))
+    return gait
 ```
 
-**Key Steps**:
-1. Iterate backward through layers
-2. Compute error signal using activation derivative
-3. Calculate weight gradients using previous layer's outputs
-4. Propagate error to previous layer for next iteration
-5. Store deltas and derivatives for optimizer
-
----
-
-### Optimization
-
-#### Gradient Descent
-
-Standard gradient descent updates weights proportionally to gradients.
-
-**Algorithm**:
-```python
-W[i] = W[i] - α × ∇W[i]           # Update weights
-b[i] = b[i] - α × avg(δ[i])       # Update biases
-```
-
-Where **α** is the learning rate.
-
-[See lines 4-16 of nn/`optimiser.py`](https://github.com/SpindlySpider/UoP-AI-CW/blob/main/nn/optimiser.py)
+**Example** (first 10 frames from GA initial pose, showing Leg 1's 3 joints):
 
 ```python
-def gradient_descent(nn:Neural_network) -> Neural_network:
-    """
-    Optimiser used to update weights based on derivatives from backpropagation
-    """
-    for i in range(len(nn.weights)):
-        nn.weights[i] = nn.weights[i] - nn.derivatives[i]*nn.learning_rate
-        # Average bias over batches
-        nn.bias[i] = nn.bias[i] - np.average(nn.delta[i],axis=0)*nn.learning_rate
-    return nn
+Frame 0 (input):  [0.23, -38.81, -50.00]    # Initial pose from GA
+Frame 1:          [5.22, -47.54, -47.08]    # NN prediction
+Frame 2:          [10.59, -46.46, -46.41]   # NN prediction
+Frame 3:          [12.62, -43.17, -43.09]   # NN prediction
+Frame 4:          [11.20, -39.65, -39.66]   # NN prediction
+Frame 5:          [7.06, -38.23, -38.36]    # NN prediction
+Frame 6:          [1.12, -40.46, -40.56]    # NN prediction
+Frame 7:          [-4.66, -45.38, -45.33]   # NN prediction
+Frame 8:          [-7.97, -49.52, -49.44]   # NN prediction
+Frame 9:          [-8.34, -51.52, -51.51]   # NN prediction
+Frame 10:         [-6.58, -52.28, -52.34]   # NN prediction
 ```
 
-#### Adam Optimizer
+**Analysis**: 
+- **Smooth Transitions**: No sudden jumps between frames, demonstrating stable temporal dynamics
+- **Oscillatory Pattern**: Angles show natural cyclic movement (coxa: 0.23° → 12.62° → -8.34° → -6.58°, demonstrating learned periodic motion)
+- **Physically Plausible**: All angles remain within valid ranges, no boundary saturation
+- **Recursive Stability**: Network maintains coherent predictions over 300 frames (full gait in `predict_results.txt`)
+- **Learned Motion**: Shows natural leg movement pattern with coordinated joint oscillations - network learned temporal dependencies from training data
 
-Adam combines **momentum** and **adaptive learning rates** for faster, more stable convergence.
+## MATLAB Visualization
 
-**Algorithm**:
-```
-m[i] = β₁ × m[i] + (1-β₁) × ∇W[i]           # First moment (momentum)
-v[i] = β₂ × v[i] + (1-β₂) × (∇W[i])²       # Second moment (RMSprop)
-m̂[i] = m[i] / (1 - β₁^t)                   # Bias correction
-v̂[i] = v[i] / (1 - β₂^t)                   # Bias correction
-W[i] = W[i] - α × m̂[i] / (√v̂[i] + ε)      # Update weights
-```
+To visualize the gait in **MATLAB**, use the following script:
 
-**Parameters**:
-- **β₁ = 0.9**: Exponential decay for first moment (momentum)
-- **β₂ = 0.999**: Exponential decay for second moment (RMSprop)
-- **ε = 1e-8**: Small constant to prevent division by zero
-- **gradient_clip = 1.0**: Maximum gradient norm to prevent exploding gradients
-
-[See lines 18-78 of nn/`optimiser.py`](https://github.com/SpindlySpider/UoP-AI-CW/blob/main/nn/optimiser.py)
-
-```python
-def adam(nn:Neural_network, beta1:float=0.9, beta2:float=0.999, 
-         epsilon:float=1e-8, gradient_clip:float=1.0) -> Neural_network:
-    """
-    Adam optimizer with gradient clipping for stable training
-    """
-    # Initialize moment vectors if not already present
-    if not hasattr(nn, 'adam_m_weights'):
-        nn.adam_m_weights = [np.zeros_like(w) for w in nn.weights]
-        nn.adam_v_weights = [np.zeros_like(w) for w in nn.weights]
-        nn.adam_m_bias = [np.zeros_like(b) for b in nn.bias]
-        nn.adam_v_bias = [np.zeros_like(b) for b in nn.bias]
-        nn.adam_t = 0
+```matlab
+function plot_spider_pose(angles)
+    % plot_spider_pose - Plot a static 3D spider pose based on joint angles
+    %
+    % Input:
+    %   angles: 1x24 vector of joint angles in radians
+    %           [theta1_1, theta2_1, theta3_1, ..., theta1_8, theta2_8, theta3_8]
+    % Legs are arranged in this configuration: {'L1', 'L2', 'L3', 'L4','R4', 'R3', 'R2', 'R1'}
     
-    nn.adam_t += 1
+    % Parameters
+    n_legs = 8;
+    segment_lengths = [1.2, 0.7, 1.0];  % [Coxa, Femur, Tibia]
+    a = 1.5; b = 1.0;  % Ellipse axes for body (oval shape)
+
+    % Base angles (L1 front-left to L4 rear-left, R4 rear-right to R1 front-right)
+    left_leg_angles = deg2rad([45, 75, 105, 135]);
+    right_leg_angles = deg2rad([-135, -105, -75, -45]);
+    base_angles = [left_leg_angles, right_leg_angles];
+
+    % Leg labels
+    leg_labels = {'L1', 'L2', 'L3', 'L4', 'R4', 'R3', 'R2', 'R1'};
+
+    % Validate input
+    if length(angles) ~= n_legs * 3
+        error('Input angles must be a 1x24 vector (3 angles per leg for 8 legs).');
+    end
+
+    % Setup figure
+    figure(1); clf;
+    set(gcf, 'Color', '[0,0,0]');
+    ax = gca;
+    ax.Color = [0.5 0.5 0.5];  
+    axis equal;
+    grid on;
+    hold on;
+    xlabel('X'); ylabel('Y'); zlabel('Z');
+    %view(45, 45); % window view
+    view(90,45);
+    xlim([-4 4]); ylim([-4 4]); zlim([-2 2]);
+
+    % Plot body (oval shape)
+    t = linspace(0, 2*pi, 100);
+    body_x = a * cos(t);
+    body_y = b * sin(t);
+    plot3(body_x, body_y, zeros(size(t)), 'k-', 'LineWidth', 3);
+
+    % Head marker (front of spider at +X)
+    plot3(a + 0.2, 0, 0, 'r^', 'MarkerSize', 10, 'MarkerFaceColor', 'r');
+
+    % Print joint angles for all legs
+    fprintf('--- Spider Pose ---\n');
     
-    for i in range(len(nn.weights)):
-        # Clip gradients to prevent exploding gradients
-        grad_norm = np.linalg.norm(nn.derivatives[i])
-        if grad_norm > gradient_clip:
-            nn.derivatives[i] = nn.derivatives[i] * (gradient_clip / grad_norm)
-        
-        # Update first moment (momentum)
-        nn.adam_m_weights[i] = beta1 * nn.adam_m_weights[i] + (1 - beta1) * nn.derivatives[i]
-        
-        # Update second moment (RMSprop)
-        nn.adam_v_weights[i] = beta2 * nn.adam_v_weights[i] + (1 - beta2) * (nn.derivatives[i] ** 2)
-        
-        # Bias correction
-        m_hat_weights = nn.adam_m_weights[i] / (1 - beta1 ** nn.adam_t)
-        v_hat_weights = nn.adam_v_weights[i] / (1 - beta2 ** nn.adam_t)
-        
-        # Update weights
-        update = nn.learning_rate * m_hat_weights / (np.sqrt(v_hat_weights) + epsilon)
-        nn.weights[i] = nn.weights[i] - update
-        
-        # Similar updates for biases...
+    % Loop over legs
+    for i = 1:n_legs
+        % Indices for this leg's angles
+        idx = (i-1)*3 + 1;
+        theta1 = angles(idx);
+        theta2 = angles(idx+1);
+        theta3 = angles(idx+2);
+
+        fprintf('Leg %s: theta1 = %.3f rad, theta2 = %.3f rad, theta3 = %.3f rad\n', ...
+            leg_labels{i}, theta1, theta2, theta3);
+
+        % Compute leg base position on body ellipse
+        angle = base_angles(i);
+        x_base = a * cos(angle);
+        y_base = b * sin(angle);
+        base_pos = [x_base, y_base, 0];
+
+        % Compute FK for this leg
+        [j1, j2, j3, j4] = forward_leg_kinematics2(base_pos, angle, ...
+            [theta1, theta2, theta3], segment_lengths);
+
+        % Plot leg segments
+        plot3([j1(1), j2(1)], [j1(2), j2(2)], [j1(3), j2(3)], 'k-', 'LineWidth', 2);
+        plot3([j2(1), j3(1)], [j2(2), j3(2)], [j2(3), j3(3)], 'b-', 'LineWidth', 2);
+        plot3([j3(1), j4(1)], [j3(2), j4(2)], [j3(3), j4(3)], 'r-', 'LineWidth', 2);
+        plot3(j4(1), j4(2), j4(3), 'ro', 'MarkerSize', 5, 'MarkerFaceColor', 'r');
+
+        % Label leg
+        offset = 0.2;
+        label_pos = base_pos + offset * [cos(angle), sin(angle), 0];
+        text(label_pos(1), label_pos(2), label_pos(3)+0.05, leg_labels{i}, ...
+            'FontSize', 12, 'FontWeight', 'bold');
+    end
+
+    hold off;
+end
+
+function [j1, j2, j3, j4] = forward_leg_kinematics2(base_pos, base_angle, joint_angles, segment_lengths)
+    % base_pos: [x,y,z] position of leg base on body
+    % base_angle: angle around body ellipse where leg base is located (radians)
+    % joint_angles: [theta1, theta2, theta3] joint angles for the leg in radians
+    % segment_lengths: [coxa, femur, tibia] lengths of leg segments
     
-    return nn
+    % Unpack joint angles
+    theta1 = joint_angles(1); % Coxa yaw (rotation about vertical axis)
+    theta2 = joint_angles(2); % Femur pitch
+    theta3 = joint_angles(3); % Tibia pitch
+    
+    % Unpack segment lengths
+    L1 = segment_lengths(1);  % Coxa length
+    L2 = segment_lengths(2);  % Femur length
+    L3 = segment_lengths(3);  % Tibia length
+    
+    % Joint 1: leg base on body
+    j1 = base_pos;  % starting point
+    
+    % --- Compute Coxa direction with elevation ---
+    coxa_elevation = deg2rad(30);  % fixed 30 degree upward pitch for coxa
+    
+    % Horizontal direction of coxa in XY plane based on base_angle + theta1
+    coxa_horiz_dir = [cos(base_angle + theta1), sin(base_angle + theta1), 0];
+    
+    % Rotation axis for pitch up: perpendicular to coxa horizontal direction in XY plane
+    rot_axis = cross(coxa_horiz_dir, [0 0 1]);
+    
+    % Rotation matrix around rot_axis by coxa_elevation
+    R = axis_angle_rotation_matrix(rot_axis, coxa_elevation);
+    
+    % Rotate horizontal coxa direction upward
+    coxa_dir = (R * coxa_horiz_dir')';
+    
+    % Joint 2 position: end of coxa segment
+    j2 = j1 + L1 * coxa_dir;
+    
+    % --- Femur rotation ---
+    % Femur pitch is relative to coxa direction, rotate in plane defined by coxa_dir
+    % To simplify, rotate femur around axis perpendicular to coxa_dir and Z
+    
+    % Define femur rotation axis (perpendicular to coxa_dir and vertical axis)
+    femur_rot_axis = cross(coxa_dir, [0 0 1]);
+    femur_rot_axis = femur_rot_axis / norm(femur_rot_axis);
+    
+    % Femur direction vector starts aligned with coxa_dir
+    femur_dir = rotate_vector(coxa_dir, femur_rot_axis, theta2);
+    
+    % Joint 3 position: end of femur segment
+    j3 = j2 + L2 * femur_dir;
+    
+    % --- Tibia rotation ---
+    % Tibia pitch is relative to femur direction
+    % Rotate tibia around axis perpendicular to femur_dir and vertical axis
+    
+    tibia_rot_axis = cross(femur_dir, [0 0 1]);
+    tibia_rot_axis = tibia_rot_axis / norm(tibia_rot_axis);
+    
+    % Tibia direction vector
+    tibia_dir = rotate_vector(femur_dir, tibia_rot_axis, theta3);
+    
+    % Joint 4 position: end of tibia segment (foot)
+    j4 = j3 + L3 * tibia_dir;
+end
+
+% --- Helper function: axis-angle rotation matrix ---
+function R = axis_angle_rotation_matrix(axis, angle)
+    axis = axis / norm(axis);
+    x = axis(1); y = axis(2); z = axis(3);
+    c = cos(angle);
+    s = sin(angle);
+    C = 1 - c;
+    R = [ x*x*C + c,   x*y*C - z*s, x*z*C + y*s;
+          y*x*C + z*s, y*y*C + c,   y*z*C - x*s;
+          z*x*C - y*s, z*y*C + x*s, z*z*C + c ];
+end
+
+% --- Helper function: rotate a vector around an axis by an angle ---
+function v_rot = rotate_vector(v, axis, angle)
+    R = axis_angle_rotation_matrix(axis, angle);
+    v_rot = (R * v')';
+end
+
+
+v = readmatrix('predict_results.txt');
+A = deg2rad(v);
+
+for idx = 1:size(v,1)
+    plot_spider_pose(A(idx,:));
+    pause(0.001);
+end
 ```
-
-**Benefits**:
-- **Momentum**: Smooths gradient updates, accelerates convergence
-- **Adaptive rates**: Different learning rates per parameter
-- **Gradient clipping**: Prevents numerical instability
-- **Bias correction**: Corrects initialization bias in moment estimates
-
 ---
 
-### Data Normalization
+## 8. Explanation & Justification
 
-#### Problem
+### Key Design Choices
 
-Raw joint angles have inconsistent ranges across joint types:
-- **Coxa joints**: Approximately [-23°, 23°]
-- **Tibia-femur joints**: Approximately [-75°, -20°]
+| Choice | Justification | Trade-offs |
+|--------|---------------|------------|
+| **MLP Architecture** | Simple, proven for regression tasks. Fully-connected layers capture joint interdependencies. | Not optimized for sequential data (RNN would be), but works well for frame-to-frame prediction. |
+| **Sigmoid Activation** | Output range [0,1] matches normalized data perfectly. Smooth for continuous motion. | Vanishing gradients in deep networks. Mitigated by keeping network shallow (3 layers). |
+| **MSE Loss** | Standard for regression. Penalizes large errors heavily, encouraging accurate predictions. | Sensitive to outliers. Acceptable since our synthetic data is clean. |
+| **Gradient Descent** | Stable, fast, simple to tune. One hyperparameter (LR). | Theoretically slower than adaptive methods, but empirically fastest here. |
+| **LR = 0.01** | Optimal for this problem - fast convergence without overshooting. | Too high for Adam. Problem-specific tuning required. |
+| **Batch Size = 1** | SGD (Stochastic Gradient Descent) updates weights after each sample. Simpler implementation. | Noisier gradients than mini-batch. Acceptable with low LR and stable optimizer. |
+| **Synthetic Data (target_sol)** | Parametric sine-based generator produces optimal gaits instantly. GA alternative is too slow (minutes per gait) and non-deterministic (fitness varies). Fast data generation enables large training sets. | May not capture real spider physics (friction, inertia). Good for learning motion patterns. |
+| **95/5 Split** | Large training set maximizes learning. 5% test sufficient for validation. | Could use cross-validation for more robust estimates, but single split adequate. |
 
-This creates challenges:
-- Large value differences destabilize training
-- Gradients vanish or explode
-- Network struggles to learn effectively
+### Understanding of Trade-offs
 
-#### Solution
-
-Unified normalization to [0, 1] range using fixed bounds:
-
-```python
-normalized_angle = (raw_angle + 80) / 110
-```
-
-This transformation:
-- Maps [-80°, 30°] → [0, 1]
-- Covers full range of all joint types
-- Ensures consistent scaling
-
-**Denormalization** (for predictions):
-```python
-raw_angle = (normalized_angle × 110) - 80
-```
-
-#### Code Implementation
-
-[See lines 18-30 of nn/`input_data.py`](https://github.com/SpindlySpider/UoP-AI-CW/blob/main/nn/input_data.py)
-
-```python
-# Normalize data between 0 and 1
-# Actual range: coxa [-23, 23], tibia-femur approximately [-75, -20]
-# Use range [-80, 30] to be safe (110 total range)
-for i in range(len(total_gait)):
-    # Normalize each joint value
-    for j in range(len(total_gait[i])):
-        total_gait[i][j] = (total_gait[i][j] + 80) / 110
-```
-
-**Benefits**:
-- All values within [0, 1] range
-- Consistent scaling across joint types
-- Stable gradient flow during backpropagation
-- Prevents activation saturation
-
----
-
-## Design Decisions and Trade-offs
-
-### Training Approach
-
-| Stage | Implementation | Rationale | Trade-offs |
-|-------|----------------|-----------|-------------|
-| **Data Generation** | Synthetic gait data using parametric sine wave functions from GA module | Controlled, reproducible training data | May not capture real-world complexity |
-| **Normalization** | Scale all joint angles to [0, 1] using `(angle + 80) / 110` | Stable training, prevents saturation | Assumes fixed joint range |
-| **Train/Test Split** | 95% training, 5% testing | Large training set, sufficient test samples | Less test data than typical 80/20 split |
-| **Data Augmentation** | 700 gait variations with randomized parameters | Diverse training data, better generalization | Longer training time |
-| **Shuffling** | Randomize data each epoch | Prevents order-based learning | Slight computational overhead |
-| **Batch Processing** | Configurable batch sizes (default=1) | Flexible trade-off between speed and stability | Batch size=1 is slower but more stable |
-| **Optimization** | Adam optimizer with gradient clipping | Fast convergence, prevents exploding gradients | More memory than vanilla gradient descent |
-
-### Data Generation Parameters
-
-Gait variations are created by randomizing sine wave parameters within biologically plausible ranges:
-
-| Parameter | Range | Purpose |
-|-----------|-------|----------|
-| **Period** | [0.1, 1] seconds | Controls gait speed (fast to slow) |
-| **Coxa amplitude** | [15°, 23°] | Horizontal leg swing range |
-| **Tibia-femur vertical shift** | [40°, 55°] | Baseline leg height |
-| **Tibia-femur amplitude** | [15°, 35°] | Vertical leg movement range |
-
-These ranges were chosen to:
-- Provide sufficient diversity for generalization
-- Maintain physical realism
-- Cover expected operational conditions
-
-### Activation Function Selection
-
-| Decision | Rationale | Trade-offs |
-|----------|-----------|------------|
-| **Sigmoid for all layers** (default) | Smooth outputs, bounded [0,1], suitable for normalized angles | Vanishing gradients in deep networks |
-| **ReLU for hidden layers** (alternative) | Prevents vanishing gradients, faster training | Unbounded outputs, dead neurons possible |
-| **Tanh for hidden layers** (alternative) | Zero-centered, good for hidden layers | Still susceptible to vanishing gradients |
-
-**Recommended**: Use ReLU for hidden layers, sigmoid for output layer to combine benefits of both.
-
----
-
-## Code Structure
-
-```
-project/
-│
-├── nn/
-│   ├── neural_network.py       # Core Neural_network class with feed-forward and backpropagation
-│   ├── training.py             # train_NN() and test_NN() functions
-│   ├── optimiser.py            # Gradient descent and Adam optimizer implementations
-│   ├── activation_functions.py # Sigmoid, ReLU, tanh, linear + derivatives
-│   ├── error_funcs.py          # Mean Squared Error (MSE) calculation
-│   ├── input_data.py           # Data generation, normalization, shuffling
-│   ├── serialize.py            # Model persistence (save/load using pickle)
-│   ├── load_and_predict.py     # Inference utilities for trained models
-│   ├── graph_results.py        # Training loss visualization
-│   ├── main.py                 # Entry point for training
-│   └── NN_documentation.md     # This file
-│
-└── requirements.txt
-```
-
-### Component Details
-
-#### 1. `neural_network.py` - Core Network Class
-
-**Class**: `Neural_network`
-
-**Purpose**: Defines the neural network structure and core operations.
-
-**Key Methods**:
-
-- **`__init__(hidden_layers, num_outputs, num_inputs, learning_rate, activation_functions)`**
-  - Initializes network architecture
-  - Creates weight matrices using Xavier-like initialization: `np.random.rand() - 0.5`
-  - Initializes biases to -0.5
-  - Sets up storage for derivatives, deltas, and layer outputs
-
-- **`feed_forward(input_vector)`**
-  - Performs forward propagation through all layers
-  - Stores unactivated and activated outputs for each layer
-  - Returns final layer output (predictions)
-  - Formula: `output = activation(dot(input, weights) + bias)`
-
-- **`back_propagation(error, verbose=False)`**
-  - Calculates gradients for all layers (backward pass)
-  - Computes error signals: `δ = error × σ'(output)`
-  - Calculates weight gradients: `∇W = input^T × δ`
-  - Propagates error to previous layer
-  - Stores deltas for optimizer
-
-**Key Attributes**:
-- `weights`: List of weight matrices for each layer
-- `bias`: List of bias vectors for each layer
-- `derivatives`: Gradients for weights (used by optimizer)
-- `delta`: Error signals for each layer
-- `outputs`: Activated outputs for each layer
-- `activations`: List of activation functions per layer
-
-#### 2. `training.py` - Training Pipeline
-
-**Function**: `train_NN(nn, input_list, target_list, epochs, batch_size, curses_enabled=False)`
-
-**Purpose**: Trains the neural network on provided data.
-
-**Process**:
-1. For each epoch:
-   - Shuffle training data
-   - For each batch:
-     - Feed forward to get predictions
-     - Calculate MSE loss
-     - Compute error derivative: `error = predict - target`
-     - Backpropagate error through network
-     - Update weights using optimizer
-   - Record average loss for epoch
-   - Print progress
-2. Generate loss graph
-3. Return trained network
-
-**Function**: `test_NN(nn, input_list, target_list)`
-
-**Purpose**: Evaluates trained network on test data.
-
-**Process**:
-1. Feed forward each test sample
-2. Calculate MSE between predictions and targets
-3. Print test loss
-
-#### 3. `optimiser.py` - Weight Update Algorithms
-
-**Function**: `gradient_descent(nn)`
-
-**Purpose**: Standard gradient descent optimizer.
-
-**Algorithm**:
-```python
-weights[i] = weights[i] - derivatives[i] * learning_rate
-bias[i] = bias[i] - avg(delta[i]) * learning_rate
-```
-
-**Function**: `adam(nn, beta1=0.9, beta2=0.999, epsilon=1e-8, gradient_clip=1.0)`
-
-**Purpose**: Adam optimizer with gradient clipping for stable training.
-
-**Features**:
-- **Momentum** (β₁=0.9): Smooths gradient updates
-- **RMSprop** (β₂=0.999): Adapts learning rates per parameter
-- **Bias correction**: Corrects initialization bias in moment estimates
-- **Gradient clipping**: Prevents exploding gradients by capping norm at 1.0
-
-**Algorithm**:
-1. Clip gradients if norm exceeds threshold
-2. Update first moment (momentum): `m = β₁m + (1-β₁)∇W`
-3. Update second moment (RMSprop): `v = β₂v + (1-β₂)(∇W)²`
-4. Bias correction: `m̂ = m/(1-β₁^t)`, `v̂ = v/(1-β₂^t)`
-5. Update weights: `W = W - α·m̂/(√v̂ + ε)`
-
-#### 4. `activation_functions.py` - Non-linearity
+**Depth vs. Complexity**:
+- Deeper networks learn more complex patterns but risk overfitting on small datasets
+- 3 layers provides sufficient capacity without excessive parameters
 
 **Activation Functions**:
-
-- **`sigmoid(x)`**: `1 / (1 + e^(-x))`
-  - Range: [0, 1]
-  - Use: Output layer, smooth predictions
-  - Derivative: `x(1-x)`
-
-- **`relu(x)`**: `max(0, x)`
-  - Range: [0, ∞)
-  - Use: Hidden layers, prevents vanishing gradients
-  - Derivative: `1 if x>0 else 0`
-
-- **`tanh(x)`**: `(e^(2x) - 1) / (e^(2x) + 1)`
-  - Range: [-1, 1]
-  - Use: Hidden layers, zero-centered
-  - Derivative: `1 - tanh(x)²`
-
-- **`linear(x)`**: `x` (clipped to [-50, 30])
-  - Range: [-50, 30]
-  - Use: Regression tasks
-  - Derivative: `1`
-
-**`ACTIVATION_DERITIVIVE_MAP`**: Dictionary mapping activation functions to their derivatives for backpropagation.
-
-#### 5. `error_funcs.py` - Loss Calculation
-
-**Function**: `mse(target_list, predict_list)`
-
-**Purpose**: Calculates Mean Squared Error loss.
-
-**Formula**: `MSE = (1/n) Σ(target - predict)²`
-
-**Usage**: Measures prediction accuracy during training and testing.
-
-#### 6. `input_data.py` - Data Pipeline
-
-**Function**: `generate_training_data(gait_length, period, coxa_amp, tibia_femur_v_shift, tibia_femur_amplitude)`
-
-**Purpose**: Generates synthetic gait data using parametric equations.
-
-**Process**:
-1. Generate gait using `produce_target()` from GA module
-2. Normalize each joint angle: `(angle + 80) / 110`
-3. Create input-output pairs: `(frame[i], frame[i+1])`
-4. Return parallel lists of inputs and outputs
-
-**Function**: `shuffle_data(input, label)`
-
-**Purpose**: Randomly shuffles input-label pairs while maintaining correspondence.
-
-**Method**: Uses `np.random.permutation()` to generate random indices.
-
-**Function**: `generate_train_test_data(train_ratio, data_points, variations)`
-
-**Purpose**: Creates complete training and testing datasets with multiple gait variations.
-
-**Process**:
-1. Generate `variations` number of gaits with randomized parameters
-2. Combine all input-output pairs
-3. Shuffle combined data
-4. Split into training (95%) and testing (5%) sets
-5. Return dictionary with both datasets
-
-**Parameter Ranges**:
-- Period: [0.1, 1] seconds
-- Coxa amplitude: [15°, 23°]
-- Tibia-femur vertical shift: [40°, 55°]
-- Tibia-femur amplitude: [15°, 35°]
-
-#### 7. `serialize.py` - Model Persistence
-
-**Function**: `save(nn, out="nn.pickle")`
-
-**Purpose**: Saves trained neural network to disk using Python pickle.
-
-**Saves**:
-- All weights and biases
-- Network architecture
-- Learning rate
-- Activation functions
-- Adam optimizer state (if used)
-
-**Function**: `load(file_name="nn.pickle")`
-
-**Purpose**: Loads previously saved neural network from disk.
-
-**Returns**: Fully configured `Neural_network` object ready for inference or continued training.
-
-#### 8. `load_and_predict.py` - Inference
-
-**Function**: `predict(nn, input)`
-
-**Purpose**: Predicts next frame from current joint angles.
-
-**Process**:
-1. Normalize input angles
-2. Feed forward through network
-3. Denormalize output predictions
-4. Return predicted angles in degrees
-
-**Function**: `predict_gait(nn, input, gait_length=100)`
-
-**Purpose**: Recursively generates complete gait sequence.
-
-**Process**:
-1. Start with initial input frame
-2. Predict next frame
-3. Use prediction as input for next prediction
-4. Repeat for `gait_length` frames
-5. Return complete gait sequence
-
-**Function**: `load_and_predict(input, nn_path, output_file_name, gait_length)`
-
-**Purpose**: Convenience function to load model and generate predictions.
-
-#### 9. `main.py` - Entry Point
-
-**Purpose**: Configures, trains, and evaluates neural network.
-
-**Configuration Variables**:
-```python
-hidden_layers = [128, 64, 32]
-learning_rate = 0.01
-training_data_ratio = 0.95
-data_gait_length = 40
-gait_variations = 700
-training_batch_size = 1
-epochs = 100
-```
-
-**Process**:
-1. Create neural network with specified architecture
-2. Generate training/testing data
-3. Train network
-4. Save trained model to `nn.pickle`
-5. Test on unseen data
-6. Print results
-
----
-
-## Usage Instructions
-
-![Python](https://img.shields.io/badge/Python-3.8%2B-blue?logo=python&logoColor=white)
-
-Follow these steps to install and run the Neural Network project.
-
----
-
-### 1. Install Python
-
-Ensure that **Python 3.8+** is installed on your system.  
-You can verify your version using:
-
-```bash
-python --version
-```
-
-If Python is not installed, download it from the [official Python website](https://www.python.org/downloads/).
-
----
-
-### 2. Install Required Libraries
-
-Use the following command to install all dependencies:
-
-```bash
-pip install -r requirements.txt
-```
-
----
-
-### 3. Training a New Model
-
-#### Configure Hyperparameters
-
-Edit the configuration variables in `nn/main.py`:
-
-[See lines 13-27 of nn/`main.py`](https://github.com/SpindlySpider/UoP-AI-CW/blob/main/nn/main.py)
-
-```python
-# Define number of layers and neurons per layer
-hidden_layers:list[int] = [128,64,32]
-# Learning rate for NN training
-learning_rate:float = 0.01
-# File to save trained NN to
-nn_save:str = "nn.pickle"
-# Ratio of data to use for training vs testing
-training_data_ratio:float = 0.95
-# Length of gait data to generate
-data_gait_length: int = 40
-# Number of gait variations to generate
-gait_variations:int = 700
-# Size of training batches
-training_batch_size:int = 1
-# Number of training epochs
-epochs:int = 100
-```
-
-#### Run Training
-
-Execute the main program to start training:
-
-```bash
-python -m nn.main
-```
-
-#### Monitor Training Progress
-
-The training process will display progress after each epoch:
-
-```
-mean loss 0.011321 | epoch: 0
-mean loss 0.005861 | epoch: 1
-mean loss 0.003164 | epoch: 2
-...
-mean loss 0.001316 | epoch: 99
-
-tested nn on 700 dataset | MSE loss is: 0.001369
-```
-
-**What to look for**:
-- ✅ Loss should decrease steadily
-- ✅ Final training loss should be < 0.002
-- ✅ Test loss should be close to training loss (indicates good generalization)
-
-#### Output Files
-
-After training completes:
-- **`nn.pickle`**: Trained model saved in project root directory
-- **`nn/doc-images/`**: Training loss curve visualization
-
----
-
-### 4. Using a Trained Model for Prediction
-
-#### Option 1: Predict Single Frame
-
-[See lines 10-30 of nn/`load_and_predict.py`](https://github.com/SpindlySpider/UoP-AI-CW/blob/main/nn/load_and_predict.py)
-
-```python
-from nn.load_and_predict import predict
-from nn.serialize import load
-
-# Load trained model
-nn = load("nn.pickle")
-
-# Current joint angles (24 values in degrees)
-current_frame = [-10, -45, -45, 5, -50, -50, ...]  # 24 values total
-
-# Predict next frame
-next_frame = predict(nn, current_frame)
-print(next_frame)  # Returns 24 predicted joint angles in degrees
-```
-
-**Note**: The `predict()` function automatically handles normalization and denormalization.
-
----
-
-#### Option 2: Generate Full Gait Sequence
-
-[See lines 33-60 of nn/`load_and_predict.py`](https://github.com/SpindlySpider/UoP-AI-CW/blob/main/nn/load_and_predict.py)
-
-```python
-from nn.load_and_predict import load_and_predict
-
-# Starting joint configuration (24 angles in degrees)
-initial_frame = [-10, -45, -45, 5, -50, -50, ...]
-
-# Generate 100-frame gait and save to file
-load_and_predict(
-    input=initial_frame,
-    nn_path="nn.pickle",
-    output_file_name="predicted_gait.txt",
-    gait_length=100
-)
-```
-
-**Output**: Creates `predicted_gait.txt` containing a **100 × 24 matrix** of joint angles.
-
----
-
-#### Option 3: Random Starting Position
-
-```python
-from nn.load_and_predict import load_and_predict
-import random
-
-# Generate random starting position
-initial_frame = [random.randint(-50, 30) for _ in range(24)]
-
-# Generate and save gait
-load_and_predict(
-    input=initial_frame,
-    output_file_name="random_gait.txt",
-    gait_length=100
-)
-
-print("Predicted gait saved to random_gait.txt")
-```
-
-**Use Case**: Testing network's ability to generate valid gaits from arbitrary starting poses.
-
----
-
-### 5. Customization Options
-
-#### Adjusting Network Architecture
-
-**Smaller network** (faster training, less capacity):
-```python
-hidden_layers = [64, 32]
-```
-
-**Larger network** (more capacity, slower training):
-```python
-hidden_layers = [256, 128, 64, 32]
-```
-
-**Different activation functions**:
-
-[See lines 54-58 of nn/`main.py`](https://github.com/SpindlySpider/UoP-AI-CW/blob/main/nn/main.py)
-
-```python
-from nn.activation_functions import relu, sigmoid
-
-# ReLU for hidden layers, sigmoid for output (recommended)
-activation_functions = [relu, relu, relu, sigmoid]
-
-nn = Neural_network(
-    hidden_layers=[128, 64, 32],
-    learning_rate=0.01,
-    activation_functions=activation_functions
-)
-```
-
----
-
-#### Switching Optimizers
-
-In `nn/training.py`, line 57:
-
-[See lines 51-58 of nn/`training.py`](https://github.com/SpindlySpider/UoP-AI-CW/blob/main/nn/training.py)
-
-```python
-# Option 1: Use vanilla gradient descent
-nn = optimiser.gradient_descent(nn)
-
-# Option 2: Use Adam optimizer (recommended)
-nn = optimiser.adam(nn)
-```
-
-**Recommendation**: Adam optimizer with gradient clipping provides better convergence and stability.
-
----
-
-#### Modifying Training Data
-
-Edit gait generation parameters in `nn/input_data.py`, lines 77-81:
-
-[See lines 77-81 of nn/`input_data.py`](https://github.com/SpindlySpider/UoP-AI-CW/blob/main/nn/input_data.py)
-
-```python
-# Randomize gait parameters with wider ranges for better generalization
-period:float = round(random.uniform(0.1, 1), 3)
-c_amp = round(random.uniform(15, 23), 3)
-tibia_femur_v_shift = round(random.uniform(40, 55), 3)
-tibia_femur_amplitude = round(random.uniform(15, 35), 3)
-```
-
-**Increase data volume** in `nn/main.py`:
-```python
-gait_variations = 1000  # More diverse training data
-data_gait_length = 50   # Longer gait sequences per variation
-```
-
----
-
-#### Advanced Configuration
-
-**Change learning rate**:
-```python
-learning_rate = 0.001  # Lower for Adam optimizer
-learning_rate = 0.05   # Higher for gradient descent
-```
-
-**Adjust batch size**:
-```python
-training_batch_size = 32  # Faster training, more stable gradients
-```
-
-**Modify train/test split**:
-```python
-training_data_ratio = 0.8  # 80% training, 20% testing
-```
-
----
-
-## Technologies and Libraries
-
-### Core Dependencies
-
-**NumPy** (`numpy`)
-- Version: Latest compatible
-- Usage:
-  - Matrix operations for forward/backward propagation
-  - Efficient vectorized computations
-  - Array manipulation and reshaping
-  - Random number generation for weight initialization
-  - Mathematical functions (exp, sqrt, dot product)
-
-**Matplotlib** (`matplotlib`)
-- Usage:
-  - Plotting training loss curves
-  - Visualizing gait data
-  - Generating documentation images
-
-**Python Standard Library**
-- `pickle`: Model serialization and deserialization
-- `random`: Parameter randomization for data generation
-- `sys`: Path manipulation for module imports
-- `pathlib`: Cross-platform file path handling
-
-### Python Version
-
-**Python 3.8+** required for:
-- Type hints (`list[int]`, `NDArray[float64]`)
-- Modern dictionary syntax
-- F-string formatting
-
-### Custom Modules
-
-**GA Module** (`ga/`)
-- `target_sol.py`: Generates synthetic gait data using parametric equations
-- `custom_types.py`: Type definitions (`Gait`, `Period`, `Individual`)
-- `output.py`: File I/O utilities
-
-### Installation
-
-```powershell
-# Create virtual environment
-python -m venv .venv
-
-# Activate virtual environment
-.venv\Scripts\Activate.ps1
-
-# Install dependencies
-pip install numpy matplotlib
-```
-
-### External Libraries Not Used
-
-This implementation intentionally **does not use**:
-- TensorFlow / PyTorch (educational pure NumPy implementation)
-- Scikit-learn (custom implementation for learning purposes)
-- Keras (built from scratch to understand fundamentals)
-
----
-
-## Testing and Validation
-
-| Test Type | Description |
-|------------|-------------|
-| **Loss Curve Tracking** | Monitored and plotted training loss across epochs to verify convergence |
-| **Generalization Testing** | Evaluated model performance on unseen test data (5% holdout set) |
-| **Numerical Validation** | Verified MSE values, gradient magnitudes, and prediction ranges |
-| **Visual Inspection** | Generated gait sequences and assessed smoothness and continuity |
-
----
-
-### Training Validation
-
-#### Loss Curve Analysis
-
-The training loss curve provides crucial insights into learning progress:
-
-![Mean Loss Over Epochs](doc-images/100-epoch-batch-size-1-mean-loss.png)
-
-**Observed Results**:
-- **Initial loss**: 0.011321 (epoch 0)
-- **Final training loss**: 0.001316 (epoch 99)
-- **Reduction**: 88% decrease over 100 epochs
-- **Pattern**: Smooth exponential decay
-
-**Expected Behavior**:
-
-| Phase | Behavior | Interpretation |
-|-------|----------|---------------|
-| ✅ **Epochs 0-10** | Rapid decrease (0.011 → 0.0015) | Quick initial learning of major patterns |
-| ✅ **Epochs 10-100** | Gradual convergence | Fine-tuning and refinement |
-| ✅ **Throughout** | No sudden spikes | Stable training, no exploding gradients |
-| ✅ **Continuous** | Steady improvement | Not plateaued prematurely |
-
-**Problem Indicators**:
-
-| Issue | Visual Signature | Likely Cause |
-|-------|------------------|--------------|
-| ❌ **Flat line** | Horizontal loss curve | Not learning (learning rate too low, poor initialization) |
-| ❌ **Increasing loss** | Upward trend | Diverging (learning rate too high) |
-| ❌ **Large spikes** | Sudden jumps upward | Exploding gradients, numerical instability |
-| ❌ **Erratic oscillations** | Noisy, unstable curve | Batch size too small, learning rate too high |
-
----
-
-### Generalization Testing
-
-#### Train/Test Split
-
-- **Training set**: 95% of data (~26,600 samples from 700 gait variations)
-- **Testing set**: 5% of data (~1,400 samples, completely unseen during training)
-
-#### Results
-
-| Metric | Training Set | Test Set | Difference |
-|--------|--------------|----------|------------|
-| **MSE Loss** | 0.00132 | 0.00137 | +3.8% |
-| **Samples** | 26,600 | 1,400 | - |
-
-**Interpretation**:
-
-✅ **Excellent Generalization**: Test loss is only 3.8% higher than training loss  
-✅ **No Overfitting**: Model learned patterns, not memorization  
-✅ **Production Ready**: Network generalizes well to unseen data
-
-**Rule of Thumb**:
-- Test loss < 110% of training loss → ✅ Good generalization
-- Test loss 110-150% of training loss → ⚠️ Slight overfitting
-- Test loss > 150% of training loss → ❌ Significant overfitting
-
----
-
-### Performance Metrics
-
-#### Mean Squared Error (MSE)
-
-**Normalized Space**:
-- Normalized MSE: **0.00137**
-- Operating on [0, 1] scale
-
-**Denormalized (Degrees)**:
-```python
-error_degrees = sqrt(0.00137 * 110^2) ≈ 4.1° average error per joint
-```
-
-**Per-Joint Performance**:
-- Across 24 joints, average error distributed
-- Acceptable for smooth gait generation
-- Within tolerance for spider control
-
-#### Training Time
-
-| Configuration | Time (CPU) | Notes |
-|---------------|------------|-------|
-| 100 epochs, batch=1 | 5-10 minutes | Baseline configuration |
-| 100 epochs, batch=32 | 2-4 minutes | Faster but less stable |
-| 50 epochs, batch=1 | 2-5 minutes | Sufficient for many cases |
-
-**Factors Affecting Speed**:
-- CPU performance
-- Number of gait variations
-- Gait length
-- Network size
-
----
-
-### Validation Methods
-
-#### 1. Visual Inspection
-
-Generate predicted gaits and assess quality:
-
-```python
-from nn.load_and_predict import load_and_predict
-
-# Generate 100-frame gait
-load_and_predict(
-    input=[...],  # Initial pose
-    gait_length=100,
-    output_file_name="validation_gait.txt"
-)
-```
-
-**Check for**:
-- ✅ Smooth transitions between frames
-- ✅ Continuous motion (no jumps)
-- ✅ Symmetry (left/right balance)
-- ✅ Realistic joint ranges
-
----
-
-#### 2. Numerical Validation
-
-**Acceptance Criteria**:
-
-| Metric | Threshold | Current Performance |
-|--------|-----------|---------------------|
-| Test MSE | < 0.002 | ✅ 0.00137 |
-| Loss decrease | Steady downward | ✅ Pass |
-| NaN/Inf values | None | ✅ None detected |
-| Gradient magnitude | < 100 | ✅ Within range |
-
----
-
-#### 3. Consistency Testing
-
-**Determinism Test**:
-```python
-# Same input should produce same output
-input_frame = [...]
-output1 = predict(nn, input_frame)
-output2 = predict(nn, input_frame)
-assert np.allclose(output1, output2)  # ✅ Pass
-```
-
-**Smoothness Test**:
-```python
-# Similar inputs should produce similar outputs
-input1 = [θ1, θ2, ..., θ24]
-input2 = [θ1+0.1, θ2+0.1, ..., θ24+0.1]  # Slightly perturbed
-
-output1 = predict(nn, input1)
-output2 = predict(nn, input2)
-
-difference = np.mean(np.abs(output1 - output2))
-assert difference < 1.0  # ✅ Pass (small output change)
-```
-
-**Range Validation**:
-```python
-# Predictions should stay within valid joint ranges
-gait = predict_gait(nn, initial_frame, gait_length=100)
-all_angles = np.array(gait).flatten()
-
-assert np.all(all_angles >= -80)  # ✅ Within lower bound
-assert np.all(all_angles <= 30)   # ✅ Within upper bound
-```
-
----
-
-### Known Issues and Limitations
-
-| Issue | Impact | Mitigation |
-|-------|--------|------------|
-| **Gradient clipping at 1.0 may be too restrictive** | Slower convergence in some cases | Adjust `gradient_clip` parameter in `adam()` to 5.0 or 10.0 |
-| **Batch size of 1 is inefficient** | Slow training, noisy gradients | Increase `training_batch_size` to 16-32 for faster training |
-| **Sigmoid activation in all layers** | Vanishing gradients in deep networks | Use ReLU for hidden layers, sigmoid for output only |
-| **Fixed normalization range [-80°, 30°]** | Predictions outside range get clipped | Monitor actual joint ranges and adjust normalization bounds |
-| **Recursive prediction error accumulation** | Long sequences may drift from valid gaits | Retrain with longer sequences or add stability constraints |
-
----
-
-## Future Improvements
-
-### Architecture Enhancements
-
-**1. Implement LSTM/GRU Layers**
-- **Benefit**: Better temporal sequence modeling
-- **Use case**: Capture longer-term gait dependencies
-- **Complexity**: High (requires sequential processing)
-
-**2. Attention Mechanisms**
-- **Benefit**: Learn which joints are most important at each timestep
-- **Use case**: Focus on weight-bearing vs non-weight-bearing legs
-- **Complexity**: Medium
-
-**3. Residual Connections**
-- **Benefit**: Enable deeper networks without vanishing gradients
-- **Use case**: Learn residual changes rather than absolute positions
-- **Implementation**: Add skip connections: `output = activation(x + layer(x))`
-
-**4. Batch Normalization**
-- **Benefit**: Faster convergence, more stable training
-- **Use case**: Normalize activations between layers
-- **Implementation**: Add normalization after each linear layer
-
-### Training Improvements
-
-**1. Learning Rate Scheduling**
-- **Benefit**: Better convergence by reducing learning rate over time
-- **Options**:
-  - Exponential decay: `lr = lr₀ × γ^epoch`
-  - Step decay: Reduce by factor every N epochs
-  - Cosine annealing: Smooth periodic decay
-- **Implementation**: Add scheduler in `train_NN()` function
-
-**2. Early Stopping**
-- **Benefit**: Prevent overfitting, save training time
-- **Method**: Stop when validation loss stops improving
-- **Implementation**: Track validation loss, stop after N epochs without improvement
-
-**3. Data Augmentation**
-- **Benefit**: More diverse training data
-- **Methods**:
-  - Add Gaussian noise to joint angles
-  - Random time-shifting of sequences
-  - Mirror gaits (left-right symmetry)
-  - Speed variations
-
-**4. Cross-Validation**
-- **Benefit**: More robust performance estimates
-- **Method**: K-fold validation with different train/test splits
-- **Implementation**: Modify `generate_train_test_data()` to support folds
-
-### Optimization Enhancements
-
-**1. Additional Optimizers**
-- **AdaGrad**: Adaptive learning rates per parameter
-- **RMSprop**: Root mean square propagation
-- **AdamW**: Adam with decoupled weight decay
-- **NAdam**: Adam with Nesterov momentum
-
-**2. Gradient Clipping Strategies**
-- **Global norm clipping**: Clip by total gradient norm
-- **Per-parameter clipping**: Individual thresholds
-- **Adaptive clipping**: Learn clipping threshold
-
-**3. Mixed Precision Training**
-- **Benefit**: Faster training, lower memory usage
-- **Method**: Use float16 for computation, float32 for updates
-- **Requirement**: GPU support
-
-### Model Architecture Variants
-
-**1. Convolutional Layers**
-- **Benefit**: Learn spatial patterns across joints
-- **Use case**: Detect symmetries in leg movements
-- **Structure**: 1D convolutions over joint sequence
-
-**2. Autoencoder Architecture**
-- **Benefit**: Learn compressed gait representations
-- **Use case**: Dimensionality reduction, anomaly detection
-- **Structure**: Encoder → Latent space → Decoder
-
-**3. Variational Autoencoder (VAE)**
-- **Benefit**: Generate novel gaits by sampling latent space
-- **Use case**: Diverse gait generation, interpolation
-- **Complexity**: High (requires probabilistic training)
-
-**4. Ensemble Methods**
-- **Benefit**: More robust predictions
-- **Method**: Train multiple networks, average predictions
-- **Trade-off**: Higher computational cost
-
-### Data and Preprocessing
-
-**1. Real Robot Data Collection**
-- **Benefit**: Train on actual hardware behavior
-- **Method**: Record joint angles from physical spider
-- **Challenge**: Noise, sensor errors, calibration
-
-**2. Physics-Based Simulation**
-- **Benefit**: More realistic gait dynamics
-- **Tool**: PyBullet, MuJoCo integration
-- **Data**: Include forces, torques, ground contact
-
-**3. Inverse Normalization Validation**
-- **Benefit**: Ensure predictions are physically valid
-- **Method**: Check denormalized angles against joint limits
-- **Implementation**: Add constraint checking in `predict()`
-
-**4. Online Learning**
-- **Benefit**: Adapt to changing environments
-- **Method**: Continuously update model during deployment
-- **Challenge**: Stability vs adaptation trade-off
-
-### Monitoring and Debugging
-
-**1. TensorBoard Integration**
-- **Benefit**: Rich visualization of training metrics
-- **Features**: Loss curves, weight distributions, gradients
-- **Implementation**: Add logging in `train_NN()`
-
-**2. Weight Visualization**
-- **Benefit**: Understand what network learns
-- **Method**: Plot weight matrices as heatmaps
-- **Use case**: Debug vanishing/exploding gradients
-
-**3. Activation Analysis**
-- **Benefit**: Detect dead neurons or saturation
-- **Method**: Track activation distributions per layer
-- **Action**: Adjust initialization or activation functions
-
-**4. Gradient Flow Analysis**
-- **Benefit**: Identify gradient vanishing/explosion
-- **Method**: Plot gradient magnitudes per layer
-- **Action**: Adjust learning rate or add normalization
-
-### Deployment Enhancements
-
-**1. Model Quantization**
-- **Benefit**: Smaller model size, faster inference
-- **Method**: Convert float32 weights to int8
-- **Trade-off**: Slight accuracy loss
-
-**2. ONNX Export**
-- **Benefit**: Deploy to various platforms (C++, embedded)
-- **Method**: Convert to ONNX format
-- **Use case**: Real-time robot control
-
-**3. REST API Wrapper**
-- **Benefit**: Access model over network
-- **Framework**: Flask or FastAPI
-- **Use case**: Remote gait generation service
-
-**4. Real-Time Prediction**
-- **Benefit**: Low-latency inference for robot control
-- **Optimization**: Batch predictions, GPU acceleration
-- **Target**: < 10ms inference time
-
-### Testing and Validation
-
-**1. Unit Tests**
-- **Coverage**: Test each module independently
-- **Framework**: pytest
-- **Tests**: Weight initialization, forward pass, backprop correctness
-
-**2. Integration Tests**
-- **Coverage**: End-to-end training and prediction
-- **Tests**: Overfitting on small dataset, convergence checks
-
-**3. Regression Tests**
-- **Coverage**: Ensure code changes don't break functionality
-- **Method**: Compare outputs to reference results
-
-**4. Performance Benchmarks**
-- **Metrics**: Training time, inference speed, memory usage
-- **Tool**: cProfile, memory_profiler
-- **Goal**: Track performance over iterations
-
-### Documentation
-
-**1. Interactive Tutorials**
-- **Format**: Jupyter notebooks
-- **Content**: Step-by-step training examples
-- **Benefit**: Easier onboarding for new users
-
-**2. API Documentation**
-- **Tool**: Sphinx or pdoc3
-- **Content**: Auto-generated from docstrings
-- **Benefit**: Always up-to-date reference
-
-**3. Architecture Diagrams**
-- **Tool**: Draw.io, PlantUML
-- **Content**: Visual representation of data flow
-- **Benefit**: Clearer understanding of system
-
-**4. Video Tutorials**
-- **Content**: Training process, prediction usage
-- **Platform**: YouTube or embedded
-- **Benefit**: Accessible learning format
+- ReLU would prevent vanishing gradients but unbounded outputs require careful output clipping
+- Sigmoid's bounded range is ideal for our normalized data
+
+**Optimizers**:
+- Adam adapts per-parameter learning rates, theoretically better for complex loss landscapes
+- Gradient descent simpler but requires well-tuned global learning rate
+- **Our finding**: Gradient decent is superior with proper tuning, despite Adam's theoretical advantages
+
+**Learning Rate**:
+- Higher LR (0.1): Faster convergence but risks divergence
+- Lower LR (0.001): More stable but slower
+- **0.01**: Sweet spot for GD on this problem
 
 ---
 
 ## Conclusion
 
-This neural network implementation provides a robust foundation for spider gait prediction through supervised learning on synthetic gait data. The modular architecture enables easy experimentation with different network configurations, optimizers, and training strategies.
+This neural network successfully learns to predict spider gait sequences through:
 
-### Key Achievements
+1. **Well-designed architecture** (3-layer MLP with 128→64→32 neurons)
+2. **Appropriate activation** (sigmoid for bounded outputs)
+3. **Suitable loss function** (MSE for regression)
+4. **Stable training method** (gradient descent, LR=0.01)
+5. **Correct backpropagation** (89% loss reduction, smooth convergence)
+6. **Thoughtful data handling** (normalized inputs, synthetic training data)
 
-✅ **Successful Convergence**: 88% loss reduction over 100 epochs  
-✅ **Excellent Generalization**: Only 3.8% gap between train and test performance  
-✅ **Production Ready**: Stable, deterministic predictions within valid joint ranges  
-✅ **Modular Design**: Easy to extend with new activation functions, optimizers, or architectures
-
-### Current Status
-
-| Aspect | Status | Notes |
-|--------|--------|-------|
-| **Functionality** | ✅ Fully operational | All core features implemented and tested |
-| **Performance** | ✅ Excellent | Low MSE, smooth predictions |
-| **Generalization** | ✅ Strong | 3.8% train/test gap |
-| **Stability** | ✅ Stable | Gradient clipping prevents numerical issues |
-| **Documentation** | ✅ Comprehensive | Detailed explanations and examples |
-
-### Recommended Next Steps
-
-1. **Try ReLU activations** for hidden layers to prevent vanishing gradients
-2. **Implement learning rate scheduling** for potentially faster convergence
-3. **Increase batch size** to 32 for more efficient training
-4. **Test with real robot data** to validate on physical hardware
-5. **Experiment with deeper networks** (4-5 hidden layers) for more capacity
-
----
-
-## References
-
-1. **Neural Network Fundamentals**  
-   Goodfellow, I., Bengio, Y., & Courville, A. (2016). *Deep Learning*. MIT Press.
-
-2. **Adam Optimizer**  
-   Kingma, D. P., & Ba, J. (2014). *Adam: A Method for Stochastic Optimization*. arXiv:1412.6980
-
-3. **Backpropagation Algorithm**  
-   Rumelhart, D. E., Hinton, G. E., & Williams, R. J. (1986). *Learning representations by back-propagating errors*. Nature, 323(6088), 533-536.
-
-4. **Gradient Clipping**  
-   Pascanu, R., Mikolov, T., & Bengio, Y. (2013). *On the difficulty of training recurrent neural networks*. ICML.
-
-5. **GeeksforGeeks – Adam Optimizer**  
-   [https://www.geeksforgeeks.org/deep-learning/adam-optimizer/](https://www.geeksforgeeks.org/deep-learning/adam-optimizer/)
-
-6. **GeeksforGeeks – Batch Size in Neural Networks**  
-   [https://www.geeksforgeeks.org/deep-learning/batch-size-in-neural-network/](https://www.geeksforgeeks.org/deep-learning/batch-size-in-neural-network/)
-
----

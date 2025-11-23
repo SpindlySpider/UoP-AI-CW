@@ -19,9 +19,11 @@ except ImportError:
     from neural_network import Neural_network
     import serialize as serialize
 
-minimum_angle = -50
+# Normalization constants matching input_data.py training normalization
+# Maps [-80, 30] to [0, 1] using (x + 80) / 110
+minimum_angle = -80
 maximum_angle = 30
-angle_diff = abs(minimum_angle) + abs(maximum_angle)
+angle_diff = maximum_angle - minimum_angle  # = 110
 
 def predict(nn:Neural_network,input:list[float]) -> list[float]:
     """
@@ -37,10 +39,13 @@ def predict(nn:Neural_network,input:list[float]) -> list[float]:
     return denormalize(predict)
 
 
-normalize = lambda x : (x + abs(minimum_angle))/angle_diff
-denormalize = lambda x : (x*angle_diff) - abs(minimum_angle)
+# Normalization/denormalization matching input_data.py
+# Training uses: (x + 80) / 110 for normalization
+# So denormalization is: (x * 110) - 80
+normalize = lambda x : (x - minimum_angle) / angle_diff  # (x + 80) / 110
+denormalize = lambda x : (x * angle_diff) + minimum_angle  # (x * 110) - 80
 
-def predict_gait(nn:Neural_network, input:list[float],gait_length:int = 100) -> Gait:
+def predict_gait(nn:Neural_network, input:list[float],gait_length:int = 300) -> Gait:
     """
     Recursively predict entire gait from one input.
     Parameters:
@@ -59,7 +64,7 @@ def predict_gait(nn:Neural_network, input:list[float],gait_length:int = 100) -> 
         gait.append(prediction.reshape(prediction.shape[1]))
     return gait
 
-def load_and_predict(input:list[float],nn_path:str = "nn.pickle",output_file_name:str = "results.txt",gait_length:int = 100):
+def load_and_predict(input:list[float],nn_path:str = "nn.pickle",output_file_name:str = "results.txt",gait_length:int = 300):
     """
     Helper function to easily load nn and output results.
     Parameters:

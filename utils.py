@@ -51,6 +51,18 @@ def modify_default(choice_dict:dict[str,any],defaults:dict):
             return defaults
         elif choice == "save and exit":
             return modified_default
+        elif choice == "optimiser":
+            print(f"modifying:",choice)
+            optimiser_options = {
+                "prompt":"Choose between:",
+                "options":["gradient_descent","adam","exit"]
+            }
+            optimiser_choice = get_choice(optimiser_options)
+            if optimiser_choice == "exit":
+                print("not saved")
+            elif optimiser_choice in ["gradient_descent","adam"]:
+                modified_default[choice] = optimiser_choice
+                print(f"new value saved: {optimiser_choice}")
         else:
             # modify defaults
             print(f"modifying:",choice)

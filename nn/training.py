@@ -12,15 +12,15 @@ try:
     from nn.neural_network import Neural_network
     import nn.input_data as input_data
     from nn.error_funcs import mse
-    import nn.optimiser as optimiser
+    import nn.optimiser as opt
 except ImportError:
     import graph_results as graph_results
     from neural_network import Neural_network
     import input_data as input_data
     from error_funcs import mse
-    import optimiser as optimiser
+    import optimiser as opt
 
-def train_NN(nn:Neural_network,input_list:NDArray[float64],target_list:NDArray[float64],epochs:int, batch_size:int, curses_enabled:bool = False) -> Neural_network:
+def train_NN(nn:Neural_network,input_list:NDArray[float64],target_list:NDArray[float64],epochs:int, batch_size:int, optimiser:str) -> Neural_network:
     """
     Train neural network to predict next pose
     Parameters:
@@ -29,6 +29,7 @@ def train_NN(nn:Neural_network,input_list:NDArray[float64],target_list:NDArray[f
         target_list (NDArray[float64]): Each item in target corresponds to target of input. This should be a list of size 24 joints which would be the next frame in the gait.
         epochs (int): How many epochs to train for.
         batch_size (int): Size of batch per epoch, before performing BP
+        optimiser (str): Optimiser to use for training ("gradient_descent" or "adam")
     Returns:
         Trained neural network
     """
@@ -65,7 +66,10 @@ def train_NN(nn:Neural_network,input_list:NDArray[float64],target_list:NDArray[f
 
             # back propogate and gradient descent step
             nn.back_propagation(mse_der_error)
-            nn = optimiser.gradient_descent(nn)
+            if optimiser == "gradient_descent":
+                nn = opt.gradient_descent(nn)
+            elif optimiser == "adam":
+                nn = opt.adam(nn)
 
         # average loss for epoch
         loss_per_epoch.append(mse_loss/((len(input_list) // batch_size)))

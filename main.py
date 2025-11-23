@@ -2,7 +2,7 @@ import nn.main as nn
 import nn.load_and_predict as predict
 import random
 import sys
-import ga.main as ga
+import main as ga
 from utils import *
 
 
@@ -49,7 +49,7 @@ def main():
                 "nn_path":"./nn.pickle",
                 "output_file_name":"./predict_results.txt",
                 "input":input,
-                "gait_length":100
+                "gait_length":300
             }
             defaults = get_defaults(predict_defaults)
             #TODO: user need to be able to input nn location to load, and number of next predicts e.g. gait length, where to save to
