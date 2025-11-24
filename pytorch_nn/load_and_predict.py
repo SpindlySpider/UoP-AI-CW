@@ -7,10 +7,9 @@ import torch
 # Add parent directory to access ga module
 sys.path.insert(0, str(Path(__file__).parent.parent))
 from ga.custom_types import Gait
-from ga.output import output
 
 from pytorch_nn.torch_model import TorchNet
-from pytorch_nn import serialize
+from pytorch_nn import serialise
 
 # Normalization constants matching input_data.py training normalization
 # Maps [-50, 30] to [0, 1] using (x + 50) / 80
@@ -46,7 +45,7 @@ def predict(model:TorchNet, input:list[float]) -> np.ndarray:
 normalize = lambda x : (np.array(x) - minimum_angle) / angle_diff  # (x + 50) / 80
 denormalize = lambda x : (x * angle_diff) + minimum_angle  # (x * 80) - 50
 
-def predict_gait(model:TorchNet, input:list[float], gait_length:int = 300) -> Gait:
+def predict_gait(model:TorchNet, input:list[float], gait_length:int = 100) -> Gait:
     """
     Recursively predict entire gait from one input.
     Parameters:
@@ -65,32 +64,27 @@ def predict_gait(model:TorchNet, input:list[float], gait_length:int = 300) -> Ga
         gait.append(prediction.reshape(prediction.shape[1]))
     return gait
 
-def load_and_predict(input:list[float], nn_path:str = "nn.pth", output_file_name:str = "predict_results.txt", gait_length:int = 300):
+def load_and_predict(input:list[float], nn_path:str = "nn_pytorch.pth", output_file_name:str = "pytorch_predict_results.txt", gait_length:int = 100):
     """
     Helper function to easily load PyTorch model and output results.
     Parameters:
         input (list[float]): list of 24 floats representing joint angles in degrees
-        nn_path (str): path of neural network file to load. default name is nn.pth
-        output_file_name (str): Name of file to output to, will output to pytorch_nn folder by default
+        nn_path (str): path of neural network file to load. default name is nn_pytorch.pth
+        output_file_name (str): Name of file to output to, will output to root directory
         gait_length (int): length of gait to produce (how many predictions will it do)
     """
-    # Ensure the path is relative to pytorch_nn/ folder if just a filename
-    if not Path(nn_path).is_absolute() and not str(nn_path).startswith('.'):
-        nn_path = str(Path(__file__).parent / nn_path)
-    
-    if not Path(output_file_name).is_absolute() and not str(output_file_name).startswith('.'):
-        output_file_name = str(Path(__file__).parent / output_file_name)
-    
     # load model - instantiate with same architecture as trained
     print(f"predicting next {gait_length} poses")
     model = TorchNet(input_size=24, hidden_sizes=[128, 64, 32], output_size=24, activation='sigmoid')
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     model.to(device)
-    model = serialize.load_torch(model, nn_path)
+    model = serialise.load_torch(model, nn_path)
     
     gait = predict_gait(model, input, gait_length)
-    # save predicted gait to file
-    output(output_file_name, gait)
+    # save predicted gait to file in root directory
+    with open(output_file_name, 'w') as f:
+        for frame in gait:
+            f.write(','.join(map(str, frame)) + '\n')
     print(f"predicted gait saved to {output_file_name}")
 
 

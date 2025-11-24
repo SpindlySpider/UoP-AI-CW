@@ -1,7 +1,7 @@
 import sys
 from pathlib import Path
 
-import nn.serialize as serialize
+from nn.serialise import save
 import nn.input_data as input_data
 from nn.training import *
 from nn.activation_functions import *
@@ -18,7 +18,7 @@ nn_save:str = "nn.pickle"
 # Ratio of data to use for training vs testing
 training_data_ratio:float = 0.95
 # Length of gait data to generate
-data_gait_length: int = 300
+data_gait_length: int = 100
 # Number of gait variations to generate
 gait_variations:int = 700
 
@@ -68,7 +68,7 @@ def main(hidden_layers=hidden_layers,learning_rate=learning_rate,nn_save=nn_save
 
     # train and save resulting NN
     nn = train_NN(nn,train_in,train_out,epochs,training_batch_size, optimiser)
-    serialize.save(nn,nn_save)
+    save(nn,nn_save)
 
     # test trained nn with unseen input data
     test_NN(nn,test_in,test_out)

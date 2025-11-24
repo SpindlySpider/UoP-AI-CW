@@ -2,12 +2,12 @@
 
 ## Overview
 
-This neural network predicts the **next frame of a spider's gait** from its current joint configuration. The spider has 8 legs with 3 joints each (coxa, femur, tibia), totaling **24 degrees of freedom**. 
-**Input/Output**: `[24 joint angles] → Neural Network → [24 predicted joint angles]`
+Our neural network predicts the **next frame of a spider's gait** from its current joint configuration. The spider has 8 legs with 3 joints for each (coxa, femur, tibia), resulting in **24 degrees of freedom**. 
+**Input/Output**: `[24 joint angles] -> Neural Network -> [24 predicted joint angles]`
 
 ### Implementations
 
-Two implementations are provided: **`nn/`** (NumPy from scratch) and **`pytorch_nn/`** (PyTorch framework). The PyTorch version replicates the exact architecture, training procedure, and hyperparameters of the NumPy implementation to enable direct comparison. However, PyTorch runs significantly slower with batch size 1 due to framework overhead—PyTorch is optimized for larger batches where GPU acceleration and vectorization provide substantial speedups, but with single-sample batches, the tensor conversion and computational graph overhead outweighs these benefits compared to NumPy's direct array operations.
+We have provided two implementations: **`nn/`** (NumPy from scratch) and **`pytorch_nn/`** (PyTorch framework). The PyTorch version replicates the architecture, training procedure, and hyperparameters of the NumPy implementation for the purpose of direct comparison of the neural networks. However, PyTorch runs significantly slower, with batch size 1, due to framework overhead, PyTorch is optimised for larger batches where GPU acceleration and vectorisation provide substantial speedups, but with single-sample batches, the tensor conversion and computational graph overhead outweighs these benefits compared to our NumPy's direct array operations.
 
 ---
 
@@ -29,7 +29,7 @@ Output Layer:    24 neurons + Sigmoid activation (predicted joint angles)
 
 | Decision | Rationale |
 |----------|-----------|
-| **3 Hidden Layers [128, 64, 32]** | Progressive dimensionality reduction for hierarchical feature extraction. Balances capacity with training efficiency. |
+| **3 Hidden Layers [128, 64, 32]** | Progressive dimensionality reduction for the extraction of hierarchical features. Balances capacity with training efficiency. |
 | **Input/Output Shape (24, 24)** | Matches spider's 24 joints. Direct frame-to-frame prediction enables recursive gait generation. |
 | **Decreasing Layer Sizes** | Funnels high-dimensional input through compressed representations, learning essential motion patterns. |
 | **Fully-Connected (Dense)** | All joints influence each other - legs coordinate during walking. Dense connections capture inter-joint dependencies. |
@@ -49,7 +49,7 @@ Output Layer:    24 neurons + Sigmoid activation (predicted joint angles)
 
 | Aspect | Sigmoid Benefits | Why Suitable |
 |--------|------------------|--------------|
-| **Output Range** | [0, 1] | Matches normalized joint angle range perfectly |
+| **Output Range** | [0, 1] | Matches normalised joint angle range perfectly |
 | **Smooth Gradients** | Differentiable everywhere | Enables stable backpropagation |
 | **Non-linearity** | S-curve shape | Captures complex motion patterns |
 | **Biological Realism** | Smooth transitions | Mirrors natural joint movement |
@@ -58,7 +58,7 @@ Output Layer:    24 neurons + Sigmoid activation (predicted joint angles)
 
 **Derivative** (for backpropagation): $\sigma'(x) = \sigma(x)(1 - \sigma(x))$
 
-**Trade-off**: Sigmoid can cause vanishing gradients in very deep networks, but at 3 layers this is manageable. The bounded output range [0,1] is ideal for our normalized data.
+**Trade-off: In very deep networks, sigmoid may result in vanishing gradients, but it is manageable at three layers. For our normalised data, the bounded output range [0,1] is optimal.
 
 ---
 
@@ -80,22 +80,22 @@ Where:
 | Reason | Explanation |
 |--------|-------------|
 | **Regression Task** | Predicting continuous values (angles), not classification |
-| **Penalizes Large Errors** | Squared term heavily penalizes predictions far from target |
+| **Penalises Large Errors** | Squared term heavily penalises predictions far from target |
 | **Differentiable** | Smooth gradient enables efficient backpropagation |
 | **Balanced Across Joints** | Treats all 24 joints equally in error calculation |
 
 **Why Not Other Loss Functions?**
-- **MAE (Mean Absolute Error)**: Less sensitive to outliers, but we want to heavily penalize bad predictions
-- **Cross-Entropy**: For classification only, not regression
-- **Huber Loss**: Useful for noisy data, but our synthetic data is clean
+- **MAE (Mean Absolute Error)**: Less sensitive to outliers, but we want to heavily penalise bad predictions
+- **Cross-Entropy**: This is only used for classification and not regression
+- **Huber Loss**: Generally more useful for noisy data, but our synthetic data is clean
 
 ---
 
 ## 4. Training Method & Learning Rate
 
-### Optimizer Comparison: Gradient Descent vs Adam
+### Optimiser Comparison: Gradient Descent vs Adam
 
-Both optimizers were tested extensively. Results below show **actual training runs** on identical data.
+We tested both optimisers and the results below show **actual training runs** on the same data for each.
 
 #### Configuration
 
@@ -105,7 +105,7 @@ Both optimizers were tested extensively. Results below show **actual training ru
 | **Test Data** | 1,365 samples (5% holdout) |
 | **Batch Size** | 1 (SGD - Stochastic Gradient Descent) |
 | **Epochs** | 100 |
-| **Learning Rate** | 0.01 (both optimizers) |
+| **Learning Rate** | 0.01 (both optimisers) |
 
 ---
 
@@ -123,7 +123,7 @@ Both optimizers were tested extensively. Results below show **actual training ru
 
 ![Gradient Descent Loss](doc-images/gradient_decent_default_learning%20_rate.png)
 
-**Analysis**: Smooth exponential decay from epoch 0 to 100. No oscillations or instabilities. The learning rate of 0.01 is well-tuned - loss decreases steadily without overshooting.
+**Analysis**: There is a smooth exponential decay from epoch 0 to 100, no oscillations or instabilities and the learning rate of 0.01 is well-tuned - the loss decreases steadily without overshooting.
 
 **Why It Works**:
 - **Simple updates**: Direct gradient application without momentum
@@ -133,12 +133,12 @@ Both optimizers were tested extensively. Results below show **actual training ru
 
 ---
 
-### Adam Optimizer (!) UNSTABLE (Default Settings)
+### Adam Optimiser (!) UNSTABLE (Default Settings)
 
 **Algorithm**: Adaptive Moment Estimation with momentum
 
 **Results**:
-- **Training Loss**: 0.002011 → 0.001383 (31% reduction)
+- **Training Loss**: 0.002011 -> 0.001383 (31% reduction)
 - **Test Loss**: 0.001342  
 - **Training Time**: 2381.02 seconds (~40 minutes) - **10× slower**
 - **Stability**: Poor - 10+ major loss spikes
@@ -147,7 +147,7 @@ Both optimizers were tested extensively. Results below show **actual training ru
 
 ![Adam Default LR](doc-images/adam_default_learning_rate.png)
 
-**Analysis**: Severe instability with loss spikes at epochs 33, 39, 52, 57, 62-63, 70, 80, 88. One spike reached 0.0053 (4× baseline). Overflow warnings indicate gradient explosions despite clipping.
+**Analysis**: Severe instability with loss spikes at epochs 33, 39, 52, 57, 62-63, 70, 80, 88. One spike reached 0.0053 (4× baseline) and overflow warnings indicate gradient explosions despite clipping.
 
 **Why It Failed**:
 - **LR too high**: 0.01 causes overshooting when combined with momentum
@@ -163,7 +163,7 @@ Both optimizers were tested extensively. Results below show **actual training ru
 
 ![Adam LR 0.001](doc-images/adam_learning_rate_0.001.png)
 
-**Analysis**: Reducing learning rate to 0.001 dramatically improves stability. Still shows minor oscillations but no major spikes. Converges to similar loss as gradient descent but takes longer.
+**Analysis**: Reducing learning rate to 0.001 dramatically improves stability but can still shows minor oscillations but no major spikes. It converges to similar loss as gradient descent but takes longer.
 
 **Conclusion**: Adam **can work** with proper tuning (LR=0.001, possibly ReLU activations), but gradient descent is simpler and more reliable for this problem.
 
@@ -183,7 +183,7 @@ Both optimizers were tested extensively. Results below show **actual training ru
 
 ![Gradient Descent LR 0.001](doc-images/gradient_decent_learning_rate_0.001.png)
 
-**Analysis**: Exceptionally smooth exponential decay with even more gradual convergence than LR=0.01. The lower learning rate produces an extremely stable training curve with zero oscillations. Loss decreases more slowly but very predictably.
+**Analysis**: Exceptionally smooth exponential decay with even more gradual convergence than LR=0.01. The lower learning rate produces an extremely stable training curve with zero oscillations and the loss decreases more slowly but very predictably.
 
 **Why It Works**:
 - **Gentle updates**: Smaller steps prevent any overshooting
@@ -204,7 +204,7 @@ Both optimizers were tested extensively. Results below show **actual training ru
 
 ### Learning Rate Tuning Summary
 
-| Optimizer | LR | Result | Verdict |
+| Optimiser | LR | Result | Verdict |
 |-----------|----|----|---------|
 | **Gradient Descent** | 0.01 | (✓) Stable, fast convergence | **Optimal** |
 | **Gradient Descent** | 0.001 | (✓) Very stable, slower | Conservative alternative |
@@ -215,7 +215,7 @@ Both optimizers were tested extensively. Results below show **actual training ru
 - Best performance (lowest loss: 0.00125)
 - Fastest training (232s)
 - Perfectly stable (zero issues)
-- Simplest to tune (one hyperparameter)
+- Easiest to tune (one hyperparameter)
 - Optimal balance of speed and stability
 
 **Alternative**: Use LR = 0.001 only if extreme stability is required or if experimenting with more complex architectures that might be sensitive to higher learning rates.
@@ -238,22 +238,22 @@ For each layer i (backward):
 **Evidence of Correct Implementation**:
 
 1. **Loss Decreases**: 89% reduction over 100 epochs proves gradients flow correctly
-2. **Smooth Convergence**: No erratic behavior suggests proper gradient calculation
-3. **Generalization**: Test loss (0.00129) close to training loss (0.00125) indicates learned patterns, not memorization
+2. **Smooth Convergence**: No erratic behaviour suggests proper gradient calculation
+3. **Generalisation**: Test loss (0.00129) close to training loss (0.00125) indicates learned patterns and not memorisation
 
 ### Convergence Analysis
 
 | Metric | Value | Indicates |
 |--------|-------|-----------|
-| **Initial Loss** | 0.011322 | Random initialization baseline |
+| **Initial Loss** | 0.011322 | Random initialisation baseline |
 | **Epoch 10 Loss** | 0.001498 | Rapid early learning |
 | **Epoch 50 Loss** | 0.001294 | Continued refinement |
 | **Final Loss** | 0.001249 | Converged to stable minimum |
-| **Test Loss** | 0.001287 | Generalizes well (+3% from training) |
+| **Test Loss** | 0.001287 | Generalises well (+3% from training) |
 
-**Convergence Pattern**: Exponential decay → Logarithmic refinement → Plateau
+**Convergence Pattern**: Exponential decay -> Logarithmic refinement -> Plateau
 
-The network reaches a **reasonable solution** where predicted joint angles closely match targets (average error ~4° per joint after denormalization).
+The network reaches a **reasonable solution** where predicted joint angles closely match targets (average error ~4° per joint after denormalisation).
 
 ---
 
@@ -265,7 +265,7 @@ The network reaches a **reasonable solution** where predicted joint angles close
 
 **Process**:
 1. **Generate Base Gaits**: Use genetic algorithm's sine-based gait generator
-2. **Randomize Parameters**: Create 700 variations by varying:
+2. **Randomise Parameters**: Create 700 variations by varying:
    - Period: [0.1, 1.0] seconds (gait speed)
    - Coxa amplitude: [15°, 23°] (horizontal leg swing)
    - Tibia-femur vertical shift: [40°, 55°] (leg height)
@@ -284,40 +284,40 @@ The network reaches a **reasonable solution** where predicted joint angles close
 - Coxa joints: approximately [-23°, 23°]
 - Tibia/Femur joints: approximately [-75°, -20°]
 
-**Normalization**: Map to [0, 1] using expanded bounds
+**Normalisation**: Map to [0, 1] using expanded bounds
 
 [nn/`input_data.py`](https://github.com/SpindlySpider/UoP-AI-CW/blob/main/nn/input_data.py)
 
 ```python
 # Used in both input_data.py and load_and_predict.py
-normalized = (raw_angle + 80) / 110  # Maps [-80°, 30°] → [0, 1]
+normalised = (raw_angle + 80) / 110  # Maps [-80°, 30°] → [0, 1]
 ```
 
 **Why [-80°, 30°] bounds (110° range)?**
 - Code comment states: "actual range: coxa [-23, 23], tibia-femur approximately [-75, -20]"
 - Expanded to [-80°, 30°] to provide safety margin beyond observed extremes
-- Ensures no joint angle exceeds [0, 1] bounds after normalization
+- Ensures no joint angle exceeds [0, 1] bounds after normalisation
 - Consistent scaling prevents some joints dominating loss
 - Enables stable sigmoid outputs without saturation
 
 ### Output Format
 
-**Network Output**: 24 normalized values in [0, 1]
+**Network Output**: 24 normalised values in [0, 1]
 
-**Denormalization**: Convert back to degrees
+**Denormalisation**: Convert back to degrees
 
 [nn/`load_and_predict.py`](https://github.com/SpindlySpider/UoP-AI-CW/blob/main/nn/load_and_predict.py)
 
 ```python
 # Used in both training and prediction
-raw_angle = (normalized × 110) - 80  # Maps [0, 1] → [-80°, 30°]
+raw_angle = (normalised × 110) - 80  # Maps [0, 1] → [-80°, 30°]
 ```
 
 **Usage**: Predicted frame becomes input for next prediction, enabling recursive gait generation
 
 ---
 
-## 7. Performance Visualization
+## 7. Performance Visualisation
 
 ### Training Loss Curves
 
@@ -371,7 +371,7 @@ raw_angle = (normalized × 110) - 80  # Maps [0, 1] → [-80°, 30°]
 - **Average Error**: ~5.5° per joint across all 24 joints
 - **Pattern Mismatch**: The network predicts smoother, more symmetric motion patterns compared to the GA-generated gait which has higher amplitude variations
 - **Key Difference**: The NN was trained on smoother parametric sine-based gaits, while this GA output (from 277-generation run achieving fitness 1.5035) shows more dynamic asymmetric movement (note joints 1 and 4 with ~7-11° errors)
-- **Generalization**: Despite never seeing this exact GA gait pattern during training, the network produces physically plausible joint angles within valid ranges
+- **Generalisation**: Despite never seeing this exact GA gait pattern during training, the network produces physically plausible joint angles within valid ranges
 
 ---
 
@@ -419,15 +419,15 @@ Frame 10:         [-10.85, -51.20, -51.32]  # NN prediction
 ```
 
 **Analysis**: 
-- **Smooth Transitions**: No sudden jumps between frames, demonstrating stable temporal dynamics
-- **Oscillatory Pattern**: Angles show natural cyclic movement (coxa: 0.51° → 16.05° → -13.51° → -10.85°, demonstrating learned periodic motion)
-- **Physically Plausible**: All angles remain within valid ranges, no boundary saturation
+- **Smooth Transitions**: No sudden jumps between frames which demonstrating stable temporal dynamics
+- **Oscillatory Pattern**: Angles show natural cyclic movement (coxa: 0.51° -> 16.05° -> -13.51° -> -10.85°, demonstrating learned periodic motion)
+- **Physically Possible**: All angles remain within valid ranges and no boundary saturation
 - **Recursive Stability**: Network maintains coherent predictions over 100 frames (full gait in `nn_predict_results.txt`)
 - **Learned Motion**: Shows natural leg movement pattern with coordinated joint oscillations - network learned temporal dependencies from training data
 
-## MATLAB Visualization
+## MATLAB Visualisation
 
-To visualize the gait in **MATLAB**, use the following script:
+To visualise the gait in **MATLAB**, use the following script:
 
 ```matlab
 function plot_spider_pose(angles)
@@ -618,14 +618,14 @@ end
 
 | Choice | Justification | Trade-offs |
 |--------|---------------|------------|
-| **MLP Architecture** | Simple, proven for regression tasks. Fully-connected layers capture joint interdependencies. | Not optimized for sequential data (RNN would be), but works well for frame-to-frame prediction. |
-| **Sigmoid Activation** | Output range [0,1] matches normalized data perfectly. Smooth for continuous motion. | Vanishing gradients in deep networks. Mitigated by keeping network shallow (3 layers). |
-| **MSE Loss** | Standard for regression. Penalizes large errors heavily, encouraging accurate predictions. | Sensitive to outliers. Acceptable since our synthetic data is clean. |
+| **MLP Architecture** | Simple, proven for regression tasks. Fully-connected layers capture joint interdependencies. | Not optimised for sequential data (RNN would be), but works well for frame-to-frame prediction. |
+| **Sigmoid Activation** | Output range [0,1] matches normalised data perfectly. Smooth for continuous motion. | Vanishing gradients in deep networks. Mitigated by keeping network shallow (3 layers). |
+| **MSE Loss** | Standard for regression. Penalises large errors heavily, encouraging accurate predictions. | Sensitive to outliers. Acceptable since our synthetic data is clean. |
 | **Gradient Descent** | Stable, fast, simple to tune. One hyperparameter (LR). | Theoretically slower than adaptive methods, but empirically fastest here. |
 | **LR = 0.01** | Optimal for this problem - fast convergence without overshooting. | Too high for Adam. Problem-specific tuning required. |
-| **Batch Size = 1** | SGD (Stochastic Gradient Descent) updates weights after each sample. Simpler implementation. | Noisier gradients than mini-batch. Acceptable with low LR and stable optimizer. |
+| **Batch Size = 1** | SGD (Stochastic Gradient Descent) updates weights after each sample. Simpler implementation. | Noisier gradients than mini-batch. Acceptable with low LR and stable optimiser. |
 | **Synthetic Data (target_sol)** | Parametric sine-based generator produces optimal gaits instantly. GA alternative is too slow (minutes per gait) and non-deterministic (fitness varies). Fast data generation enables large training sets. | May not capture real spider physics (friction, inertia). Good for learning motion patterns. |
-| **95/5 Split** | Large training set maximizes learning. 5% test sufficient for validation. | Could use cross-validation for more robust estimates, but single split adequate. |
+| **95/5 Split** | Large training set maximises learning. 5% test sufficient for validation. | Could use cross-validation for more robust estimates, but single split adequate. |
 
 ### Understanding of Trade-offs
 
@@ -635,9 +635,9 @@ end
 
 **Activation Functions**:
 - ReLU would prevent vanishing gradients but unbounded outputs require careful output clipping
-- Sigmoid's bounded range is ideal for our normalized data
+- Sigmoid's bounded range is ideal for our normalised data
 
-**Optimizers**:
+**Optimisers**:
 - Adam adapts per-parameter learning rates, theoretically better for complex loss landscapes
 - Gradient descent simpler but requires well-tuned global learning rate
 - **Our finding**: Gradient decent is superior with proper tuning, despite Adam's theoretical advantages
@@ -659,11 +659,11 @@ The PyTorch implementation consolidates functionality by leveraging PyTorch's bu
 
 | NumPy File | PyTorch Equivalent | Reason |
 |------------|-------------------|--------|
-| (✘) `activation_functions.py` | Built-in `nn.Sigmoid()`, `nn.ReLU()`, etc. | PyTorch provides optimized activation functions |
+| (✘) `activation_functions.py` | Built-in `nn.Sigmoid()`, `nn.ReLU()`, etc. | PyTorch provides optimised activation functions |
 | (✘) `error_funcs.py` | Built-in `nn.MSELoss()` | PyTorch's loss functions integrate with autograd |
 | (✘) `neural_network.py` | **`torch_model.py`** | Replaced with `nn.Module` class structure |
-| (✘) `optimiser.py` | Built-in `torch.optim.SGD()` | PyTorch optimizers handle weight updates automatically |
-| (✘) `training.py` | **`torch_training.py`** | Adapted for PyTorch's `loss.backward()` and `optimizer.step()` |
+| (✘) `optimiser.py` | Built-in `torch.optim.SGD()` | PyTorch optimisers handle weight updates automatically |
+| (✘) `training.py` | **`torch_training.py`** | Adapted for PyTorch's `loss.backward()` and `optimiser.step()` |
 | (✘) `load_and_predict.py` | **`load_and_predict.py`** | Adapted for PyTorch model loading and inference |
 | (✓) `input_data.py` | **Shared** from `nn/` | Data generation remains framework-agnostic |
 | (✘) `serialise.py` | **`serialise.py`** (rewritten) | Uses `torch.save()` / `torch.load()` instead of pickle |
@@ -675,17 +675,17 @@ The PyTorch implementation consolidates functionality by leveraging PyTorch's bu
 
 | File | Changes from NumPy Implementation | Specific Code References |
 |------|-----------------------------------|--------------------------|
-| **[`torch_model.py`](https://github.com/SpindlySpider/UoP-AI-CW/blob/main/pytorch_nn/torch_model.py)** | Replaces `neural_network.py`. Uses `nn.Module` with `nn.Linear` layers. Custom weight initialization matches NumPy: `uniform(-0.5, 0.5)` for weights, `-0.5` constant for biases. Sigmoid applied to all layers including output. | **[Lines 37-43](https://github.com/SpindlySpider/UoP-AI-CW/blob/main/pytorch_nn/torch_model.py#L37-L43)**: `nn.Linear()` layers with `nn.Sigmoid()` activations<br>**[Lines 59-64](https://github.com/SpindlySpider/UoP-AI-CW/blob/main/pytorch_nn/torch_model.py#L59-L64)**: `_initialize_weights()` using `nn.init.uniform_(-0.5, 0.5)` for weights and `nn.init.constant_(-0.5)` for biases<br>**[Lines 76-77](https://github.com/SpindlySpider/UoP-AI-CW/blob/main/pytorch_nn/torch_model.py#L76-L77)**: `forward()` method returns `self.net(x)` |
-| **[`torch_training.py`](https://github.com/SpindlySpider/UoP-AI-CW/blob/main/pytorch_nn/torch_training.py)** | Replaces `training.py`. Accepts NumPy arrays directly (no DataLoader). Manual epoch shuffling with `np.random.permutation()`. Manual batch iteration matching original algorithm. Loss computed with `nn.MSELoss()`, gradients via PyTorch autograd instead of manual backpropagation. | **[Line 31](https://github.com/SpindlySpider/UoP-AI-CW/blob/main/pytorch_nn/torch_training.py#L31)**: `nn.MSELoss(reduction='mean')`<br>**[Lines 35-37](https://github.com/SpindlySpider/UoP-AI-CW/blob/main/pytorch_nn/torch_training.py#L35-L37)**: `torch.optim.SGD(momentum=0)` for gradient descent<br>**[Lines 45-47](https://github.com/SpindlySpider/UoP-AI-CW/blob/main/pytorch_nn/torch_training.py#L45-L47)**: `np.random.permutation()` shuffles data each epoch<br>**[Lines 54-56](https://github.com/SpindlySpider/UoP-AI-CW/blob/main/pytorch_nn/torch_training.py#L54-L56)**: Manual batch iteration `range(0, len - batch_size, batch_size)`<br>**[Lines 62-68](https://github.com/SpindlySpider/UoP-AI-CW/blob/main/pytorch_nn/torch_training.py#L62-L68)**: `loss.backward()` and `optimizer.step()` replace manual gradient computation | 
+| **[`torch_model.py`](https://github.com/SpindlySpider/UoP-AI-CW/blob/main/pytorch_nn/torch_model.py)** | Replaces `neural_network.py`. Uses `nn.Module` with `nn.Linear` layers. Custom weight initialisation matches NumPy: `uniform(-0.5, 0.5)` for weights, `-0.5` constant for biases. Sigmoid applied to all layers including output. | **[Lines 37-43](https://github.com/SpindlySpider/UoP-AI-CW/blob/main/pytorch_nn/torch_model.py#L37-L43)**: `nn.Linear()` layers with `nn.Sigmoid()` activations<br>**[Lines 59-64](https://github.com/SpindlySpider/UoP-AI-CW/blob/main/pytorch_nn/torch_model.py#L59-L64)**: `_initialise_weights()` using `nn.init.uniform_(-0.5, 0.5)` for weights and `nn.init.constant_(-0.5)` for biases<br>**[Lines 76-77](https://github.com/SpindlySpider/UoP-AI-CW/blob/main/pytorch_nn/torch_model.py#L76-L77)**: `forward()` method returns `self.net(x)` |
+| **[`torch_training.py`](https://github.com/SpindlySpider/UoP-AI-CW/blob/main/pytorch_nn/torch_training.py)** | Replaces `training.py`. Accepts NumPy arrays directly (no DataLoader). Manual epoch shuffling with `np.random.permutation()`. Manual batch iteration matching original algorithm. Loss computed with `nn.MSELoss()`, gradients via PyTorch autograd instead of manual backpropagation. | **[Line 31](https://github.com/SpindlySpider/UoP-AI-CW/blob/main/pytorch_nn/torch_training.py#L31)**: `nn.MSELoss(reduction='mean')`<br>**[Lines 35-37](https://github.com/SpindlySpider/UoP-AI-CW/blob/main/pytorch_nn/torch_training.py#L35-L37)**: `torch.optim.SGD(momentum=0)` for gradient descent<br>**[Lines 45-47](https://github.com/SpindlySpider/UoP-AI-CW/blob/main/pytorch_nn/torch_training.py#L45-L47)**: `np.random.permutation()` shuffles data each epoch<br>**[Lines 54-56](https://github.com/SpindlySpider/UoP-AI-CW/blob/main/pytorch_nn/torch_training.py#L54-L56)**: Manual batch iteration `range(0, len - batch_size, batch_size)`<br>**[Lines 62-68](https://github.com/SpindlySpider/UoP-AI-CW/blob/main/pytorch_nn/torch_training.py#L62-L68)**: `loss.backward()` and `optimiser.step()` replace manual gradient computation | 
 | **[`main.py`](https://github.com/SpindlySpider/UoP-AI-CW/blob/main/pytorch_nn/main.py)** | Identical structure and parameters to `nn/main.py`. Uses `sys.path.insert()` to access shared `input_data.py` from `nn/`. | **[Line 6](https://github.com/SpindlySpider/UoP-AI-CW/blob/main/pytorch_nn/main.py#L6)**: `sys.path.insert()` to access parent directory<br>**[Line 8](https://github.com/SpindlySpider/UoP-AI-CW/blob/main/pytorch_nn/main.py#L8)**: `import nn.input_data`<br>**[Line 51](https://github.com/SpindlySpider/UoP-AI-CW/blob/main/pytorch_nn/main.py#L51)**: `TorchNet(input_size=24, hidden_sizes=hidden_layers, output_size=24, activation='sigmoid')`<br>**[Lines 60-61](https://github.com/SpindlySpider/UoP-AI-CW/blob/main/pytorch_nn/main.py#L60-61)**: `train_torch()` and `save_torch()` match original workflow |
 | **[`serialise.py`](https://github.com/SpindlySpider/UoP-AI-CW/blob/main/pytorch_nn/serialise.py)** | Uses `torch.save()` and `torch.load()` for model persistence instead of Python's `pickle`. | **[Line 18](https://github.com/SpindlySpider/UoP-AI-CW/blob/main/pytorch_nn/serialise.py#L18)**: `torch.save(model.state_dict(), out)`<br>**[Line 30](https://github.com/SpindlySpider/UoP-AI-CW/blob/main/pytorch_nn/serialise.py#L30)**: `model.load_state_dict(torch.load(file_name, weights_only=True))` |
 
 ### Key Implementation Differences 
 
 1. **Forward Pass**: PyTorch's computational graph automatically handles forward propagation through `nn.Linear` layers
-2. **Backward Pass**: `loss.backward()` replaces manual gradient computation—PyTorch autograd calculates all gradients automatically
-3. **Weight Updates**: `optimizer.step()` replaces manual weight updates (`w -= learning_rate * dw`)
-4. **Optimizer**: `torch.optim.SGD(momentum=0)` configured to match vanilla gradient descent exactly
+2. **Backward Pass**: `loss.backward()` replaces manual gradient computation and PyTorch autograd calculates all gradients automatically
+3. **Weight Updates**: `optimiser.step()` replaces manual weight updates (`w -= learning_rate * dw`)
+4. **Optimiser**: `torch.optim.SGD(momentum=0)` configured to match vanilla gradient descent exactly
 
 ### Performance Characteristics
 
@@ -695,8 +695,8 @@ With **batch_size=1**, PyTorch is significantly slower than the NumPy implementa
 - **Framework abstraction**: Multiple layers of PyTorch abstraction versus direct NumPy operations
 
 PyTorch excels with **larger batch sizes** (32+) where:
-- GPU parallelization amortizes overhead
-- Vectorized operations dominate computation time
+- GPU parallelisation amortises overhead
+- Vectorised operations dominate computation time
 - Autograd benefits from batched gradient computation
 
 For this specific use case (batch_size=1, CPU-only, small network), NumPy's direct implementation is more efficient. However, the PyTorch version demonstrates framework portability and provides a foundation for GPU acceleration if batch sizes increase.
@@ -744,7 +744,7 @@ Using the **same initial pose** (from GA-generated gait), both implementations p
 - **Excellent Agreement**: Predictions differ by <0.25° across all joints and time steps
 - **Consistent Patterns**: Both implementations generate smooth, oscillatory gait sequences
 - **Numerical Precision**: Minor differences (<0.2°) due to floating-point arithmetic variations between NumPy and PyTorch
-- **Validation**: The PyTorch implementation successfully replicates the NumPy version's behavior
+- **Validation**: The PyTorch implementation successfully replicates the NumPy version's behaviour
 
 
 
@@ -754,12 +754,12 @@ Using the **same initial pose** (from GA-generated gait), both implementations p
 
 This neural network successfully learns to predict spider gait sequences through:
 
-1. **Well-designed architecture** (3-layer MLP with 128→64→32 neurons)
-2. **Appropriate activation** (sigmoid for bounded outputs)
-3. **Suitable loss function** (MSE for regression)
-4. **Stable training method** (gradient descent, LR=0.01)
-5. **Correct backpropagation** (89% loss reduction, smooth convergence)
-6. **Thoughtful data handling** (normalized inputs, synthetic training data)
+1. **Well-designed architecture** - which uses 3-layer MLP with 128→64→32 neurons
+2. **Suitable activation** - sigmoid for bounded outputs
+3. **Suitable loss function** - MSE for regression)
+4. **Stable training method** - gradient descent, LR=0.01
+5. **Suitable backpropagation** - 89% loss reduction, smooth convergence
+6. **Data handling processes** - normalised inputs, synthetic training data
 
-Both **NumPy** and **PyTorch** implementations achieve identical results, validating the correctness of the from-scratch NumPy implementation while demonstrating modern framework integration.
+Both **NumPy** and **PyTorch** implementations achieve very similar results, giving more validity to out neural network created from scratch, while demonstrating modern framework integration.
 

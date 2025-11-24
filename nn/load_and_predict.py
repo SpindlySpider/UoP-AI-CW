@@ -4,7 +4,6 @@ import random as rd
 import numpy as np
 
 from ga.custom_types import Gait
-from ga.output import output
 
 from nn.neural_network import Neural_network
 import nn.serialize as serialize
@@ -54,28 +53,23 @@ def predict_gait(nn:Neural_network, input:list[float],gait_length:int = 300) -> 
         gait.append(prediction.reshape(prediction.shape[1]))
     return gait
 
-def load_and_predict(input:list[float],nn_path:str = "nn.pickle",output_file_name:str = "predict_results.txt",gait_length:int = 300):
+def load_and_predict(input:list[float],nn_path:str = "nn.pickle",output_file_name:str = "results.txt",gait_length:int = 300):
     """
     Helper function to easily load nn and output results.
     Parameters:
         nn_path (str): path of neural network file to load. default name is nn.pickle
         input (list[float]): list of 24 floats representing joint angles in degrees
-        output_file_name (str): Name of file to output to, will output to nn_without_pytorch folder by default
+        output_file_name (str): Name of file to output to, will output to CWD
         gait_length (int): length of gait to produce (how many predictions will it do)
     """
-    # Ensure the path is relative to nn_without_pytorch/ folder if just a filename
-    if not Path(nn_path).is_absolute() and not str(nn_path).startswith('.'):
-        nn_path = str(Path(__file__).parent / nn_path)
-    
-    if not Path(output_file_name).is_absolute() and not str(output_file_name).startswith('.'):
-        output_file_name = str(Path(__file__).parent / output_file_name)
-    
     # load nn
     print(f"predicting next {gait_length} poses")
     nn = serialize.load(nn_path)
     gait = predict_gait(nn,input,gait_length)
-    # save predicted gait to file
-    output(output_file_name,gait)
+    # save predicted gait to file in root directory
+    with open(output_file_name, 'w') as f:
+        for frame in gait:
+            f.write(','.join(map(str, frame)) + '\n')
     print(f"predicted gait saved to {output_file_name}")
 
 

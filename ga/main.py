@@ -23,9 +23,9 @@ gait_length:int = 50
 population_size:int = 3000
 mutation_rate:float = 0.025
 crossover_rate:float = 0.7
-output_file:str = "results.txt"
+output_file:str = "ga_results.txt"
 # define fitness target score
-fitness_score_target:float = 1.0
+fitness_score_target:float = 1.5
 
 defaults = {
     "gait_length":gait_length,

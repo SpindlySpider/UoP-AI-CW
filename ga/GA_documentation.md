@@ -620,7 +620,7 @@ Execute the main program to start the Genetic Algorithm and evolve gait patterns
 ```bash
 python ga/main.py
 ```
-The code generates a results.txt file that contains a 300x24 matrix that can be imported into matlab.
+The code generates a ga_results.txt file that contains a 300x24 matrix that can be imported into matlab.
 ---
 
 
@@ -879,7 +879,7 @@ function v_rot = rotate_vector(v, axis, angle)
 end
 
 
-v = readmatrix('results.txt');
+v = readmatrix('ga_results.txt');
 A = deg2rad(v);
 
 for idx = 1:size(v,1)
@@ -896,7 +896,7 @@ gait length: 300
 population size: 3000
 mutation rate: 0.025
 crossover rate: 0.7
-output file: results.txt
+output file: ga_results.txt
 fitness score target: 1.5
 ```
 
@@ -931,12 +931,12 @@ generation: 277 | best fitness: 1.5035 ✓ (Target reached)
 - **Final convergence**: Generations 250-277 refined the gait from 1.38 to 1.50
 - **Total runtime**: 277 generations to achieve optimal gait pattern exceeding target threshold
 
-The resulting gait data is saved to `results.txt` as a **300 × 24 matrix** (300 time steps, 24 joint angles), ready for visualization in MATLAB using the code provided below.
+The resulting gait data is saved to `ga_results.txt` as a **300 × 24 matrix** (300 time steps, 24 joint angles), ready for visualization in MATLAB using the code provided below.
 
 ---
 
 **Explanation:**
-- `readmatrix()` loads the gait data from `results.txt`.  
+- `readmatrix()` loads the gait data from `ga_results.txt`.  
 - `deg2rad()` converts joint angles to radians.  
 - The loop visualizes each time step, animating the spider’s movement.
 
