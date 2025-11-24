@@ -109,38 +109,36 @@ We tested both optimisers and the results below show **actual training runs** on
 
 ---
 
-### Gradient Descent (✓) RECOMMENDED
+### Stochastic Gradient Descent
 
-**Algorithm**: $W_{new} = W_{old} - \alpha \nabla L$
+**Algorithm**: 
+$$W_{new} = W_{old} - \eta {\frac{\delta{E}}{\delta{W_{old}}}} $$
+where:
+$$\eta$$ - is learning rate
+$$\eta {\frac{\delta{E}}{\delta{W_{old}}}}$$ - is partial derivitive is the gradient of error with respect to $$W_{old}$$
 
 **Results**:
 - **Training Loss**: 0.011322 → 0.001249 (89% reduction)
 - **Test Loss**: 0.001287
-- **Training Time**: 231.91 seconds (~4 minutes)
 - **Stability**: Perfect - zero spikes
 
 **Training Progress**:
 
 ![Gradient Descent Loss](doc-images/gradient_decent_default_learning%20_rate.png)
 
-**Analysis**: There is a smooth exponential decay from epoch 0 to 100, no oscillations or instabilities and the learning rate of 0.01 is well-tuned - the loss decreases steadily without overshooting.
+**Analysis**:
 
-**Why It Works**:
-- **Simple updates**: Direct gradient application without momentum
-- **Stable convergence**: Predictable, deterministic weight changes
-- **Low computational overhead**: Fast per-epoch execution
-- **Suitable LR**: 0.01 allows steady progress without divergence
+From the training progress we can see an unusually smooth curve for a model using stochastic gradient descent. Typically we would expect SGD to produce a 'noisy' graph with frequent oscillations. However the smoothness here implies that out learning rate is low enough to keep the descent steady. However, it is also possible that the noise is too small too see, compared to how much the total loss has dropped.
 
 ---
 
-### Adam Optimiser (!) UNSTABLE (Default Settings)
+### Adam Optimiser
 
 **Algorithm**: Adaptive Moment Estimation with momentum
 
 **Results**:
 - **Training Loss**: 0.002011 -> 0.001383 (31% reduction)
 - **Test Loss**: 0.001342  
-- **Training Time**: 2381.02 seconds (~40 minutes) - **10× slower**
 - **Stability**: Poor - 10+ major loss spikes
 
 **Training Progress**:
@@ -149,29 +147,32 @@ We tested both optimisers and the results below show **actual training runs** on
 
 **Analysis**: Severe instability with loss spikes at epochs 33, 39, 52, 57, 62-63, 70, 80, 88. One spike reached 0.0053 (4× baseline) and overflow warnings indicate gradient explosions despite clipping.
 
-**Why It Failed**:
-- **LR too high**: 0.01 causes overshooting when combined with momentum
-- **Sigmoid saturation**: Adaptive rates amplified saturation at boundaries
-- **Gradient explosions**: Default clip value (1.0) insufficient
-- **Degenerate predictions**: Network outputs freeze at -50° or 30° (boundaries)
+This could be because the learning rate was too high for ADAM, we used a learning rate of `0.01` which could could a overshoot when combined with the momentum.
+Additionally another issue we could be facing is our activation functions becoming saturated, leading to results close to the boundaries (0 and 1).
 
 ---
 
-### Adam with Tuned Learning Rate (✓) IMPROVED
+### Adam with Modified Learning Rate
 
 **Results with LR = 0.001**:
 
 ![Adam LR 0.001](doc-images/adam_learning_rate_0.001.png)
 
-**Analysis**: Reducing learning rate to 0.001 dramatically improves stability but can still shows minor oscillations but no major spikes. It converges to similar loss as gradient descent but takes longer.
+**Analysis**:
+Reducing learning rate to 0.001 dramatically improves stability but can still shows minor oscillations but no major spikes. It converges to similar loss as gradient descent but takes longer.
 
-**Conclusion**: Adam **can work** with proper tuning (LR=0.001, possibly ReLU activations), but gradient descent is simpler and more reliable for this problem.
+We can conclude that ADAM can work with a lower learning rate (e.g. `0.001`) and possibly different activation functions such as reLU. However gradient descent is much more reliable in this scenario.
 
 ---
 
-### Gradient Descent with LR = 0.001 (✓) CONSERVATIVE ALTERNATIVE
+### Stochastic Gradient Descent with Modified learning rate
 
-**Algorithm**: $W_{new} = W_{old} - 0.001 \times \nabla L$ (lower learning rate)
+**Results with LR = 0.001**:
+
+$$W_{new} = W_{old} - \eta {\frac{\delta{E}}{\delta{W_{old}}}} $$
+where:
+$$\eta$$ - is learning rate of `0.001`
+$$\eta {\frac{\delta{E}}{\delta{W_{old}}}}$$ - is partial derivitive is the gradient of error with respect to $$W_{old}$$
 
 **Results**:
 - **Training Loss**: 0.015 → 0.0015 (90% reduction)
@@ -183,7 +184,8 @@ We tested both optimisers and the results below show **actual training runs** on
 
 ![Gradient Descent LR 0.001](doc-images/gradient_decent_learning_rate_0.001.png)
 
-**Analysis**: Exceptionally smooth exponential decay with even more gradual convergence than LR=0.01. The lower learning rate produces an extremely stable training curve with zero oscillations and the loss decreases more slowly but very predictably.
+**Analysis**:
+Exceptionally smooth exponential decay with even more gradual convergence than LR=0.01. The lower learning rate produces an extremely stable training curve with zero oscillations and the loss decreases more slowly but very predictably.
 
 **Why It Works**:
 - **Gentle updates**: Smaller steps prevent any overshooting
