@@ -212,6 +212,7 @@ nn.main(**defaults)
     "gait_variations": int,          # e.g., 700
     "training_batch_size": int,      # e.g., 1
     "epochs": int                    # e.g., 100
+    "optimiser": str                 # e.g., adam
 }
 ```
 
