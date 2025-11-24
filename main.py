@@ -27,7 +27,7 @@ def main():
         # Choose between PyTorch and custom implementation
         options = {
             "prompt":"Which neural network implementation?:",
-            "options":["custom (numpy)","pytorch","exit"]
+            "options":["from scratch implementation","pytorch","exit"]
         }
         nn_choice = get_choice(options)
         if nn_choice == "exit":

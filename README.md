@@ -18,7 +18,7 @@ The **main.py** file serves as the central command-line interface (CLI) for the 
 
 1. **Genetic Algorithm (GA)** - Evolves optimal gait patterns through evolutionary optimization
 2. **Neural Network (NN)** - Learns to predict sequential gait frames from training data
-   - **Custom NumPy Implementation** - Pure Python implementation for educational purposes
+   - **From Scratch Implementation** - Pure Python implementation for educational purposes
    - **PyTorch Implementation** - GPU-accelerated deep learning framework for production use
 
 This modular CLI design allows users to seamlessly switch between evolutionary optimization and machine learning approaches, or use them in combination for comprehensive gait generation and analysis.
@@ -61,7 +61,7 @@ Main Menu
 ├── Genetic Algorithm
 ├── Neural Network
 │   ├── Implementation Choice
-│   │   ├── Custom (NumPy)
+│   │   ├── From Scratch Implementation
 │   │   └── PyTorch
 │   ├── Train
 │   └── Predict
@@ -253,13 +253,13 @@ predict.load_and_predict(**defaults)
 
 The system provides **two neural network implementations** with identical interfaces but different underlying technologies:
 
-### Custom NumPy Implementation (`nn_without_pytorch/`)
+### From Scratch Implementation (`nn_without_pytorch/`)
 
 **Purpose**: Educational reference and lightweight deployment
 
 **Key Features**:
 - Pure Python implementation using NumPy
-- Custom backpropagation and gradient descent
+- From scratch backpropagation and gradient descent
 - No external deep learning frameworks required
 - Ideal for understanding neural network mechanics
 
@@ -284,7 +284,7 @@ The system provides **two neural network implementations** with identical interf
 
 ### Implementation Comparison
 
-| Feature | Custom NumPy | PyTorch |
+| Feature | From Scratch | PyTorch |
 |---------|--------------|---------|
 | **Speed** | Moderate (CPU only) | Fast (GPU/CPU) |
 | **Dependencies** | NumPy only | PyTorch framework |
@@ -317,7 +317,7 @@ load_and_predict(
 
 ### Choosing an Implementation
 
-**Use Custom NumPy when**:
+**Use From Scratch Implementation when**:
 - Learning about neural network internals
 - No GPU available and dataset is small
 - Avoiding heavy framework dependencies
