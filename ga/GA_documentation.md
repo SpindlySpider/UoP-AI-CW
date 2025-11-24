@@ -1,10 +1,10 @@
-# Chromosome Optimization using Genetic Algorithms
+# Chromosome Optimisation using Genetic Algorithms
 
 ## Table of Contents
 1. [Glossary](#glossary)
 2. [Overview](#overview)
 3. [Solution and Approach](#solution-and-approach)
-   - [Initialization](#initialization)
+   - [Initialisation](#initialisation)
    - [Fitness Function Design](#fitness-function-design)
    - [Selection](#selection)
    - [Reproduction](#reproduction)
@@ -21,7 +21,7 @@
 ## Glossary
 | Term | Definition |
 |------|-------------|
-| **GA (Genetic Algorithm)** | A search heuristic inspired by natural selection, used to optimize solutions. |
+| **GA (Genetic Algorithm)** | A search heuristic inspired by natural selection, used to optimise solutions. |
 | **Gait** | A pattern of limb movement during locomotion. |
 | **Chromosome** | A tuple encapsulating sine wave parameters. |
 | **Gene** | An individual parameter within a chromosome that governs a specific aspect of joint motion.
@@ -49,7 +49,7 @@ The GA explores the space of possible walking patterns using the following compo
 
 | Stage | Description |
 |--------|-------------|
-| **Initialization** | Randomly generates an initial population of gait candidates. |
+| **Initialisation** | Randomly generates an initial population of gait candidates. |
 | **Selection** | Chooses fitter individuals based on performance metrics (stability, speed, efficiency). |
 | **Reproduction** | Creates new individuals via crossover and mutation. |
 | **Termination** | Ends when improvements plateau or a maximum generation count is reached. |
@@ -65,15 +65,15 @@ The final objective is a **stable, coordinated, and efficient gait**.
 
 ## Solution and Approach
 
-### Initialization
+### Initialisation
 
 Each **individual** in the population represents a complete gait.  
-Each chromosome consists of  5 parameters (amp,p,offset,e.t.c.) controlling the oscillation of a joint. Per limb there is 3 joints. Finally there are 2 unique limbs per side on this spider. So in total **5x3x2x2 = 60 genes**
+Each chromosome consists of five parameters (amp, p, offset, etc.) that control the oscillation of a joint. For each limb, there are 3 joints. Finally, there are 2 unique limbs per side on this spider. So in total **5x3x2x2 = 60 genes**
 
 Each side (left and right) has two unique sine waves per joint, for a total of six. The pattern on each side follows an A, B, A, B sequence, meaning the front legs follow the 3rd legs and the 2nd legs follow the rear legs.
 
 #### Gene Encoding
-Each joint’s motion is represented by a **sine-wave function** characterized by five parameters:
+Each joint’s motion is represented by a **sine-wave function** characterised by five parameters:
 
 | Parameter | Description | Range | Design Rationale |
 |------------|-------------|--------|------------------|
@@ -87,10 +87,10 @@ The wide range of possible values for these parameters creates a high-dimensiona
 
 #### Representation Rationale
 - **Sine-wave encoding** produces smooth, periodic motion aligned with natural walking.
-- Ensures **continuous, non-abrupt movement**.
-- Compact encoding enables **faster optimization**.
+- Ensures **continuous, non-jerky movement**.
+- Compact encoding enables **faster optimisation**.
 
-**Trade-off:** Restricts solutions to periodic gaits; may exclude more complex or irregular movements.
+**Trade-off:** Restricts solutions to periodic gaits; possibly too restrictive for more complicated or irregular movements 
 
 ---
 
@@ -139,7 +139,7 @@ import target_sol
 
 class Fitness:
     """
-    A class to evaluate the fitness of an individual gait using a target gait as reference.
+    A class to evaluate the fitness of an individual gait using a target gait as a reference.
 
     The fitness is calculated based on the Mean Squared Error (MSE) between the generated
     gait (from the individual's chromosomes) and a target gait solution. Lower error means
@@ -152,13 +152,13 @@ class Fitness:
 
     def __init__(self, gait_length: int):
         """
-        Initialize the fitness evaluator.
+        Initialise the fitness evaluator.
 
         Parameters:
             gait_length (int): The number of time steps in the gait cycle.
 
         Notes:
-            The target gait is generated once during initialization to avoid recomputation.
+            The target gait is generated once during initialisation to avoid recomputation.
         """
         self.target_individual = target_sol.random_sol(gait_length)
         self.gait_length = gait_length
@@ -168,7 +168,7 @@ class Fitness:
         Compute the fitness of a given individual by comparing it to the target gait.
 
         The comparison uses Mean Squared Error (MSE) for each joint (coxa, femur, tibia),
-        normalized and inverted so that higher fitness corresponds to lower error.
+        normalised and inverted so that higher fitness corresponds to lower error.
 
         Parameters:
             individual (Individual): The individual whose gait is to be evaluated.
@@ -203,7 +203,7 @@ class Fitness:
                 err = (target_val - pred_val) ** 2
                 fit_dict[joint] += err
 
-        # Normalize errors and invert (1 / (1 + MSE)) for fitness
+        # Normalise errors and invert (1 / (1 + MSE)) for fitness
         for joint in joint_names:
             j = fit_dict[joint]
             j = (j / (4 * self.gait_length))  # Average per joint
@@ -262,8 +262,8 @@ def gen_gait(individual: Individual, gait_length: int) -> Gait:
 
 ### Selection Methods
 
-Both **tournament selection** and **roulette wheel selection** were implemented.  
-**Tournament selection** was ultimately chosen due to its simplicity and the precise control it offers over selection pressure, making it a reliable and efficient method for guiding the evolutionary process.
+Initially, both **tournament selection** and **roulette wheel selection** were implemented.  
+It was ultimately decided that **Tournament selection** would be used due to its simplicity and the precise control it offers over selection pressure, making it a reliable and efficient method for guiding the evolutionary process.
 
 
 #### Method
@@ -278,7 +278,7 @@ Both **tournament selection** and **roulette wheel selection** were implemented.
 | Adjustable subset size | Controls balance between pressure and diversity |
 
 ---
-
+#### Code
 [ga/`selection.py`](https://github.com/SpindlySpider/UoP-AI-CW/blob/main/ga/selection.py)
 
 ```python
@@ -458,7 +458,7 @@ def mutate(population:Population,mut_rate:float) -> Population:
 
 The algorithm stops when **either** of the following is true:
 
-- The **best individual’s fitness** is **≥ 1.500**. In theory, the maximum fitness score produced by the fitness function is 3.0. However, across all test runs the highest score achieved was 1.8, and obtaining a higher score would require additional generations and greater computational resources. A fitness score of 1.5 was found to correspond to a high-quality gait, with higher scores providing only negligible improvements. Consequently, a fitness score of 1.5 was chosen as the stopping criterion for the genetic algorithm.
+- The **best individual’s fitness** is **≥ 1.500**. Theoretically, the fitness function could produce a maximum fitness score of 3.0 however, in practice, all test runs appeared to be getting to a maximum of 1.8, therefore indicating that achieving a higher fitness score would require more generations and more computational power. A fitness score of 1.5 was found to correspond to a high-quality gait, with higher scores providing only negligible improvements. So, a fitness score of 1.5 was chosen as the stopping criterion for the genetic algorithm.
 - The **best individual’s fitness** (rounded to **three decimal places**) remains unchanged for **100 consecutive generations**.
 
 ---
