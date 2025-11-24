@@ -38,12 +38,11 @@ def predict(model:TorchNet, input:list[float]) -> np.ndarray:
     
     return denormalize(prediction)
 
-
 # Normalization/denormalization matching input_data.py
 # Training uses: (x + 50) / 80 for normalization
 # So denormalization is: (x * 80) - 50
-normalize = lambda x : (np.array(x) - minimum_angle) / angle_diff  # (x + 50) / 80
-denormalize = lambda x : (x * angle_diff) + minimum_angle  # (x * 80) - 50
+normalize = lambda x : (x + abs(minimum_angle))/angle_diff
+denormalize = lambda x : (x*angle_diff) - abs(minimum_angle)
 
 def predict_gait(model:TorchNet, input:list[float], gait_length:int = 100) -> Gait:
     """
