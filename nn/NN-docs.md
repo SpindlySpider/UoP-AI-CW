@@ -185,42 +185,26 @@ $$\eta {\frac{\delta{E}}{\delta{W_{old}}}}$$ - is partial derivitive is the grad
 ![Gradient Descent LR 0.001](doc-images/gradient_decent_learning_rate_0.001.png)
 
 **Analysis**:
-Exceptionally smooth exponential decay with even more gradual convergence than LR=0.01. The lower learning rate produces an extremely stable training curve with zero oscillations and the loss decreases more slowly but very predictably.
+Exceptionally smooth exponential decay with even more gradual convergence than LR=0.01. The lower learning rate produces an extremely stable training curve with zero visible oscillations and the loss decreases more slowly but very predictably.
 
-**Why It Works**:
-- **Gentle updates**: Smaller steps prevent any overshooting
-- **Maximum stability**: Ultra-conservative approach eliminates all risk
-- **Fine control**: Precise weight adjustments near optimal point
-- **Safe choice**: Guaranteed stability for sensitive problems
-
-**When to Use 0.001**:
-- Initial experiments show instability at higher rates
-- Fine-tuning a pre-trained network
-- Working with sensitive or poorly-conditioned problems
-- Maximum stability is priority over training speed
-- Transfer learning scenarios
-
-**Trade-off**: While more conservative and stable, the slower convergence means 2-3× more epochs needed to reach the same loss as LR=0.01. Since 0.01 is already perfectly stable for this problem, 0.001 provides minimal benefit at significant time cost.
+The trade off for the lower learning rate is that, while more stable and conservative, the NN learns significantly slower. We can compare this to the SGD with `0.01` LR and see that they a similar minimum error, however with a higher learning rate it converges on that point much faster (>20 epochs).
 
 ---
 
-### Learning Rate Tuning Summary
+### Learning Rate Modification Summary
 
 | Optimiser | LR | Result | Verdict |
 |-----------|----|----|---------|
-| **Gradient Descent** | 0.01 | (✓) Stable, fast convergence | **Optimal** |
-| **Gradient Descent** | 0.001 | (✓) Very stable, slower | Conservative alternative |
-| **Adam** | 0.01 | (✘) Unstable, unusable | Too high |
-| **Adam** | 0.001 | (✓) Stable, good convergence | Workable with tuning |
+| **Gradient Descent** | 0.01 | Stable with fast convergence | Strong solution |
+| **Gradient Descent** | 0.001 | Very stable, slower convergence | Acceptable performance |
+| **Adam** | 0.01 | Unstable loss minimization unusable | Too inconstant to use with high LR |
+| **Adam** | 0.001 | Stable with good convergence | Useable |
 
-**Final Choice**: **Gradient Descent with LR = 0.01**
-- Best performance (lowest loss: 0.00125)
-- Fastest training (232s)
-- Perfectly stable (zero issues)
-- Easiest to tune (one hyperparameter)
-- Optimal balance of speed and stability
-
-**Alternative**: Use LR = 0.001 only if extreme stability is required or if experimenting with more complex architectures that might be sensitive to higher learning rates.
+Because of this we decided to use stochastic gradient descent with a learning rate of `0.01`, for the following reasons:
+- Best observed performance of `0.00125`.
+- Stable loss minimization.
+- computationally simple.
+- Optimal balance of speed and stability.
 
 ---
 
