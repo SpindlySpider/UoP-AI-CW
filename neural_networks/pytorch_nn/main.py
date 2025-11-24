@@ -3,13 +3,11 @@ from pathlib import Path
 
 # Add parent directory to access nn_without_lib
 sys.path.insert(0, str(Path(__file__).parent.parent))
-sys.path.insert(0, str(Path(__file__).parent.parent / 'nn_without_lib'))
 
-import input_data as input_data
+import nn_without_lib.input_data as input_data
 from torch_model import TorchNet
 from torch_training import train_torch, test_torch
-from serialize import save_torch
-
+from serialize import save_torch  
 
 # Define number of layers and neurons per layer
 hidden_layers: list[int] = [128, 64, 32]

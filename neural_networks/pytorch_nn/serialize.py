@@ -8,7 +8,6 @@ import torch
 # Add parent directory to path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from pytorch_nn.torch_model import TorchNet
 
 
 def save_torch(model: torch.nn.Module, out: str = "nn.pth"):

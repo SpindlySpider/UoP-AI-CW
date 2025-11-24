@@ -34,7 +34,7 @@ Output Layer:    24 neurons + Sigmoid activation (predicted joint angles)
 | **Decreasing Layer Sizes** | Funnels high-dimensional input through compressed representations, learning essential motion patterns. |
 | **Fully-Connected (Dense)** | All joints influence each other - legs coordinate during walking. Dense connections capture inter-joint dependencies. |
 
-**Why This Depth?**
+**Number of layer**
 - **Too shallow (1-2 layers)**: Cannot learn complex temporal patterns
 - **Too deep (5+ layers)**: Overfits small dataset, slower training, vanishing gradients
 - **3 layers**: Optimal for this problem's complexity
