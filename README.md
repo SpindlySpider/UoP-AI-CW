@@ -269,6 +269,7 @@ predict.load_and_predict(**defaults)
 | `gait_variations` | int | Number of training examples | 700 |
 | `training_batch_size` | int | Samples per training batch | 1 |
 | `epochs` | int | Training iterations | 100 |
+ `epochs` | int | Training iterations | "gradient_decent" |
 
 ### Neural Network Prediction Configuration
 
@@ -277,7 +278,7 @@ predict.load_and_predict(**defaults)
 | `nn_path` | str | Path to trained model | "./nn.pickle" |
 | `output_file_name` | str | Prediction results file | "./predict_results.txt" |
 | `input` | list[float] | Initial 24 joint angles | (random/manual) |
-| `gait_length` | int | Number of frames to predict | 100 |
+| `gait_length` | int | Number of frames to predict | 300 |
 
 ---
 
@@ -428,4 +429,4 @@ The `main.py` CLI provides a **unified interface** for spider gait generation us
 - **Genetic Algorithm**: Evolutionary optimization for discovering optimal gait patterns
 - **Neural Network**: Supervised learning for rapid gait prediction
 
-With its **interactive menu system**, **flexible configuration**, and **robust error handling**, the CLI enables both researchers and practitioners to efficiently generate, train, and predict spider locomotion patterns.
+With its **interactive menu system**, **flexible configuration**, and **robust error handling**, the CLI enables both researchers and practitioners to efficiently generate, train, and predict spider gait patterns.
