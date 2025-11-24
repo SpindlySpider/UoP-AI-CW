@@ -6,7 +6,7 @@ import ga.fitness as fitness
 def output(filename:str,solution:Individual):
     '''
     Outputs the given solution to a file in a comma-separated format which can be read by MATLAB.
-    Args:
+    Parameters:
         filename (str): The name of the file to output the solution to.
         solution (Individual): The solution to be outputted.
     '''
@@ -22,7 +22,7 @@ def output(filename:str,solution:Individual):
 def output_gait(filename:str,individual:Individual,gait_length:int):
     '''
     Outputs the gait generated from the given individual to a file in a comma-separated format which can be read by MATLAB.
-    Args:
+    Parameters:
         filename (str): The name of the file to output the gait to.
         individual (Individual): The individual to generate the gait from.
         gait_length (int): The length of the gait.

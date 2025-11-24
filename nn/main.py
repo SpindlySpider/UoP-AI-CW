@@ -44,7 +44,7 @@ defaults = {
 
 def main(hidden_layers=hidden_layers,learning_rate=learning_rate,nn_save=nn_save,training_data_ratio=training_data_ratio,data_gait_length=data_gait_length,gait_variations=gait_variations,training_batch_size=training_batch_size,epochs=epochs,optimiser=opt):
     """Main function to create, train, and test a neural network for gait generation.
-    Args:
+    Parameters:
         hidden_layers (list[int], optional): List defining the number of neurons in each hidden layer. Defaults to hidden_layers.
         learning_rate (float, optional): Learning rate for training the neural network. Defaults to learning_rate.
         nn_save (str, optional): Filename to save the trained neural network. Defaults to nn_save.

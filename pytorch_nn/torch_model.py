@@ -68,7 +68,7 @@ class TorchNet(nn.Module):
         - Input goes through each weight matrix followed by activation
         - Returns final activated output
         
-        Args:
+        Parameters:
             x: Input tensor of shape (batch_size, input_size)
         Returns:
             Output tensor of shape (batch_size, output_size)

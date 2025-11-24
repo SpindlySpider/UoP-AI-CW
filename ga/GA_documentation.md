@@ -335,7 +335,7 @@ The **uniform crossover** implementation:
 def uniform_crossover(parents:Population,gait_length:int,crossover_rate:float) -> Population:
     '''
     Performs uniform crossover on a population of individuals. 
-    Args:
+    Parameters:
         parents (Population): The population of individuals to perform crossover on.
         gait_length (int): The number of frames in the gait cycle.
         crossover_rate (float): The probability of performing crossover on a pair of parents.
@@ -413,7 +413,7 @@ This ensures **diversity** and prevents **premature convergence**.
 def mutate(population:Population,mut_rate:float) -> Population:
     '''
     Performs mutation on a population of individuals.
-    Args:
+    Parameters:
         population (Population): The population of individuals to mutate.
         mut_rate (float): The probability of mutating each gene.
     Returns:
@@ -643,7 +643,7 @@ These parameters can be modified directly through the:
 def produce_target(gait_length:int, period:Period, coxa_amplitude:float, tibia_femur_v_shift:float, tibia_femur_amplitude:float) -> Individual:
     '''
     Produce target gait based on sine wave parameters
-    Args:
+    Parameters:
         gait_length (int): The length of the gait
         period (float): The period of the sine wave
         coxa_amplitude (float): The amplitude of the coxa joint movement
