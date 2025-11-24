@@ -66,6 +66,9 @@ def load_and_predict(input:list[float],nn_path:str = "nn.pickle",output_file_nam
         gait_length (int): length of gait to produce (how many predictions will it do)
     """
     # Ensure the path is relative to nn_without_lib/ folder if just a filename
+    if not Path(nn_path).is_absolute() and not str(nn_path).startswith('.'):
+        nn_path = str(Path(__file__).parent / nn_path)
+    
     if not Path(output_file_name).is_absolute() and not str(output_file_name).startswith('.'):
         output_file_name = str(Path(__file__).parent / output_file_name)
     

@@ -51,7 +51,7 @@ def main():
                 input = handle_lists(float,24)
 
             predict_defaults = {
-                "nn_path":"./nn.pickle",
+                "nn_path":"nn.pickle",
                 "output_file_name":"predict_results.txt",
                 "input":input,
                 "gait_length":300
