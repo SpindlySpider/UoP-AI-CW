@@ -253,7 +253,7 @@ predict.load_and_predict(**defaults)
 
 The system provides **two neural network implementations** with identical interfaces but different underlying technologies:
 
-### From Scratch Implementation (`nn_without_pytorch/`)
+### From Scratch Implementation (`nn/`)
 
 **Purpose**: Educational reference and lightweight deployment
 
