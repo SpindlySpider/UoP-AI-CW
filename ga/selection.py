@@ -2,13 +2,7 @@ import sys
 from pathlib import Path
 import random
 
-# Add parent directory to path
-sys.path.insert(0, str(Path(__file__).parent.parent))
-
-try:
-    from ga.custom_types import Population
-except ImportError:
-    from custom_types import Population
+from ga.custom_types import Population
 
 def roulette(population: Population, fitness: list[float]) -> Population:
     """

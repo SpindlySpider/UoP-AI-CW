@@ -1,14 +1,6 @@
-import sys
-from pathlib import Path
 import random
 
-# Add parent directory to path
-sys.path.insert(0, str(Path(__file__).parent.parent))
-
-try:
-    from ga.custom_types import Population, Individual
-except ImportError:
-    from custom_types import Population, Individual
+from ga.custom_types import Population, Individual
 
 def crossover(parents:Population,gait_length:int,crossover_rate:float) -> Population:
     '''

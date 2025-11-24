@@ -1,16 +1,7 @@
-import sys
-from pathlib import Path
 import math
 
-# Add parent directory to path
-sys.path.insert(0, str(Path(__file__).parent.parent))
-
-try:
-    from ga.custom_types import Individual, Gait
-    import ga.target_sol as target_sol
-except ImportError:
-    from custom_types import Individual, Gait
-    import target_sol as target_sol
+from ga.custom_types import Individual, Gait
+import ga.target_sol as target_sol
 
 class Fitness:
     """

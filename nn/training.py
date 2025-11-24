@@ -2,11 +2,11 @@ from numpy.typing import NDArray
 from numpy._core.numerictypes import float64
 import numpy as np
 
-from nn_without_pytorch import graph_results
-from nn_without_pytorch.neural_network import Neural_network
-from nn_without_pytorch import input_data
-from nn_without_pytorch.error_funcs import mse
-from nn_without_pytorch import optimiser as opt
+import nn.graph_results as graph_results
+import nn.input_data as input_data
+from nn.neural_network import Neural_network
+from nn.error_funcs import mse
+import nn.optimiser as opt
 
 def train_NN(nn:Neural_network,input_list:NDArray[float64],target_list:NDArray[float64],epochs:int, batch_size:int, optimiser:str) -> Neural_network:
     """

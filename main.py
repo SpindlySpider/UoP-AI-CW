@@ -1,8 +1,8 @@
 import sys
 from pathlib import Path
 
-import nn_without_pytorch.main as nn
-import nn_without_pytorch.load_and_predict as predict
+import nn.main as nn
+import nn.load_and_predict as predict
 import pytorch_nn.main as pytorch_nn
 import pytorch_nn.load_and_predict as pytorch_predict
 import random

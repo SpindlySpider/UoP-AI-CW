@@ -4,7 +4,7 @@ from pathlib import Path
 # Add parent directory to access nn_without_pytorch
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-import nn_without_pytorch.input_data as input_data
+import nn.input_data as input_data
 from pytorch_nn.torch_model import TorchNet
 from pytorch_nn.torch_training import train_torch, test_torch
 from pytorch_nn.serialize import save_torch  

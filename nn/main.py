@@ -1,20 +1,16 @@
 import sys
 from pathlib import Path
 
-# Add parent directory to path for imports
-sys.path.insert(0, str(Path(__file__).parent.parent))
-
-# Use relative imports within the package
-from nn_without_pytorch import serialize
-from nn_without_pytorch import input_data
-from nn_without_pytorch.training import *
-from nn_without_pytorch.activation_functions import *
-from nn_without_pytorch.neural_network import Neural_network
-from nn_without_pytorch.optimiser import *
+import nn.serialize as serialize
+import nn.input_data as input_data
+from nn.training import *
+from nn.activation_functions import *
+from nn.neural_network import Neural_network
+from nn.optimiser import *
 
 
 # Define number of layers and neurons per layer
-hidden_layers:list[int] = [128,64,32]
+hidden_layers:list[int] = [64,32]
 # Learning rate for NN training
 learning_rate:float = 0.01
 # File to save trained NN to
@@ -22,9 +18,9 @@ nn_save:str = "nn.pickle"
 # Ratio of data to use for training vs testing
 training_data_ratio:float = 0.95
 # Length of gait data to generate
-data_gait_length: int = 300
+data_gait_length: int = 50
 # Number of gait variations to generate
-gait_variations:int = 700
+gait_variations:int = 500
 
 # Size of training batches
 training_batch_size:int = 1

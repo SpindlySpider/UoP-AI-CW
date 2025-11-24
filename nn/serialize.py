@@ -4,7 +4,7 @@ Module used to serilize NN class load and dump
 import pickle
 from pathlib import Path
 
-from nn_without_pytorch.neural_network import Neural_network
+from nn.neural_network import Neural_network
 
 def save(nn:Neural_network,out:str="nn.pickle"):
     """

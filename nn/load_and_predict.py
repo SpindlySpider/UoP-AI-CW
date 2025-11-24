@@ -3,13 +3,11 @@ from pathlib import Path
 import random as rd
 import numpy as np
 
-# Add parent directory to access ga module
-sys.path.insert(0, str(Path(__file__).parent.parent))
 from ga.custom_types import Gait
 from ga.output import output
 
-from nn_without_pytorch.neural_network import Neural_network
-from nn_without_pytorch import serialize
+from nn.neural_network import Neural_network
+import nn.serialize as serialize
 
 # Normalization constants matching input_data.py training normalization
 # Maps [-80, 30] to [0, 1] using (x + 80) / 110
