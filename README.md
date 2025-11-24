@@ -36,7 +36,7 @@ main.py (CLI Entry Point)
 └── Utilities Module (utils.py)
     ├── get_choice()        # Interactive menu system
     ├── get_defaults()      # Configuration management
-    ├── modify_default()    # Parameter customization
+    ├── modify_default()    # Parameter customisation
     └── handle_lists()      # Input validation
 ```
 
@@ -77,7 +77,7 @@ Main Menu
 
 ### 2. Configuration Management
 
-Both GA and NN modules support **customizable parameters** with an intuitive modification interface:
+Both GA and NN modules support **customisable parameters** with an intuitive modification interface:
 
 #### Features:
 - **Display Defaults**: Shows all current parameter values before execution
