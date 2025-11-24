@@ -38,10 +38,12 @@ def main():
             nn_module = pytorch_nn
             predict_module = pytorch_predict
             model_extension = "nn_pytorch.pth"
+            predict_file_name = "pytorch_predict_results.txt"
         else:  # from scratch (numpy)
             nn_module = nn
             predict_module = predict
             model_extension = "nn.pickle"
+            predict_file_name = "nn_predict_results.txt"
         
         options = {
             "prompt":"Would you like to train or predict using existing model?:",
@@ -68,7 +70,7 @@ def main():
 
             predict_defaults = {
                 "nn_path":model_extension,
-                "output_file_name":"nn_predict_results.txt",
+                "output_file_name":predict_file_name,
                 "input":input,
                 "gait_length":100
             }
@@ -76,7 +78,6 @@ def main():
 
             # unpacks default values to named params of load_and_predict
             predict_module.load_and_predict(**defaults)
-            
     print("="*20)
 
 
