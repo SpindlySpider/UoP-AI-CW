@@ -306,11 +306,24 @@ normalized = (raw_angle + 80) / 110  # Maps [-80°, 30°] → [0, 1]
 
 **Denormalization**: Convert back to degrees
 
-[nn/`load_and_predict.py`](https://github.com/SpindlySpider/UoP-AI-CW/blob/main/nn/load_and_predict.py)
+**NumPy Implementation** - [nn/`load_and_predict.py`](https://github.com/SpindlySpider/UoP-AI-CW/blob/main/nn/load_and_predict.py)
 
 ```python
 # Used in both training and prediction
 raw_angle = (normalized × 110) - 80  # Maps [0, 1] → [-80°, 30°]
+```
+
+**PyTorch Implementation** - [pytorch_nn/`load_and_predict.py`](https://github.com/SpindlySpider/UoP-AI-CW/blob/main/pytorch_nn/load_and_predict.py)
+
+```python
+# Normalization constants matching input_data.py training normalization
+# Maps [-50, 30] to [0, 1] using (x + 50) / 80
+minimum_angle = -50
+maximum_angle = 30
+angle_diff = 80
+
+normalize = lambda x : (x + abs(minimum_angle))/angle_diff
+denormalize = lambda x : (x*angle_diff) - abs(minimum_angle)
 ```
 
 **Usage**: Predicted frame becomes input for next prediction, enabling recursive gait generation

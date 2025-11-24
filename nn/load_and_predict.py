@@ -9,10 +9,10 @@ from nn.neural_network import Neural_network
 import nn.serialize as serialize
 
 # Normalization constants matching input_data.py training normalization
-# Maps [-80, 30] to [0, 1] using (x + 80) / 110
-minimum_angle = -80
+# Maps [-50, 30] to [0, 1] using (x + 50) / 80
+minimum_angle = -50
 maximum_angle = 30
-angle_diff = maximum_angle - minimum_angle  # = 110
+angle_diff = abs(minimum_angle) + abs(maximum_angle)
 
 def predict(nn:Neural_network,input:list[float]) -> list[float]:
     """
