@@ -16,12 +16,12 @@
 
 The **main.py** file serves as the central command-line interface (CLI) for the Spider Gait Generation System, providing a unified access point to multiple AI approaches for generating and predicting spider locomotion patterns:
 
-1. **Genetic Algorithm (GA)** - Evolves optimal gait patterns through evolutionary optimization
+1. **Genetic Algorithm (GA)** - Evolves optimal gait patterns through evolutionary optimisation
 2. **Neural Network (NN)** - Learns to predict sequential gait frames from training data
    - **From Scratch Implementation** - Pure Python implementation for educational purposes
    - **PyTorch Implementation** - GPU-accelerated deep learning framework for production use
 
-This modular CLI design allows users to seamlessly switch between evolutionary optimization and machine learning approaches, or use them in combination for comprehensive gait generation and analysis.
+This modular CLI design allows users to seamlessly switch between evolutionary optimisation and machine learning approaches, or combine both for comprehensive gait generation and analysis.
 
 ---
 
@@ -93,7 +93,7 @@ starting with these defaults:
   2) nn save: nn.pickle
   ...
 ====================
-would you like to change anything? (y/N): y
+Would you like to change anything? (y/N): y
 ```
 
 ### 3. Input Handling
@@ -126,7 +126,7 @@ python main.py
 1. Start the application
 2. Select `0` for Genetic Algorithm
 3. When prompted about defaults, enter `N` to use default parameters
-4. The GA will execute and generate an optimized gait pattern
+4. The GA will execute and generate an optimised gait pattern
 
 **Output**: Creates `results.txt` containing a 300×24 matrix of joint angles
 
@@ -139,7 +139,7 @@ python main.py
 5. Select parameters to modify (e.g., `0` for hidden layers)
 6. Enter new values (e.g., `[256, 128, 64]`)
 7. Select `save and exit` to confirm changes
-8. Training begins with custom configuration
+8. Training begins with a custom configuration
 
 **Output**: Creates `nn.pickle` containing the trained model
 
@@ -265,7 +265,7 @@ The system provides **two neural network implementations** with identical interf
 
 **Model Format**: `.pickle` (serialised Python objects)
 
-**Optimizers**: `gradient_descent`, `adam`
+**Optimisers**: `gradient_descent`, `adam`
 
 ### PyTorch Implementation (`pytorch_nn/`)
 
@@ -280,7 +280,7 @@ The system provides **two neural network implementations** with identical interf
 
 **Model Format**: `.pth` (PyTorch state dict)
 
-**Optimizers**: `sgd`, `adam`
+**Optimisers**: `sgd`, `adam`
 
 ### Implementation Comparison
 
@@ -289,7 +289,7 @@ The system provides **two neural network implementations** with identical interf
 | **Speed** | Moderate (CPU only) | Fast (GPU/CPU) |
 | **Dependencies** | NumPy only | PyTorch framework |
 | **Learning** | Great for education | Production ready |
-| **GPU Support** | ❌ No | ✅ Yes |
+| **GPU Support** | (✘) No | ✓ Yes |
 | **Model Size** | Larger (full objects) | Smaller (weights only) |
 | **Compatibility** | Python specific | Cross-platform |
 
@@ -319,7 +319,7 @@ load_and_predict(
 
 **Use From Scratch Implementation when**:
 - Learning about neural network internals
-- No GPU available and dataset is small
+- No GPU available, and the dataset is small
 - Avoiding heavy framework dependencies
 - Teaching or demonstrating concepts
 
@@ -394,7 +394,7 @@ plot(gait_data(:,1));  % Plot first joint's motion
 
 **File**: `nn.pickle` (default)
 
-**Format**: Serialized Neural Network object
+**Format**: Serialised Neural Network object
 
 **Description**: Trained model containing:
 - Network architecture (layer sizes)
@@ -468,7 +468,7 @@ For optimal results, use both systems in sequence:
 
 2. **Phase 2: Learning**
    - Use evolved gaits as training data for neural network
-   - Train NN to learn patterns from optimized gaits
+   - Train NN to learn patterns from optimised gaits
 
 3. **Phase 3: Prediction**
    - Use trained NN for real-time gait generation
@@ -497,7 +497,7 @@ This hybrid approach combines the **optimization strength of GA** with the **pre
 Potential CLI improvements:
 
 - **Batch Processing**: Run multiple configurations automatically
-- **Visualization**: Real-time fitness/loss plotting during execution
+- **Visualisation**: Real-time fitness/loss plotting during execution
 - **Comparison Mode**: Automatically compare GA vs NN outputs
 - **Resume Training**: Save and restore training checkpoints
 - **Export Formats**: Support for multiple output formats (CSV, JSON, etc.)
@@ -516,7 +516,7 @@ Potential CLI improvements:
 
 The `main.py` CLI provides a **unified interface** for spider gait generation using two complementary AI approaches:
 
-- **Genetic Algorithm**: Evolutionary optimization for discovering optimal gait patterns
+- **Genetic Algorithm**: Evolutionary optimisation for discovering optimal gait patterns
 - **Neural Network**: Supervised learning for rapid gait prediction
 
 With its **interactive menu system**, **flexible configuration**, and **robust error handling**, the CLI enables both researchers and practitioners to efficiently generate, train, and predict spider gait patterns.
