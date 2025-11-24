@@ -22,6 +22,9 @@ def run_predictions(input_path, model_path='nn.pth', out_path='sol_pred.txt', no
         script_dir = PathLib(__file__).parent
         out_path = str(script_dir / out_path)
     
+    if not os.path.exists(input_path):
+        raise FileNotFoundError(f"Input file not found: {input_path}")
+    
     X = np.loadtxt(input_path, delimiter=',')
     if X.ndim == 1:
         X = X.reshape(1, -1)
@@ -62,14 +65,14 @@ def run_predictions(input_path, model_path='nn.pth', out_path='sol_pred.txt', no
 
 if __name__ == '__main__':
     if '-h' in sys.argv or '--help' in sys.argv:
-        print("Usage: python run_predict_sol.py <path/to/sol.txt> [model.pth] [out.txt]")
+        print("Usage: python run_predict_sol.py <path/to/results.txt> [model.pth] [out.txt]")
         sys.exit(0)
 
-    # Default input is 'sol.txt' in current working directory if not provided
+    # Default input is 'results.txt' in current working directory if not provided
     if len(sys.argv) >= 2:
         inp = sys.argv[1]
     else:
-        inp = 'sol.txt'
+        inp = 'results.txt'
 
     mp = sys.argv[2] if len(sys.argv) > 2 else 'nn.pth'
 

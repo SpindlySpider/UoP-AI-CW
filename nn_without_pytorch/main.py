@@ -1,16 +1,16 @@
 import sys
 from pathlib import Path
 
-# Add parent directories to access ga module
-sys.path.insert(0, str(Path(__file__).parent.parent.parent))
+# Add parent directory to path for imports
+sys.path.insert(0, str(Path(__file__).parent.parent))
 
 # Use relative imports within the package
-import serialize as serialize
-import input_data as input_data
-from training import *
-from activation_functions import *
-from neural_network import Neural_network
-from optimiser import *
+from nn_without_pytorch import serialize
+from nn_without_pytorch import input_data
+from nn_without_pytorch.training import *
+from nn_without_pytorch.activation_functions import *
+from nn_without_pytorch.neural_network import Neural_network
+from nn_without_pytorch.optimiser import *
 
 
 # Define number of layers and neurons per layer

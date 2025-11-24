@@ -42,7 +42,7 @@ main.py (CLI Entry Point)
 | Component | Purpose | Reference |
 |-----------|---------|-----------|
 | **Genetic Algorithm** | Evolves complete gait patterns using sine-wave chromosome encoding | [GA_documentation.md](./ga/GA_documentation.md) |
-| **Neural Network** | Predicts sequential gait frames through supervised learning | [NN_documentation.md](./neural_networks/NN_documentations.md) |
+| **Neural Network** | Predicts sequential gait frames through supervised learning | [NN_documentation.md](./nn_without_pytorch/NN_documentations.md) |
 | **CLI Utilities** | Provides interactive menu navigation and parameter configuration | `utils.py` |
 
 ---
@@ -239,7 +239,7 @@ defaults = get_defaults(predict_defaults)
 predict.load_and_predict(**defaults)
 ```
 
-**For detailed NN implementation**, see [NN_documentations.md](./neural_networks/NN_documentations.md)
+**For detailed NN implementation**, see [NN_documentations.md](./nn_without_pytorch/NN_documentations.md)
 
 ---
 
@@ -265,11 +265,11 @@ predict.load_and_predict(**defaults)
 | `learning_rate` | float | Training step size | 0.01 |
 | `nn_save` | str | Model save location | "nn.pickle" |
 | `training_data_ratio` | float | Train/test split ratio | 0.95 |
-| `data_gait_length` | int | Length of training sequences | 40 |
+| `data_gait_length` | int | Length of training sequences | 300 |
 | `gait_variations` | int | Number of training examples | 700 |
 | `training_batch_size` | int | Samples per training batch | 1 |
 | `epochs` | int | Training iterations | 100 |
- `epochs` | int | Training iterations | "gradient_decent" |
+| `optimiser` | str | Optimizer algorithm | "gradient_descent" |
 
 ### Neural Network Prediction Configuration
 
@@ -417,7 +417,7 @@ Potential CLI improvements:
 ## References
 
 - **Genetic Algorithm Implementation**: See [GA_documentation.md](./ga/GA_documentation.md)
-- **Neural Network Implementation**: See [NN_documentations.md](./neural_networks/NN_documentations.md)
+- **Neural Network Implementation**: See [NN_documentations.md](./nn_without_pytorch/NN_documentations.md)
 - **Utility Functions**: See `utils.py` for CLI helper functions
 
 ---

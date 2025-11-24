@@ -1,11 +1,8 @@
 import sys
 from pathlib import Path
 
-# Add neural_networks folder to path
-sys.path.insert(0, str(Path(__file__).parent / 'neural_networks' / 'nn_without_lib'))
-
-import main as nn
-import load_and_predict as predict
+import nn_without_pytorch.main as nn
+import nn_without_pytorch.load_and_predict as predict
 import random
 import ga.main as ga
 from utils import *
@@ -25,7 +22,6 @@ def main():
         defaults = get_defaults(ga.defaults)
         ga.main(**defaults)
     else:
-        #TODO: ask if user wants to train a new NN, or load a NN and train? or predict with existing NN
         options = {
             "prompt":"Would you like to train or predict using existing model?:",
             "options":["train","predict","exit"]
@@ -57,9 +53,10 @@ def main():
                 "gait_length":300
             }
             defaults = get_defaults(predict_defaults)
-            #TODO: user need to be able to input nn location to load, and number of next predicts e.g. gait length, where to save to
+
+            # unpacks default values to named params of load_and_predict
             predict.load_and_predict(**defaults)
-            # predict using model
+            
     print("="*20)
 
 

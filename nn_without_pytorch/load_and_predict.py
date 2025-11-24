@@ -4,12 +4,12 @@ import random as rd
 import numpy as np
 
 # Add parent directory to access ga module
-sys.path.insert(0, str(Path(__file__).parent.parent.parent))
+sys.path.insert(0, str(Path(__file__).parent.parent))
 from ga.custom_types import Gait
 from ga.output import output
 
-from neural_network import Neural_network
-import serialize as serialize
+from nn_without_pytorch.neural_network import Neural_network
+from nn_without_pytorch import serialize
 
 # Normalization constants matching input_data.py training normalization
 # Maps [-80, 30] to [0, 1] using (x + 80) / 110
@@ -62,10 +62,10 @@ def load_and_predict(input:list[float],nn_path:str = "nn.pickle",output_file_nam
     Parameters:
         nn_path (str): path of neural network file to load. default name is nn.pickle
         input (list[float]): list of 24 floats representing joint angles in degrees
-        output_file_name (str): Name of file to output to, will output to nn_without_lib folder by default
+        output_file_name (str): Name of file to output to, will output to nn_without_pytorch folder by default
         gait_length (int): length of gait to produce (how many predictions will it do)
     """
-    # Ensure the path is relative to nn_without_lib/ folder if just a filename
+    # Ensure the path is relative to nn_without_pytorch/ folder if just a filename
     if not Path(nn_path).is_absolute() and not str(nn_path).startswith('.'):
         nn_path = str(Path(__file__).parent / nn_path)
     

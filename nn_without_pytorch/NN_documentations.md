@@ -7,7 +7,7 @@ This neural network predicts the **next frame of a spider's gait** from its curr
 
 ### Implementations
 
-Two implementations are provided: **`nn_without_lib/`** (NumPy from scratch) and **`pytorch_nn/`** (PyTorch framework). The PyTorch version replicates the exact architecture, training procedure, and hyperparameters of the NumPy implementation to enable direct comparison. However, PyTorch runs significantly slower with batch size 1 due to framework overhead—PyTorch is optimized for larger batches where GPU acceleration and vectorization provide substantial speedups, but with single-sample batches, the tensor conversion and computational graph overhead outweighs these benefits compared to NumPy's direct array operations.
+Two implementations are provided: **`nn_without_pytorch/`** (NumPy from scratch) and **`pytorch_nn/`** (PyTorch framework). The PyTorch version replicates the exact architecture, training procedure, and hyperparameters of the NumPy implementation to enable direct comparison. However, PyTorch runs significantly slower with batch size 1 due to framework overhead—PyTorch is optimized for larger batches where GPU acceleration and vectorization provide substantial speedups, but with single-sample batches, the tensor conversion and computational graph overhead outweighs these benefits compared to NumPy's direct array operations.
 
 ---
 
@@ -286,7 +286,7 @@ The network reaches a **reasonable solution** where predicted joint angles close
 
 **Normalization**: Map to [0, 1] using expanded bounds
 
-[neural_networks/nn_without_lib/`input_data.py`](https://github.com/SpindlySpider/UoP-AI-CW/blob/main/neural_networks/nn_without_lib/input_data.py)
+[nn_without_pytorch/`input_data.py`](https://github.com/SpindlySpider/UoP-AI-CW/blob/main/nn_without_pytorch/input_data.py)
 
 ```python
 # Used in both input_data.py and load_and_predict.py
@@ -306,7 +306,7 @@ normalized = (raw_angle + 80) / 110  # Maps [-80°, 30°] → [0, 1]
 
 **Denormalization**: Convert back to degrees
 
-[neural_networks/nn_without_lib/`load_and_predict.py`](https://github.com/SpindlySpider/UoP-AI-CW/blob/main/neural_networks/nn_without_lib/load_and_predict.py)
+[nn_without_pytorch/`load_and_predict.py`](https://github.com/SpindlySpider/UoP-AI-CW/blob/main/nn_without_pytorch/load_and_predict.py)
 
 ```python
 # Used in both training and prediction
@@ -379,7 +379,7 @@ raw_angle = (normalized × 110) - 80  # Maps [0, 1] → [-80°, 30°]
 
 **Recursive Prediction**: The network generates complete gait sequences by feeding each prediction back as input for the next frame.
 
-**Implementation**: [neural_networks/nn_without_lib/`load_and_predict.py`](https://github.com/SpindlySpider/UoP-AI-CW/blob/main/neural_networks/nn_without_lib/load_and_predict.py)
+**Implementation**: [nn_without_pytorch/`load_and_predict.py`](https://github.com/SpindlySpider/UoP-AI-CW/blob/main/nn_without_pytorch/load_and_predict.py)
 
 ```python
 def predict_gait(nn:Neural_network, input:list[float], gait_length:int = 300) -> Gait:
@@ -651,7 +651,7 @@ end
 
 ## 9. PyTorch Implementation Details
 
-The **`pytorch_nn/`** implementation provides a PyTorch version that exactly replicates the NumPy implementation in **`nn_without_lib/`**. The following changes were made to adapt the code:
+The **`pytorch_nn/`** implementation provides a PyTorch version that exactly replicates the NumPy implementation in **`nn_without_pytorch/`**. The following changes were made to adapt the code:
 
 ### Files Replaced or Removed
 
@@ -665,7 +665,7 @@ The PyTorch implementation consolidates functionality by leveraging PyTorch's bu
 | (✘) `optimiser.py` | Built-in `torch.optim.SGD()` | PyTorch optimizers handle weight updates automatically |
 | (✘) `training.py` | **`torch_training.py`** | Adapted for PyTorch's `loss.backward()` and `optimizer.step()` |
 | (✘) `load_and_predict.py` | **`run_predict_sol.py`** | Adapted for PyTorch model loading and inference |
-| (✓) `input_data.py` | **Shared** from `nn_without_lib/` | Data generation remains framework-agnostic |
+| (✓) `input_data.py` | **Shared** from `nn_without_pytorch/` | Data generation remains framework-agnostic |
 | (✘) `serialize.py` | **`serialize.py`** (rewritten) | Uses `torch.save()` / `torch.load()` instead of pickle |
 | (✘) `graph_results.py` | **`graph_results.py`** (adapted) | Modified for PyTorch training output format |
 
@@ -677,7 +677,7 @@ The PyTorch implementation consolidates functionality by leveraging PyTorch's bu
 |------|-----------------------------------|--------------------------|
 | **[`torch_model.py`](https://github.com/SpindlySpider/UoP-AI-CW/blob/main/pytorch_nn/torch_model.py)** | Replaces `neural_network.py`. Uses `nn.Module` with `nn.Linear` layers. Custom weight initialization matches NumPy: `uniform(-0.5, 0.5)` for weights, `-0.5` constant for biases. Sigmoid applied to all layers including output. | **[Lines 37-43](https://github.com/SpindlySpider/UoP-AI-CW/blob/main/pytorch_nn/torch_model.py#L37-L43)**: `nn.Linear()` layers with `nn.Sigmoid()` activations<br>**[Lines 59-64](https://github.com/SpindlySpider/UoP-AI-CW/blob/main/pytorch_nn/torch_model.py#L59-L64)**: `_initialize_weights()` using `nn.init.uniform_(-0.5, 0.5)` for weights and `nn.init.constant_(-0.5)` for biases<br>**[Lines 76-77](https://github.com/SpindlySpider/UoP-AI-CW/blob/main/pytorch_nn/torch_model.py#L76-L77)**: `forward()` method returns `self.net(x)` |
 | **[`torch_training.py`](https://github.com/SpindlySpider/UoP-AI-CW/blob/main/pytorch_nn/torch_training.py)** | Replaces `training.py`. Accepts NumPy arrays directly (no DataLoader). Manual epoch shuffling with `np.random.permutation()`. Manual batch iteration matching original algorithm. Loss computed with `nn.MSELoss()`, gradients via PyTorch autograd instead of manual backpropagation. | **[Line 31](https://github.com/SpindlySpider/UoP-AI-CW/blob/main/pytorch_nn/torch_training.py#L31)**: `nn.MSELoss(reduction='mean')`<br>**[Lines 35-37](https://github.com/SpindlySpider/UoP-AI-CW/blob/main/pytorch_nn/torch_training.py#L35-L37)**: `torch.optim.SGD(momentum=0)` for gradient descent<br>**[Lines 45-47](https://github.com/SpindlySpider/UoP-AI-CW/blob/main/pytorch_nn/torch_training.py#L45-L47)**: `np.random.permutation()` shuffles data each epoch<br>**[Lines 54-56](https://github.com/SpindlySpider/UoP-AI-CW/blob/main/pytorch_nn/torch_training.py#L54-L56)**: Manual batch iteration `range(0, len - batch_size, batch_size)`<br>**[Lines 62-68](https://github.com/SpindlySpider/UoP-AI-CW/blob/main/pytorch_nn/torch_training.py#L62-L68)**: `loss.backward()` and `optimizer.step()` replace manual gradient computation | 
-| **[`main.py`](https://github.com/SpindlySpider/UoP-AI-CW/blob/main/pytorch_nn/main.py)** | Identical structure and parameters to `nn_without_lib/main.py`. Uses `sys.path.insert()` to access shared `input_data.py` from `nn_without_lib/`. | **[Line 6](https://github.com/SpindlySpider/UoP-AI-CW/blob/main/pytorch_nn/main.py#L6)**: `sys.path.insert()` to access parent directory<br>**[Line 8](https://github.com/SpindlySpider/UoP-AI-CW/blob/main/pytorch_nn/main.py#L8)**: `import nn.input_data` from `nn_without_lib/`<br>**[Line 51](https://github.com/SpindlySpider/UoP-AI-CW/blob/main/pytorch_nn/main.py#L51)**: `TorchNet(input_size=24, hidden_sizes=hidden_layers, output_size=24, activation='sigmoid')`<br>**[Lines 60-61](https://github.com/SpindlySpider/UoP-AI-CW/blob/main/pytorch_nn/main.py#L60-L61)**: `train_torch()` and `save_torch()` match original workflow |
+| **[`main.py`](https://github.com/SpindlySpider/UoP-AI-CW/blob/main/pytorch_nn/main.py)** | Identical structure and parameters to `nn_without_pytorch/main.py`. Uses `sys.path.insert()` to access shared `input_data.py` from `nn_without_pytorch/`. | **[Line 6](https://github.com/SpindlySpider/UoP-AI-CW/blob/main/pytorch_nn/main.py#L6)**: `sys.path.insert()` to access parent directory<br>**[Line 8](https://github.com/SpindlySpider/UoP-AI-CW/blob/main/pytorch_nn/main.py#L8)**: `import nn_without_pytorch.input_data`<br>**[Line 51](https://github.com/SpindlySpider/UoP-AI-CW/blob/main/pytorch_nn/main.py#L51)**: `TorchNet(input_size=24, hidden_sizes=hidden_layers, output_size=24, activation='sigmoid')`<br>**[Lines 60-61](https://github.com/SpindlySpider/UoP-AI-CW/blob/main/pytorch_nn/main.py#L60-61)**: `train_torch()` and `save_torch()` match original workflow |
 | **[`serialize.py`](https://github.com/SpindlySpider/UoP-AI-CW/blob/main/pytorch_nn/serialize.py)** | Uses `torch.save()` and `torch.load()` for model persistence instead of Python's `pickle`. | **[Line 18](https://github.com/SpindlySpider/UoP-AI-CW/blob/main/pytorch_nn/serialize.py#L18)**: `torch.save(model.state_dict(), out)`<br>**[Line 30](https://github.com/SpindlySpider/UoP-AI-CW/blob/main/pytorch_nn/serialize.py#L30)**: `model.load_state_dict(torch.load(file_name, weights_only=True))` |
 
 ### Key Implementation Differences
