@@ -1,7 +1,12 @@
-import nn.main as nn
-import nn.load_and_predict as predict
-import random
 import sys
+from pathlib import Path
+
+# Add neural_networks folder to path
+sys.path.insert(0, str(Path(__file__).parent / 'neural_networks' / 'nn_without_lib'))
+
+import main as nn
+import load_and_predict as predict
+import random
 import ga.main as ga
 from utils import *
 
@@ -47,7 +52,7 @@ def main():
 
             predict_defaults = {
                 "nn_path":"./nn.pickle",
-                "output_file_name":"./predict_results.txt",
+                "output_file_name":"predict_results.txt",
                 "input":input,
                 "gait_length":300
             }

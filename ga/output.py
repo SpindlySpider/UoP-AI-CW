@@ -20,6 +20,10 @@ def output(filename:str,solution:Individual):
         filename (str): The name of the file to output the solution to.
         solution (Individual): The solution to be outputted.
     '''
+    # Ensure the path is relative to ga/ folder if just a filename
+    if not Path(filename).is_absolute() and not str(filename).startswith('.'):
+        filename = str(Path(__file__).parent / filename)
+    
     with open(filename,"w") as file:
         for arr in solution:
             out_string = ",".join(map(str,arr)) + "\n"

@@ -42,7 +42,7 @@ main.py (CLI Entry Point)
 | Component | Purpose | Reference |
 |-----------|---------|-----------|
 | **Genetic Algorithm** | Evolves complete gait patterns using sine-wave chromosome encoding | [GA_documentation.md](./ga/GA_documentation.md) |
-| **Neural Network** | Predicts sequential gait frames through supervised learning | [NN_documentation.md](./nn/NN_documentation.md) |
+| **Neural Network** | Predicts sequential gait frames through supervised learning | [NN_documentation.md](./neural_networks/NN_documentations.md) |
 | **CLI Utilities** | Provides interactive menu navigation and parameter configuration | `utils.py` |
 
 ---
@@ -238,7 +238,7 @@ defaults = get_defaults(predict_defaults)
 predict.load_and_predict(**defaults)
 ```
 
-**For detailed NN implementation**, see [NN_documentation.md](./nn/NN_documentation.md)
+**For detailed NN implementation**, see [NN_documentations.md](./neural_networks/NN_documentations.md)
 
 ---
 
@@ -415,7 +415,7 @@ Potential CLI improvements:
 ## References
 
 - **Genetic Algorithm Implementation**: See [GA_documentation.md](./ga/GA_documentation.md)
-- **Neural Network Implementation**: See [NN_documentation.md](./nn/NN_documentation.md)
+- **Neural Network Implementation**: See [NN_documentations.md](./neural_networks/NN_documentations.md)
 - **Utility Functions**: See `utils.py` for CLI helper functions
 
 ---

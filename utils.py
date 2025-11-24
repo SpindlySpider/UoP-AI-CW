@@ -10,7 +10,6 @@ def get_choice(choice_dict:dict[str,any]) -> int | bool:
     Returns:
         integer representing a choice form the list or bool for quit
     """
-    #TODO: implement this functionality
     choice = None
     print("="*20)
     print(choice_dict["prompt"])
