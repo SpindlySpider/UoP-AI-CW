@@ -109,7 +109,7 @@ Both optimizers were tested extensively. Results below show **actual training ru
 
 ---
 
-### Gradient Descent ✅ RECOMMENDED
+### Gradient Descent (✓) RECOMMENDED
 
 **Algorithm**: $W_{new} = W_{old} - \alpha \nabla L$
 
@@ -133,7 +133,7 @@ Both optimizers were tested extensively. Results below show **actual training ru
 
 ---
 
-### Adam Optimizer ⚠️ UNSTABLE (Default Settings)
+### Adam Optimizer (!) UNSTABLE (Default Settings)
 
 **Algorithm**: Adaptive Moment Estimation with momentum
 
@@ -157,7 +157,7 @@ Both optimizers were tested extensively. Results below show **actual training ru
 
 ---
 
-### Adam with Tuned Learning Rate ✅ IMPROVED
+### Adam with Tuned Learning Rate (✓) IMPROVED
 
 **Results with LR = 0.001**:
 
@@ -169,7 +169,7 @@ Both optimizers were tested extensively. Results below show **actual training ru
 
 ---
 
-### Gradient Descent with LR = 0.001 ✅ CONSERVATIVE ALTERNATIVE
+### Gradient Descent with LR = 0.001 (✓) CONSERVATIVE ALTERNATIVE
 
 **Algorithm**: $W_{new} = W_{old} - 0.001 \times \nabla L$ (lower learning rate)
 
@@ -206,10 +206,10 @@ Both optimizers were tested extensively. Results below show **actual training ru
 
 | Optimizer | LR | Result | Verdict |
 |-----------|----|----|---------|
-| **Gradient Descent** | 0.01 | ✅ Stable, fast convergence | **Optimal** |
-| **Gradient Descent** | 0.001 | ✅ Very stable, slower | Conservative alternative |
-| **Adam** | 0.01 | ❌ Unstable, unusable | Too high |
-| **Adam** | 0.001 | ✅ Stable, good convergence | Workable with tuning |
+| **Gradient Descent** | 0.01 | (✓) Stable, fast convergence | **Optimal** |
+| **Gradient Descent** | 0.001 | (✓) Very stable, slower | Conservative alternative |
+| **Adam** | 0.01 | (✘) Unstable, unusable | Too high |
+| **Adam** | 0.001 | (✓) Stable, good convergence | Workable with tuning |
 
 **Final Choice**: **Gradient Descent with LR = 0.01**
 - Best performance (lowest loss: 0.00125)
@@ -659,15 +659,15 @@ The PyTorch implementation consolidates functionality by leveraging PyTorch's bu
 
 | NumPy File | PyTorch Equivalent | Reason |
 |------------|-------------------|--------|
-| ❌ `activation_functions.py` | Built-in `nn.Sigmoid()`, `nn.ReLU()`, etc. | PyTorch provides optimized activation functions |
-| ❌ `error_funcs.py` | Built-in `nn.MSELoss()` | PyTorch's loss functions integrate with autograd |
-| ❌ `neural_network.py` | **`torch_model.py`** | Replaced with `nn.Module` class structure |
-| ❌ `optimiser.py` | Built-in `torch.optim.SGD()` | PyTorch optimizers handle weight updates automatically |
-| ❌ `training.py` | **`torch_training.py`** | Adapted for PyTorch's `loss.backward()` and `optimizer.step()` |
-| ❌ `load_and_predict.py` | **`run_predict_sol.py`** | Adapted for PyTorch model loading and inference |
-| ✅ `input_data.py` | **Shared** from `nn_without_lib/` | Data generation remains framework-agnostic |
-| ❌ `serialize.py` | **`serialize.py`** (rewritten) | Uses `torch.save()` / `torch.load()` instead of pickle |
-| ❌ `graph_results.py` | **`graph_results.py`** (adapted) | Modified for PyTorch training output format |
+| (✘) `activation_functions.py` | Built-in `nn.Sigmoid()`, `nn.ReLU()`, etc. | PyTorch provides optimized activation functions |
+| (✘) `error_funcs.py` | Built-in `nn.MSELoss()` | PyTorch's loss functions integrate with autograd |
+| (✘) `neural_network.py` | **`torch_model.py`** | Replaced with `nn.Module` class structure |
+| (✘) `optimiser.py` | Built-in `torch.optim.SGD()` | PyTorch optimizers handle weight updates automatically |
+| (✘) `training.py` | **`torch_training.py`** | Adapted for PyTorch's `loss.backward()` and `optimizer.step()` |
+| (✘) `load_and_predict.py` | **`run_predict_sol.py`** | Adapted for PyTorch model loading and inference |
+| (✓) `input_data.py` | **Shared** from `nn_without_lib/` | Data generation remains framework-agnostic |
+| (✘) `serialize.py` | **`serialize.py`** (rewritten) | Uses `torch.save()` / `torch.load()` instead of pickle |
+| (✘) `graph_results.py` | **`graph_results.py`** (adapted) | Modified for PyTorch training output format |
 
 **Key Insight**: PyTorch eliminates ~50 lines of core backpropagation code (gradient calculations in `back_propagation()`, weight updates in `gradient_descent()`, and activation derivatives) by using autograd and built-in modules, demonstrating the framework's abstraction benefits. Overall, ~355 lines across all eliminated files are replaced by PyTorch's built-in functionality.
 
