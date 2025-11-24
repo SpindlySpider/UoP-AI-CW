@@ -1,3 +1,5 @@
+from pathlib import Path
+
 from ga.custom_types import Gait, Individual
 import ga.fitness as fitness
 # use functions here for outputting the final best GA to a string that matlab can take

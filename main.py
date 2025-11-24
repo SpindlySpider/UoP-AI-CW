@@ -71,7 +71,7 @@ def main():
                 "nn_path":model_extension,
                 "output_file_name":"predict_results.txt",
                 "input":input,
-                "gait_length":300
+                "gait_length":100
             }
             defaults = get_defaults(predict_defaults)
 

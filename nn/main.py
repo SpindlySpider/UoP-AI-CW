@@ -10,7 +10,7 @@ from nn.optimiser import *
 
 
 # Define number of layers and neurons per layer
-hidden_layers:list[int] = [64,32]
+hidden_layers:list[int] = [128,64,32]
 # Learning rate for NN training
 learning_rate:float = 0.01
 # File to save trained NN to
@@ -18,9 +18,9 @@ nn_save:str = "nn.pickle"
 # Ratio of data to use for training vs testing
 training_data_ratio:float = 0.95
 # Length of gait data to generate
-data_gait_length: int = 50
+data_gait_length: int = 300
 # Number of gait variations to generate
-gait_variations:int = 500
+gait_variations:int = 700
 
 # Size of training batches
 training_batch_size:int = 1
