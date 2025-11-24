@@ -2,12 +2,12 @@
 
 ## Overview
 
-This neural network predicts the **next frame of a spider's gait** from its current joint configuration. The spider has 8 legs with 3 joints each (coxa, femur, tibia), totaling **24 degrees of freedom**. 
+Our neural network predicts the **next frame of a spider's gait** from its current joint configuration. The spider has 8 legs with 3 joints for each (coxa, femur, tibia), resulting in **24 degrees of freedom**. 
 **Input/Output**: `[24 joint angles] -> Neural Network -> [24 predicted joint angles]`
 
 ### Implementations
 
-Two implementations are provided: **`nn_without_pytorch/`** (NumPy from scratch) and **`pytorch_nn/`** (PyTorch framework). The PyTorch version replicates the exact architecture, training procedure, and hyperparameters of the NumPy implementation to enable direct comparison. However, PyTorch runs significantly slower with batch size 1 due to framework overhead, PyTorch is optimised for larger batches where GPU acceleration and vectorisation provide substantial speedups, but with single-sample batches, the tensor conversion and computational graph overhead outweighs these benefits compared to NumPy's direct array operations.
+We have provided two implementations: **`nn/`** (NumPy from scratch) and **`pytorch_nn/`** (PyTorch framework). The PyTorch version replicates the architecture, training procedure, and hyperparameters of the NumPy implementation for the purpose of direct comparison of the neural networks. However, PyTorch runs significantly slower, with batch size 1, due to framework overhead, PyTorch is optimised for larger batches where GPU acceleration and vectorisation provide substantial speedups, but with single-sample batches, the tensor conversion and computational graph overhead outweighs these benefits compared to our NumPy's direct array operations.
 
 ---
 
@@ -29,7 +29,7 @@ Output Layer:    24 neurons + Sigmoid activation (predicted joint angles)
 
 | Decision | Rationale |
 |----------|-----------|
-| **3 Hidden Layers [128, 64, 32]** | Progressive dimensionality reduction for hierarchical feature extraction. Balances capacity with training efficiency. |
+| **3 Hidden Layers [128, 64, 32]** | Progressive dimensionality reduction for the extraction of hierarchical features. Balances capacity with training efficiency. |
 | **Input/Output Shape (24, 24)** | Matches spider's 24 joints. Direct frame-to-frame prediction enables recursive gait generation. |
 | **Decreasing Layer Sizes** | Funnels high-dimensional input through compressed representations, learning essential motion patterns. |
 | **Fully-Connected (Dense)** | All joints influence each other - legs coordinate during walking. Dense connections capture inter-joint dependencies. |
@@ -58,7 +58,7 @@ Output Layer:    24 neurons + Sigmoid activation (predicted joint angles)
 
 **Derivative** (for backpropagation): $\sigma'(x) = \sigma(x)(1 - \sigma(x))$
 
-**Trade-off**: Sigmoid can cause vanishing gradients in very deep networks, but at 3 layers this is manageable. The bounded output range [0,1] is ideal for our normalised data.
+**Trade-off: In very deep networks, sigmoid may result in vanishing gradients, but it is manageable at three layers. For our normalised data, the bounded output range [0,1] is optimal.
 
 ---
 
@@ -86,8 +86,8 @@ Where:
 
 **Why Not Other Loss Functions?**
 - **MAE (Mean Absolute Error)**: Less sensitive to outliers, but we want to heavily penalise bad predictions
-- **Cross-Entropy**: For classification only, not regression
-- **Huber Loss**: Useful for noisy data, but our synthetic data is clean
+- **Cross-Entropy**: This is only used for classification and not regression
+- **Huber Loss**: Generally more useful for noisy data, but our synthetic data is clean
 
 ---
 
@@ -95,7 +95,7 @@ Where:
 
 ### Optimiser Comparison: Gradient Descent vs Adam
 
-Both optimisers were tested extensively. Results below show **actual training runs** on identical data.
+We tested both optimisers and the results below show **actual training runs** on the same data for each.
 
 #### Configuration
 
@@ -123,7 +123,7 @@ Both optimisers were tested extensively. Results below show **actual training ru
 
 ![Gradient Descent Loss](doc-images/gradient_decent_default_learning%20_rate.png)
 
-**Analysis**: Smooth exponential decay from epoch 0 to 100. No oscillations or instabilities. The learning rate of 0.01 is well-tuned - loss decreases steadily without overshooting.
+**Analysis**: There is a smooth exponential decay from epoch 0 to 100, no oscillations or instabilities and the learning rate of 0.01 is well-tuned - the loss decreases steadily without overshooting.
 
 **Why It Works**:
 - **Simple updates**: Direct gradient application without momentum
@@ -138,7 +138,7 @@ Both optimisers were tested extensively. Results below show **actual training ru
 **Algorithm**: Adaptive Moment Estimation with momentum
 
 **Results**:
-- **Training Loss**: 0.002011 → 0.001383 (31% reduction)
+- **Training Loss**: 0.002011 -> 0.001383 (31% reduction)
 - **Test Loss**: 0.001342  
 - **Training Time**: 2381.02 seconds (~40 minutes) - **10× slower**
 - **Stability**: Poor - 10+ major loss spikes
@@ -147,7 +147,7 @@ Both optimisers were tested extensively. Results below show **actual training ru
 
 ![Adam Default LR](doc-images/adam_default_learning_rate.png)
 
-**Analysis**: Severe instability with loss spikes at epochs 33, 39, 52, 57, 62-63, 70, 80, 88. One spike reached 0.0053 (4× baseline). Overflow warnings indicate gradient explosions despite clipping.
+**Analysis**: Severe instability with loss spikes at epochs 33, 39, 52, 57, 62-63, 70, 80, 88. One spike reached 0.0053 (4× baseline) and overflow warnings indicate gradient explosions despite clipping.
 
 **Why It Failed**:
 - **LR too high**: 0.01 causes overshooting when combined with momentum
@@ -163,7 +163,7 @@ Both optimisers were tested extensively. Results below show **actual training ru
 
 ![Adam LR 0.001](doc-images/adam_learning_rate_0.001.png)
 
-**Analysis**: Reducing learning rate to 0.001 dramatically improves stability. Still shows minor oscillations but no major spikes. Converges to similar loss as gradient descent but takes longer.
+**Analysis**: Reducing learning rate to 0.001 dramatically improves stability but can still shows minor oscillations but no major spikes. It converges to similar loss as gradient descent but takes longer.
 
 **Conclusion**: Adam **can work** with proper tuning (LR=0.001, possibly ReLU activations), but gradient descent is simpler and more reliable for this problem.
 
@@ -183,7 +183,7 @@ Both optimisers were tested extensively. Results below show **actual training ru
 
 ![Gradient Descent LR 0.001](doc-images/gradient_decent_learning_rate_0.001.png)
 
-**Analysis**: Exceptionally smooth exponential decay with even more gradual convergence than LR=0.01. The lower learning rate produces an extremely stable training curve with zero oscillations. Loss decreases more slowly but very predictably.
+**Analysis**: Exceptionally smooth exponential decay with even more gradual convergence than LR=0.01. The lower learning rate produces an extremely stable training curve with zero oscillations and the loss decreases more slowly but very predictably.
 
 **Why It Works**:
 - **Gentle updates**: Smaller steps prevent any overshooting
@@ -215,7 +215,7 @@ Both optimisers were tested extensively. Results below show **actual training ru
 - Best performance (lowest loss: 0.00125)
 - Fastest training (232s)
 - Perfectly stable (zero issues)
-- Simplest to tune (one hyperparameter)
+- Easiest to tune (one hyperparameter)
 - Optimal balance of speed and stability
 
 **Alternative**: Use LR = 0.001 only if extreme stability is required or if experimenting with more complex architectures that might be sensitive to higher learning rates.
@@ -239,7 +239,7 @@ For each layer i (backward):
 
 1. **Loss Decreases**: 89% reduction over 100 epochs proves gradients flow correctly
 2. **Smooth Convergence**: No erratic behaviour suggests proper gradient calculation
-3. **Generalisation**: Test loss (0.00129) close to training loss (0.00125) indicates learned patterns, not memorisation
+3. **Generalisation**: Test loss (0.00129) close to training loss (0.00125) indicates learned patterns and not memorisation
 
 ### Convergence Analysis
 
@@ -251,7 +251,7 @@ For each layer i (backward):
 | **Final Loss** | 0.001249 | Converged to stable minimum |
 | **Test Loss** | 0.001287 | Generalises well (+3% from training) |
 
-**Convergence Pattern**: Exponential decay → Logarithmic refinement → Plateau
+**Convergence Pattern**: Exponential decay -> Logarithmic refinement -> Plateau
 
 The network reaches a **reasonable solution** where predicted joint angles closely match targets (average error ~4° per joint after denormalisation).
 
@@ -419,9 +419,9 @@ Frame 10:         [-10.85, -51.20, -51.32]  # NN prediction
 ```
 
 **Analysis**: 
-- **Smooth Transitions**: No sudden jumps between frames, demonstrating stable temporal dynamics
-- **Oscillatory Pattern**: Angles show natural cyclic movement (coxa: 0.51° → 16.05° → -13.51° → -10.85°, demonstrating learned periodic motion)
-- **Physically Plausible**: All angles remain within valid ranges, no boundary saturation
+- **Smooth Transitions**: No sudden jumps between frames which demonstrating stable temporal dynamics
+- **Oscillatory Pattern**: Angles show natural cyclic movement (coxa: 0.51° -> 16.05° -> -13.51° -> -10.85°, demonstrating learned periodic motion)
+- **Physically Possible**: All angles remain within valid ranges and no boundary saturation
 - **Recursive Stability**: Network maintains coherent predictions over 300 frames (full gait in `predict_results.txt`)
 - **Learned Motion**: Shows natural leg movement pattern with coordinated joint oscillations - network learned temporal dependencies from training data
 
@@ -651,7 +651,7 @@ end
 
 ## 9. PyTorch Implementation Details
 
-The **`pytorch_nn/`** implementation provides a PyTorch version that exactly replicates the NumPy implementation in **`nn_without_pytorch/`**. The following changes were made to adapt the code:
+The **`pytorch_nn/`** implementation provides a PyTorch version that exactly replicates the NumPy implementation in **`nn/`**. The following changes were made to adapt the code:
 
 ### Files Replaced or Removed
 
@@ -665,7 +665,7 @@ The PyTorch implementation consolidates functionality by leveraging PyTorch's bu
 | (✘) `optimiser.py` | Built-in `torch.optim.SGD()` | PyTorch optimisers handle weight updates automatically |
 | (✘) `training.py` | **`torch_training.py`** | Adapted for PyTorch's `loss.backward()` and `optimizer.step()` |
 | (✘) `load_and_predict.py` | **`run_predict_sol.py`** | Adapted for PyTorch model loading and inference |
-| (✓) `input_data.py` | **Shared** from `nn_without_pytorch/` | Data generation remains framework-agnostic |
+| (✓) `input_data.py` | **Shared** from `nn/` | Data generation remains framework-agnostic |
 | (✘) `serialize.py` | **`serialize.py`** (rewritten) | Uses `torch.save()` / `torch.load()` instead of pickle |
 | (✘) `graph_results.py` | **`graph_results.py`** (adapted) | Modified for PyTorch training output format |
 
@@ -683,7 +683,7 @@ The PyTorch implementation consolidates functionality by leveraging PyTorch's bu
 ### Key Implementation Differences 
 
 1. **Forward Pass**: PyTorch's computational graph automatically handles forward propagation through `nn.Linear` layers
-2. **Backward Pass**: `loss.backward()` replaces manual gradient computation—PyTorch autograd calculates all gradients automatically
+2. **Backward Pass**: `loss.backward()` replaces manual gradient computation and PyTorch autograd calculates all gradients automatically
 3. **Weight Updates**: `optimizer.step()` replaces manual weight updates (`w -= learning_rate * dw`)
 4. **Optimiser**: `torch.optim.SGD(momentum=0)` configured to match vanilla gradient descent exactly
 
@@ -754,12 +754,12 @@ Using the **same initial pose** (from GA-generated gait), both implementations p
 
 This neural network successfully learns to predict spider gait sequences through:
 
-1. **Well-designed architecture** (3-layer MLP with 128→64→32 neurons)
-2. **Appropriate activation** (sigmoid for bounded outputs)
-3. **Suitable loss function** (MSE for regression)
-4. **Stable training method** (gradient descent, LR=0.01)
-5. **Correct backpropagation** (89% loss reduction, smooth convergence)
-6. **Thoughtful data handling** (normalised inputs, synthetic training data)
+1. **Well-designed architecture** - which uses 3-layer MLP with 128→64→32 neurons
+2. **Suitable activation** - sigmoid for bounded outputs
+3. **Suitable loss function** - MSE for regression)
+4. **Stable training method** - gradient descent, LR=0.01
+5. **Suitable backpropagation** - 89% loss reduction, smooth convergence
+6. **Data handling processes** - normalised inputs, synthetic training data
 
-Both **NumPy** and **PyTorch** implementations achieve identical results, validating the correctness of the from-scratch NumPy implementation while demonstrating modern framework integration.
+Both **NumPy** and **PyTorch** implementations achieve very similar results, giving more validity to out neural network created from scratch, while demonstrating modern framework integration.
 
