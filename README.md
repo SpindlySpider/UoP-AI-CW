@@ -174,6 +174,22 @@ The CLI provides flexible input methods for different use cases:
 
 ## Usage Guide
 
+### Creating an virtual environment and installing dependencies
+using `python3 <=` create a virtual environment to download dependencies
+starting from the root of the repo.
+create virtual environment.
+```bash
+python3 -m venv .venv
+```
+activate virtual environment.
+```bash
+source .venv/bin/activate
+```
+install dependencies.
+```bash
+pip install -r requirements.txt
+```
+
 ### Running the Application
 
 ```bash
@@ -350,7 +366,7 @@ The system provides **two neural network implementations** with identical interf
 | **Speed** | Moderate (CPU only) | Fast (GPU/CPU) |
 | **Dependencies** | NumPy only | PyTorch framework |
 | **Learning** | Great for education | Production ready |
-| **GPU Support** | ❌ No | ✅ Yes |
+| **GPU Support** | No | Yes |
 | **Model Size** | Larger (full objects) | Smaller (weights only) |
 | **Compatibility** | Python specific | Cross-platform |
 
