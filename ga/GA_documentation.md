@@ -21,10 +21,10 @@
 ## Glossary
 | Term | Definition |
 |------|-------------|
-| **GA (Genetic Algorithm)** | A search heuristic inspired by natural selection, used to optimise solutions. |
-| **Gait** | A pattern of limb movement during locomotion. |
+| **GA (Genetic Algorithm)** | A set of algorithms that are used to optimise solutions using methods that are inspired by evolutionary biology. |
+| **Gait** | A pattern of limb movement whilst walking. |
 | **Chromosome** | A tuple encapsulating sine wave parameters. |
-| **Gene** | An individual parameter within a chromosome that governs a specific aspect of joint motion.
+| **Gene** | An individual parameter within a chromosome that controls a specific aspect of a joint movement. 
 
 - **Amplitude** *(float)*: Maximum rotational displacement of a joint  
 - **Period** *(float)*: Controls the speed of the gait cycle  
@@ -50,11 +50,11 @@ The GA explores the space of possible walking patterns using the following compo
 | Stage | Description |
 |--------|-------------|
 | **Initialisation** | Randomly generates an initial population of gait candidates. |
-| **Selection** | Chooses fitter individuals based on performance metrics (stability, speed, efficiency). |
-| **Reproduction** | Creates new individuals via crossover and mutation. |
+| **Selection** | Chooses fitter individuals based on performance metrics. |
+| **Reproduction** | Creates new individuals through crossover and mutation. |
 | **Termination** | Ends when improvements plateau or a maximum generation count is reached. |
 
-The focus throughout this implementation is to balance:
+This implementation is focused on achieving a balance between:
 - **Biological realism**
 - **Computational efficiency**
 - **Ease of implementation**
@@ -70,7 +70,7 @@ The final objective is a **stable, coordinated, and efficient gait**.
 Each **individual** in the population represents a complete gait.  
 Each chromosome consists of five parameters (amp, p, offset, etc.) that control the oscillation of a joint. For each limb, there are 3 joints. Finally, there are 2 unique limbs per side on this spider. So in total **5x3x2x2 = 60 genes**
 
-Each side (left and right) has two unique sine waves per joint, for a total of six. The pattern on each side follows an A, B, A, B sequence, meaning the front legs follow the 3rd legs and the 2nd legs follow the rear legs.
+Each side (left and right) has two unique sine waves per joint, for a total of six. The pattern on each side follows an A, B, A, B sequence, meaning the front legs follow the 3rd legs and the 2nd legs follow the back legs.
 
 #### Gene Encoding
 Each joint’s motion is represented by a **sine-wave function** characterised by five parameters:
@@ -83,7 +83,7 @@ Each joint’s motion is represented by a **sine-wave function** characterised b
 | **negative** | Boolean flag inverting the sine wave | {True, False} | Adds diversity without extra dimensions |
 | **v_offset** | Baseline joint angle | (-50, 50) | Adjusts resting joint positions |
 
-The wide range of possible values for these parameters creates a high-dimensional search space, providing the Genetic Algorithm (GA) with a broad solution landscape to explore when optimising candidate solutions.
+The wide range of possible values for these parameters creates a high-dimensional search space, providing the Genetic Algorithm (GA) with a large search space to be explored.
 
 #### Representation Rationale
 - **Sine-wave encoding** produces smooth, periodic motion aligned with natural walking.
@@ -97,7 +97,7 @@ The wide range of possible values for these parameters creates a high-dimensiona
 ### Fitness Function Design
 
 #### Overview
-The **fitness function** measures how well a gait replicates a desired motion pattern.  
+The **fitness function** measures how well a gait matches the desired solution.  
 A higher fitness value indicates better gait performance.
 
 #### Evaluation Method
@@ -113,7 +113,7 @@ $$
 \text{fitness} = \frac{1}{1 + \text{MSE}}
 $$
 
-Lower error → higher fitness.
+The smaller the error, the higher the fitness score.
 
 #### Design Rationale
 
@@ -262,7 +262,7 @@ def gen_gait(individual: Individual, gait_length: int) -> Gait:
 
 ### Selection Methods
 
-Initially, both **tournament selection** and **roulette wheel selection** were implemented.  
+Initially, both **tournament selection** and **roulette wheel selection** were implemented to evaluate each option.   
 It was ultimately decided that **Tournament selection** would be used due to its simplicity and the precise control it offers over selection pressure, making it a reliable and efficient method for guiding the evolutionary process.
 
 
@@ -321,7 +321,7 @@ def tournament(population: Population, fitness: list[float], num_selected: int) 
 ### Reproduction
 
 #### Crossover
-Both **normal crossover** and **uniform crossover** were implemented and tested for performance. After evaluation, **uniform crossover** was chosen as it consistently produced offspring with higher genetic diversity, resulting in faster convergence and improved optimisation quality.
+Both **normal crossover** and **uniform crossover** were implemented and tested for performance. **Uniform crossover** was chosen as it consistently produced more diverse offspring, which  resulted in faster convergence and improved optimisation quality.
 
 The **uniform crossover** implementation:
 - Randomly swaps  corresponding **amplitude**, **vertical offset**, **horizontal offset** and **period**, as well as **negative flag** values between two parents.  
@@ -458,8 +458,8 @@ def mutate(population:Population,mut_rate:float) -> Population:
 
 The algorithm stops when **either** of the following is true:
 
-- The **best individual’s fitness** is **≥ 1.500**. Theoretically, the fitness function could produce a maximum fitness score of 3.0 however, in practice, all test runs appeared to be getting to a maximum of 1.8, therefore indicating that achieving a higher fitness score would require more generations and more computational power. A fitness score of 1.5 was found to correspond to a high-quality gait, with higher scores providing only negligible improvements. So, a fitness score of 1.5 was chosen as the stopping criterion for the genetic algorithm.
-- The **best individual’s fitness** (rounded to **three decimal places**) remains unchanged for **100 consecutive generations**.
+- The **best individual’s fitness** is **≥ 1.500**. Theoretically, the fitness function could produce a maximum fitness score of 3.0; however, in practice, all test runs appeared to be getting to a maximum of 1.8, therefore indicating that achieving a higher fitness score would require more generations and more computational power. A fitness score of 1.5 was found to correspond to a high-quality gait, with higher scores providing only negligible improvements. So, a fitness score of 1.5 was chosen as the stopping criterion for the genetic algorithm.
+- The **best individual’s fitness** (rounded to **three decimal places**) does not change for **100 consecutive generations**.
 
 ---
 
@@ -559,7 +559,7 @@ This compact representation significantly reduced computational overhead while p
 ### Summary
 
 The initial frame-based coxa evaluation provided **high biological fidelity** but was limited by **exponential computational cost**.  
-The final **sine-wave chromosome encoding** maintained the essential realism of leg movement while enabling **efficient optimisation**, balancing accuracy and performance for practical implementation.
+The final **sine-wave chromosome encoding** maintained **efficient optimisation**, whilst allowing accuracy in the movement. 
 
 ---
 
@@ -925,20 +925,20 @@ generation: 277 | best fitness: 1.5035 ✓ (Target reached)
 ```
 
 **Key Observations:**
-- **Early exploration phase**: Fitness increased from 0.04 to 0.12 in first 10 generations
+- **Early exploration phase**: Fitness increased from 0.04 to 0.12 in the first 10 generations
 - **Steady progressive improvement**: Generations 10-100 showed consistent incremental gains, crossing the 1.0 threshold at generation 183
-- **Accelerated refinement**: Generations 234-250 demonstrated rapid fitness improvement from 1.06 to 1.38 due to discovering superior solution space
+- **Accelerated refinement**: Generations 234-250 demonstrated rapid fitness improvement from 1.06 to 1.38 due to discovering a superior solution space
 - **Final convergence**: Generations 250-277 refined the gait from 1.38 to 1.50
-- **Total runtime**: 277 generations to achieve optimal gait pattern exceeding target threshold
+- **Total runtime**: 277 generations to achieve an optimal gait pattern exceeding the target threshold
 
-The resulting gait data is saved to `results.txt` as a **300 × 24 matrix** (300 time steps, 24 joint angles), ready for visualization in MATLAB using the code provided below.
+The resulting gait data is saved to `results.txt` as a **300 × 24 matrix** (300 time steps, 24 joint angles), ready for visualisation in MATLAB using the code provided below.
 
 ---
 
 **Explanation:**
 - `readmatrix()` loads the gait data from `results.txt`.  
 - `deg2rad()` converts joint angles to radians.  
-- The loop visualizes each time step, animating the spider’s movement.
+- The loop visualises each time step, animating the spider’s movement.
 
 ---
 
@@ -958,7 +958,7 @@ The resulting gait data is saved to `results.txt` as a **300 × 24 matrix** (300
 | Test Type | Description |
 |------------|-------------|
 | **Convergence Tracking** | Recorded and plotted fitness values across generations to monitor improvement |
-| **Visual Verification** | Assessed gait smoothness and motion stability via MATLAB visualization |
+| **Visual Verification** | Assessed gait smoothness and motion stability via MATLAB visualisation |
 | **Parameter Sensitivity** | Tested robustness by varying mutation rates and population sizes |
 
 ## Convergence Tracking
@@ -981,7 +981,7 @@ The graph above illustrates this behaviour with two distinct examples:
   <img src="images/spider_walking.gif" alt="Spider Walking Animation">
 </p>
 
-This animation showcases an optimized walking gait evolved by the Genetic Algorithm, demonstrating smooth and coordinated leg movement. The MATLAB code to reproduce this visualization is provided in the **MATLAB Visualization** section above.
+This animation showcases an optimised walking gait evolved by the Genetic Algorithm, demonstrating smooth and coordinated leg movement. The MATLAB code to reproduce this visualisation is provided in the **MATLAB Visualisation** section above.
 
 ---
 
@@ -990,7 +990,7 @@ This animation showcases an optimized walking gait evolved by the Genetic Algori
 1. **Introduce Elitism**  
    Preserve the top-performing individuals in each generation to ensure that the best solutions are always carried forward.
 2. **Evolve Multiple Target Gaits**  
-   Enable the evolution of diverse movement styles (e.g., running, jumping, crawling) rather than optimizing for a single gait. This promotes richer, more adaptable locomotion behaviors—such as a spider capable of both running and jumping.
+   Enable the evolution of diverse movement styles (e.g., running, jumping, crawling) rather than optimising for a single gait. This promotes richer, more adaptable locomotion behaviours—such as a spider capable of both running and jumping.
 3. **Integrate Adaptive Mutation Rates**  
    Implement a mutation rate that adjusts dynamically based on population diversity or generation progress. Higher mutation rates can be applied when the population begins to converge prematurely, helping to maintain diversity
 
