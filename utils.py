@@ -52,14 +52,23 @@ def modify_default(choice_dict:dict[str,any],defaults:dict):
             return modified_default
         elif choice == "optimiser":
             print(f"modifying:",choice)
-            optimiser_options = {
-                "prompt":"Choose between:",
-                "options":["gradient_descent","adam","exit"]
-            }
+            # Determine which optimizers are available based on current defaults
+            if "nn_save" in modified_default and modified_default["nn_save"].endswith(".pth"):
+                # PyTorch optimizers
+                optimiser_options = {
+                    "prompt":"Choose between (PyTorch):",
+                    "options":["sgd","adam","exit"]
+                }
+            else:
+                # Custom implementation optimizers
+                optimiser_options = {
+                    "prompt":"Choose between (Custom):",
+                    "options":["gradient_descent","adam","exit"]
+                }
             optimiser_choice = get_choice(optimiser_options)
             if optimiser_choice == "exit":
                 print("not saved")
-            elif optimiser_choice in ["gradient_descent","adam"]:
+            elif optimiser_choice in ["gradient_descent","adam","sgd"]:
                 modified_default[choice] = optimiser_choice
                 print(f"new value saved: {optimiser_choice}")
         else:

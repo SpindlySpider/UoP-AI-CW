@@ -3,6 +3,8 @@ from pathlib import Path
 
 import nn_without_pytorch.main as nn
 import nn_without_pytorch.load_and_predict as predict
+import pytorch_nn.main as pytorch_nn
+import pytorch_nn.load_and_predict as pytorch_predict
 import random
 import ga.main as ga
 from utils import *
@@ -22,6 +24,25 @@ def main():
         defaults = get_defaults(ga.defaults)
         ga.main(**defaults)
     else:
+        # Choose between PyTorch and custom implementation
+        options = {
+            "prompt":"Which neural network implementation?:",
+            "options":["custom (numpy)","pytorch","exit"]
+        }
+        nn_choice = get_choice(options)
+        if nn_choice == "exit":
+            sys.exit(0)
+        
+        # Set the correct modules based on choice
+        if nn_choice == "pytorch":
+            nn_module = pytorch_nn
+            predict_module = pytorch_predict
+            model_extension = "nn.pth"
+        else:  # custom (numpy)
+            nn_module = nn
+            predict_module = predict
+            model_extension = "nn.pickle"
+        
         options = {
             "prompt":"Would you like to train or predict using existing model?:",
             "options":["train","predict","exit"]
@@ -30,8 +51,8 @@ def main():
         if choice == "exit":
             sys.exit(0)
         elif choice == "train":
-            defaults = get_defaults(nn.defaults)
-            nn.main(**defaults)
+            defaults = get_defaults(nn_module.defaults)
+            nn_module.main(**defaults)
         else:
             #TODO: allow use to input list
             options = {
@@ -47,7 +68,7 @@ def main():
                 input = handle_lists(float,24)
 
             predict_defaults = {
-                "nn_path":"nn.pickle",
+                "nn_path":model_extension,
                 "output_file_name":"predict_results.txt",
                 "input":input,
                 "gait_length":300
@@ -55,7 +76,7 @@ def main():
             defaults = get_defaults(predict_defaults)
 
             # unpacks default values to named params of load_and_predict
-            predict.load_and_predict(**defaults)
+            predict_module.load_and_predict(**defaults)
             
     print("="*20)
 

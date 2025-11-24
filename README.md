@@ -6,17 +6,20 @@
 3. [CLI Features](#cli-features)
 4. [Usage Guide](#usage-guide)
 5. [Component Integration](#component-integration)
-6. [Configuration Options](#configuration-options)
-7. [File Outputs](#file-outputs)
+6. [Neural Network Implementations](#neural-network-implementations)
+7. [Configuration Options](#configuration-options)
+8. [File Outputs](#file-outputs)
 
 ---
 
 ## Overview
 
-The **main.py** file serves as the central command-line interface (CLI) for the Spider Gait Generation System, providing a unified access point to two distinct AI approaches for generating and predicting spider locomotion patterns:
+The **main.py** file serves as the central command-line interface (CLI) for the Spider Gait Generation System, providing a unified access point to multiple AI approaches for generating and predicting spider locomotion patterns:
 
 1. **Genetic Algorithm (GA)** - Evolves optimal gait patterns through evolutionary optimization
 2. **Neural Network (NN)** - Learns to predict sequential gait frames from training data
+   - **Custom NumPy Implementation** - Pure Python implementation for educational purposes
+   - **PyTorch Implementation** - GPU-accelerated deep learning framework for production use
 
 This modular CLI design allows users to seamlessly switch between evolutionary optimization and machine learning approaches, or use them in combination for comprehensive gait generation and analysis.
 
@@ -57,6 +60,9 @@ The CLI provides a user-friendly, menu-driven interface with hierarchical naviga
 Main Menu
 ├── Genetic Algorithm
 ├── Neural Network
+│   ├── Implementation Choice
+│   │   ├── Custom (NumPy)
+│   │   └── PyTorch
 │   ├── Train
 │   └── Predict
 │       ├── Random Input
@@ -240,6 +246,90 @@ predict.load_and_predict(**defaults)
 ```
 
 **For detailed NN implementation**, see [NN_documentations.md](./nn_without_pytorch/NN_documentations.md)
+
+---
+
+## Neural Network Implementations
+
+The system provides **two neural network implementations** with identical interfaces but different underlying technologies:
+
+### Custom NumPy Implementation (`nn_without_pytorch/`)
+
+**Purpose**: Educational reference and lightweight deployment
+
+**Key Features**:
+- Pure Python implementation using NumPy
+- Custom backpropagation and gradient descent
+- No external deep learning frameworks required
+- Ideal for understanding neural network mechanics
+
+**Model Format**: `.pickle` (serialized Python objects)
+
+**Optimizers**: `gradient_descent`, `adam`
+
+### PyTorch Implementation (`pytorch_nn/`)
+
+**Purpose**: Production use with GPU acceleration
+
+**Key Features**:
+- Built on PyTorch deep learning framework
+- GPU acceleration via CUDA (when available)
+- Automatic differentiation for backpropagation
+- Optimized matrix operations
+- Industry-standard architecture
+
+**Model Format**: `.pth` (PyTorch state dict)
+
+**Optimizers**: `sgd`, `adam`
+
+### Implementation Comparison
+
+| Feature | Custom NumPy | PyTorch |
+|---------|--------------|---------|
+| **Speed** | Moderate (CPU only) | Fast (GPU/CPU) |
+| **Dependencies** | NumPy only | PyTorch framework |
+| **Learning** | Great for education | Production ready |
+| **GPU Support** | ❌ No | ✅ Yes |
+| **Model Size** | Larger (full objects) | Smaller (weights only) |
+| **Compatibility** | Python specific | Cross-platform |
+
+### Identical API Interface
+
+Both implementations share the **exact same interface**:
+
+```python
+# Training (both implementations)
+main(
+    hidden_layers=[128, 64, 32],
+    learning_rate=0.01,
+    epochs=100,
+    ...
+)
+
+# Prediction (both implementations)
+load_and_predict(
+    input=[...],           # 24 joint angles
+    nn_path="model_file",  # .pickle or .pth
+    output_file_name="results.txt",
+    gait_length=300
+)
+```
+
+### Choosing an Implementation
+
+**Use Custom NumPy when**:
+- Learning about neural network internals
+- No GPU available and dataset is small
+- Avoiding heavy framework dependencies
+- Teaching or demonstrating concepts
+
+**Use PyTorch when**:
+- Training large models with extensive data
+- GPU acceleration is available
+- Production deployment requirements
+- Leveraging modern deep learning features
+
+**Both produce identical results** with the same hyperparameters, ensuring consistency across implementations.
 
 ---
 
