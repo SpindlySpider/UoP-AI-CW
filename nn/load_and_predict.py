@@ -29,10 +29,10 @@ def predict(nn:Neural_network,input:list[float]) -> list[float]:
 
 
 # Normalization/denormalization matching input_data.py
-# Training uses: (x + 80) / 110 for normalization
-# So denormalization is: (x * 110) - 80
-normalize = lambda x : (x - minimum_angle) / angle_diff  # (x + 80) / 110
-denormalize = lambda x : (x * angle_diff) + minimum_angle  # (x * 110) - 80
+# Training uses: (x + 50) / 80 for normalization
+# So denormalization is: (x * 80) - 50
+normalize = lambda x : (x - minimum_angle) / angle_diff  # (x + 50) / 80
+denormalize = lambda x : (x * angle_diff) + minimum_angle  # (x * 80) - 50
 
 def predict_gait(nn:Neural_network, input:list[float],gait_length:int = 300) -> Gait:
     """

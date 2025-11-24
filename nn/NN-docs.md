@@ -50,9 +50,7 @@ Output Layer:    24 neurons + Sigmoid activation (predicted joint angles)
 | Aspect | Sigmoid Benefits | Why Suitable |
 |--------|------------------|--------------|
 | **Output Range** | [0, 1] | Matches normalised joint angle range perfectly |
-| **Smooth Gradients** | Differentiable everywhere | Enables stable backpropagation |
 | **Non-linearity** | S-curve shape | Captures complex motion patterns |
-| **Biological Realism** | Smooth transitions | Mirrors natural joint movement |
 
 **Formula**: $\sigma(x) = \frac{1}{1 + e^{-x}}$
 
@@ -86,22 +84,21 @@ Where:
 
 **Why Not Other Loss Functions?**
 - **MAE (Mean Absolute Error)**: Less sensitive to outliers, but we want to heavily penalise bad predictions
-- **Cross-Entropy**: This is only used for classification and not regression
-- **Huber Loss**: Generally more useful for noisy data, but our synthetic data is clean
 
 ---
 
-## 4. Training Method & Learning Rate
+## 4. Training Method
 
 ### Optimiser Comparison: Gradient Descent vs Adam
 
-We tested both optimisers and the results below show **actual training runs** on the same data for each.
+Both optimisers were tested with the same sample size which has been shuffled afer each epoch to prevent overfitting. The results below show **tested training runs**
 
-#### Configuration
+
+#### Dafault Configuration
 
 | Parameter | Value |
 |-----------|-------|
-| **Training Data** | 25,935 samples (700 gait variations × 39 pairs each × 0.95) |
+| **Training Data** | 66500 samples (700 gait variations × 100 gait length × 0.95) |
 | **Test Data** | 1,365 samples (5% holdout) |
 | **Batch Size** | 1 (SGD - Stochastic Gradient Descent) |
 | **Epochs** | 100 |
@@ -114,7 +111,9 @@ We tested both optimisers and the results below show **actual training runs** on
 **Algorithm**: 
 $$W_{new} = W_{old} - \eta {\frac{\delta{E}}{\delta{W_{old}}}} $$
 where:
-$$\eta$$ - is learning rate
+
+<!-- $$\eta$$ - is learning rate -->
+
 $$\eta {\frac{\delta{E}}{\delta{W_{old}}}}$$ - is partial derivitive is the gradient of error with respect to $$W_{old}$$
 
 **Results**:
@@ -171,7 +170,7 @@ We can conclude that ADAM can work with a lower learning rate (e.g. `0.001`) and
 
 $$W_{new} = W_{old} - \eta {\frac{\delta{E}}{\delta{W_{old}}}} $$
 where:
-$$\eta$$ - is learning rate of `0.001`
+<!-- $$\eta$$ - is learning rate of `0.001` -->
 $$\eta {\frac{\delta{E}}{\delta{W_{old}}}}$$ - is partial derivitive is the gradient of error with respect to $$W_{old}$$
 
 **Results**:
@@ -258,11 +257,11 @@ The network reaches a **reasonable solution** where predicted joint angles close
    - Tibia-femur amplitude: [15°, 35°] (vertical movement)
 3. **Extract Frames**: Each gait = 40 time steps
 4. **Create Pairs**: `(frame[t], frame[t+1])` for supervised learning (39 pairs per gait since last frame has no next)
-5. **Combine**: 700 gaits × 39 pairs = 27,300 total samples
+5. **Combine**: 700 gaits × 100 gait variations = 70000 total samples 
 
 **Data Split**:
-- **Training**: 95% (25,935 samples)
-- **Testing**: 5% (1,365 samples)
+- **Training**: 95% (66500 samples)
+- **Testing**: 5% (3500 samples)
 
 ### Input/Output Format
 
@@ -276,12 +275,12 @@ The network reaches a **reasonable solution** where predicted joint angles close
 
 ```python
 # Used in both input_data.py and load_and_predict.py
-normalised = (raw_angle + 80) / 110  # Maps [-80°, 30°] → [0, 1]
+normalize = lambda x : (x - minimum_angle) / angle_diff  # (x + 50) / 80
 ```
 
-**Why [-80°, 30°] bounds (110° range)?**
+**Why [-50°, 30°] bounds (80° range)?**
 - Code comment states: "actual range: coxa [-23, 23], tibia-femur approximately [-75, -20]"
-- Expanded to [-80°, 30°] to provide safety margin beyond observed extremes
+- Expanded to [-50°, 30°] to provide safety margin beyond observed extremes
 - Ensures no joint angle exceeds [0, 1] bounds after normalisation
 - Consistent scaling prevents some joints dominating loss
 - Enables stable sigmoid outputs without saturation
@@ -296,7 +295,7 @@ normalised = (raw_angle + 80) / 110  # Maps [-80°, 30°] → [0, 1]
 
 ```python
 # Used in both training and prediction
-raw_angle = (normalised × 110) - 80  # Maps [0, 1] → [-80°, 30°]
+denormalize = lambda x : (x * angle_diff) + minimum_angle  # (x * 80) - 50
 ```
 
 **Usage**: Predicted frame becomes input for next prediction, enabling recursive gait generation
