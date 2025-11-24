@@ -20,6 +20,10 @@ def save_torch(model: torch.nn.Module, out: str = "nn.pth"):
         model (torch.nn.Module): PyTorch model to save.
         out (str): Name of file to save to, defaults to "nn.pth"
     """
+    # Ensure the path is relative to pytorch_nn/ folder if just a filename
+    if not Path(out).is_absolute() and not str(out).startswith('.'):
+        out = str(Path(__file__).parent / out)
+    
     torch.save(model.state_dict(), out)
 
 
@@ -34,6 +38,10 @@ def load_torch(model: torch.nn.Module, file_name: str = "nn.pth") -> torch.nn.Mo
     Returns:
         PyTorch model with loaded weights.
     """
+    # Ensure the path is relative to pytorch_nn/ folder if just a filename
+    if not Path(file_name).is_absolute() and not str(file_name).startswith('.'):
+        file_name = str(Path(__file__).parent / file_name)
+    
     model.load_state_dict(torch.load(file_name, weights_only=True))
     model.eval()
     return model

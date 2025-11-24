@@ -10,6 +10,18 @@ except Exception:
     from torch_model import TorchNet
 
 def run_predictions(input_path, model_path='nn.pth', out_path='sol_pred.txt', normalize=True, denormalize=True):
+    from pathlib import Path as PathLib
+    
+    # Ensure the model path is relative to pytorch_nn/ folder if just a filename
+    if not os.path.isabs(model_path) and not model_path.startswith('.'):
+        script_dir = PathLib(__file__).parent
+        model_path = str(script_dir / model_path)
+    
+    # Ensure the output path is relative to pytorch_nn/ folder if just a filename
+    if not os.path.isabs(out_path) and not out_path.startswith('.'):
+        script_dir = PathLib(__file__).parent
+        out_path = str(script_dir / out_path)
+    
     X = np.loadtxt(input_path, delimiter=',')
     if X.ndim == 1:
         X = X.reshape(1, -1)
@@ -23,7 +35,7 @@ def run_predictions(input_path, model_path='nn.pth', out_path='sol_pred.txt', no
     model.to(device)
 
     if not os.path.exists(model_path):
-        raise FileNotFoundError(f"Model file not found: {model_path}. Train first: python -m nn.main")
+        raise FileNotFoundError(f"Model file not found: {model_path}. Train first: python -m pytorch_nn.main")
 
     state = torch.load(model_path, map_location=device)
     # try strict load first; if it fails, fall back to non-strict (warn user)
