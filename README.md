@@ -12,7 +12,7 @@
 
 ---
 
-## Overview1
+## Overview
 
 The **main.py** file serves as the central command-line interface (CLI) for the Spider Gait Generation System, providing a unified access point to multiple AI approaches for generating and predicting spider locomotion patterns:
 
@@ -263,7 +263,7 @@ The system provides **two neural network implementations** with identical interf
 - No external deep learning frameworks required
 - Ideal for understanding neural network mechanics
 
-**Model Format**: `.pickle` (serialized Python objects)
+**Model Format**: `.pickle` (serialised Python objects)
 
 **Optimizers**: `gradient_descent`, `adam`
 
@@ -275,7 +275,7 @@ The system provides **two neural network implementations** with identical interf
 - Built on PyTorch deep learning framework
 - GPU acceleration via CUDA (when available)
 - Automatic differentiation for backpropagation
-- Optimized matrix operations
+- Optimised matrix operations
 - Industry-standard architecture
 
 **Model Format**: `.pth` (PyTorch state dict)
@@ -359,7 +359,7 @@ load_and_predict(
 | `gait_variations` | int | Number of training examples | 700 |
 | `training_batch_size` | int | Samples per training batch | 1 |
 | `epochs` | int | Training iterations | 100 |
-| `optimiser` | str | Optimizer algorithm | "gradient_descent" |
+| `optimiser` | str | Optimiser algorithm | "gradient_descent" |
 
 ### Neural Network Prediction Configuration
 
@@ -382,7 +382,7 @@ load_and_predict(
 
 **Description**: Complete evolved gait pattern with all 24 joint angles across the full gait cycle
 
-**MATLAB Compatible**: Can be directly imported into MATLAB for visualization and analysis
+**MATLAB Compatible**: Can be directly imported into MATLAB for visualisation and analysis
 
 ```matlab
 % In MATLAB:
@@ -410,7 +410,7 @@ plot(gait_data(:,1));  % Plot first joint's motion
 
 **Description**: Sequential gait predictions starting from input frame
 
-**Usage**: Can be analyzed to evaluate prediction quality and gait continuity
+**Usage**: Can be analysed to evaluate prediction quality and gait continuity
 
 ---
 
