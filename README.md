@@ -12,7 +12,7 @@
 
 ---
 
-## Overview
+## Overview1
 
 The **main.py** file serves as the central command-line interface (CLI) for the Spider Gait Generation System, providing a unified access point to multiple AI approaches for generating and predicting spider locomotion patterns:
 
