@@ -1,8 +1,8 @@
 import sys
 from pathlib import Path
 
-import nn_without_pytorch.main as nn
-import nn_without_pytorch.load_and_predict as predict
+import nn.main as nn
+import nn.load_and_predict as predict
 import pytorch_nn.main as pytorch_nn
 import pytorch_nn.load_and_predict as pytorch_predict
 import random
@@ -37,8 +37,8 @@ def main():
         if nn_choice == "pytorch":
             nn_module = pytorch_nn
             predict_module = pytorch_predict
-            model_extension = "nn.pth"
-        else:  # custom (numpy)
+            model_extension = "nn_pytorch.pth"
+        else:  # from scratch (numpy)
             nn_module = nn
             predict_module = predict
             model_extension = "nn.pickle"
@@ -54,7 +54,6 @@ def main():
             defaults = get_defaults(nn_module.defaults)
             nn_module.main(**defaults)
         else:
-            #TODO: allow use to input list
             options = {
                 "prompt":"Random input or enter your own",
                 "options":["random","manual input"]
@@ -69,9 +68,9 @@ def main():
 
             predict_defaults = {
                 "nn_path":model_extension,
-                "output_file_name":"predict_results.txt",
+                "output_file_name":"nn_predict_results.txt",
                 "input":input,
-                "gait_length":300
+                "gait_length":100
             }
             defaults = get_defaults(predict_defaults)
 

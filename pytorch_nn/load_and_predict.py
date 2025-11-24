@@ -10,7 +10,7 @@ from ga.custom_types import Gait
 from ga.output import output
 
 from pytorch_nn.torch_model import TorchNet
-from pytorch_nn import serialize
+from pytorch_nn import serialise
 
 # Normalization constants matching input_data.py training normalization
 # Maps [-50, 30] to [0, 1] using (x + 50) / 80
@@ -46,7 +46,7 @@ def predict(model:TorchNet, input:list[float]) -> np.ndarray:
 normalize = lambda x : (np.array(x) - minimum_angle) / angle_diff  # (x + 50) / 80
 denormalize = lambda x : (x * angle_diff) + minimum_angle  # (x * 80) - 50
 
-def predict_gait(model:TorchNet, input:list[float], gait_length:int = 300) -> Gait:
+def predict_gait(model:TorchNet, input:list[float], gait_length:int = 100) -> Gait:
     """
     Recursively predict entire gait from one input.
     Parameters:
@@ -65,12 +65,12 @@ def predict_gait(model:TorchNet, input:list[float], gait_length:int = 300) -> Ga
         gait.append(prediction.reshape(prediction.shape[1]))
     return gait
 
-def load_and_predict(input:list[float], nn_path:str = "nn.pth", output_file_name:str = "predict_results.txt", gait_length:int = 300):
+def load_and_predict(input:list[float], nn_path:str = "nn_pytorch.pth", output_file_name:str = "pytorch_predict_results.txt", gait_length:int = 100):
     """
     Helper function to easily load PyTorch model and output results.
     Parameters:
         input (list[float]): list of 24 floats representing joint angles in degrees
-        nn_path (str): path of neural network file to load. default name is nn.pth
+        nn_path (str): path of neural network file to load. default name is nn_pytorch.pth
         output_file_name (str): Name of file to output to, will output to pytorch_nn folder by default
         gait_length (int): length of gait to produce (how many predictions will it do)
     """
@@ -86,7 +86,7 @@ def load_and_predict(input:list[float], nn_path:str = "nn.pth", output_file_name
     model = TorchNet(input_size=24, hidden_sizes=[128, 64, 32], output_size=24, activation='sigmoid')
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     model.to(device)
-    model = serialize.load_torch(model, nn_path)
+    model = serialise.load_torch(model, nn_path)
     
     gait = predict_gait(model, input, gait_length)
     # save predicted gait to file

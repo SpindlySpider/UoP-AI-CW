@@ -1,24 +1,24 @@
 import sys
 from pathlib import Path
 
-# Add parent directory to access nn_without_pytorch
+# Add parent directory to access nn
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-import nn_without_pytorch.input_data as input_data
+import nn.input_data as input_data
 from pytorch_nn.torch_model import TorchNet
 from pytorch_nn.torch_training import train_torch, test_torch
-from pytorch_nn.serialize import save_torch  
+from pytorch_nn.serialise import save_torch  
 
 # Define number of layers and neurons per layer
 hidden_layers: list[int] = [128, 64, 32]
 # Learning rate for NN training
 learning_rate: float = 0.01
 # File to save trained NN to
-nn_save: str = "nn.pth"
+nn_save: str = "nn_pytorch.pth"
 # Ratio of data to use for training vs testing
 training_data_ratio: float = 0.95
 # Length of gait data to generate
-data_gait_length: int = 300
+data_gait_length: int = 100
 # Number of gait variations to generate
 gait_variations: int = 700
 

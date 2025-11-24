@@ -5,12 +5,12 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 # Use relative imports within the package
-from nn_without_pytorch import serialize
-from nn_without_pytorch import input_data
-from nn_without_pytorch.training import *
-from nn_without_pytorch.activation_functions import *
-from nn_without_pytorch.neural_network import Neural_network
-from nn_without_pytorch.optimiser import *
+from nn.serialise import save
+from nn import input_data
+from nn.training import *
+from nn.activation_functions import *
+from nn.neural_network import Neural_network
+from nn.optimiser import *
 
 
 # Define number of layers and neurons per layer
@@ -22,7 +22,7 @@ nn_save:str = "nn.pickle"
 # Ratio of data to use for training vs testing
 training_data_ratio:float = 0.95
 # Length of gait data to generate
-data_gait_length: int = 300
+data_gait_length: int = 100
 # Number of gait variations to generate
 gait_variations:int = 700
 
@@ -72,7 +72,7 @@ def main(hidden_layers=hidden_layers,learning_rate=learning_rate,nn_save=nn_save
 
     # train and save resulting NN
     nn = train_NN(nn,train_in,train_out,epochs,training_batch_size, optimiser)
-    serialize.save(nn,nn_save)
+    save(nn,nn_save)
 
     # test trained nn with unseen input data
     test_NN(nn,test_in,test_out)
