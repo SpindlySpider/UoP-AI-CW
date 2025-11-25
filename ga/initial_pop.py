@@ -1,14 +1,6 @@
-import sys
-from pathlib import Path
 import random
 
-# Add parent directory to path
-sys.path.insert(0, str(Path(__file__).parent.parent))
-
-try:
-    from ga.custom_types import Chromosome, Individual, Population, Period, H_offset, Amplitude, Negative, V_offset
-except ImportError:
-    from custom_types import Chromosome, Individual, Population, Period, H_offset, Amplitude, Negative, V_offset
+from ga.custom_types import Chromosome, Individual, Population, Period, H_offset, Amplitude, Negative, V_offset
 
 def gen_individual() -> Individual:
     """

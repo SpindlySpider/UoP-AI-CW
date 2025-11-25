@@ -326,7 +326,7 @@ During the crossover process, all individuals selected from the tournament go in
 def uniform_crossover(parents:Population,gait_length:int,crossover_rate:float) -> Population:
     '''
     Performs uniform crossover on a population of individuals. 
-    Args:
+    Parameters:
         parents (Population): The population of individuals to perform crossover on.
         gait_length (int): The number of frames in the gait cycle.
         crossover_rate (float): The probability of performing crossover on a pair of parents.
@@ -404,7 +404,7 @@ This ensures **diversity** and prevents **premature convergence**.
 def mutate(population:Population,mut_rate:float) -> Population:
     '''
     Performs mutation on a population of individuals.
-    Args:
+    Parameters:
         population (Population): The population of individuals to mutate.
         mut_rate (float): The probability of mutating each gene.
     Returns:
@@ -611,7 +611,7 @@ Execute the main program to start the Genetic Algorithm and evolve gait patterns
 ```bash
 python ga/main.py
 ```
-The code generates a results.txt file that contains a 300x24 matrix that can be imported into matlab.
+The code generates a ga_results.txt file that contains a 300x24 matrix that can be imported into matlab.
 ---
 
 
@@ -634,7 +634,7 @@ These parameters can be modified directly through the:
 def produce_target(gait_length:int, period:Period, coxa_amplitude:float, tibia_femur_v_shift:float, tibia_femur_amplitude:float) -> Individual:
     '''
     Produce target gait based on sine wave parameters
-    Args:
+    Parameters:
         gait_length (int): The length of the gait
         period (float): The period of the sine wave
         coxa_amplitude (float): The amplitude of the coxa joint movement
@@ -870,7 +870,7 @@ function v_rot = rotate_vector(v, axis, angle)
 end
 
 
-v = readmatrix('results.txt');
+v = readmatrix('ga_results.txt');
 A = deg2rad(v);
 
 for idx = 1:size(v,1)
@@ -887,7 +887,7 @@ gait length: 300
 population size: 3000
 mutation rate: 0.025
 crossover rate: 0.7
-output file: results.txt
+output file: ga_results.txt
 fitness score target: 1.5
 ```
 
@@ -922,12 +922,12 @@ generation: 277 | best fitness: 1.5035 ✓ (Target reached)
 - **Final convergence**: Generations 250-277 refined the gait from 1.38 to 1.50
 - **Total runtime**: 277 generations to achieve an optimal gait pattern exceeding the target threshold
 
-The resulting gait data is saved to `results.txt` as a **300 × 24 matrix** (300 time steps, 24 joint angles), ready for visualisation in MATLAB using the code provided below.
+The resulting gait data is saved to `ga_results.txt` as a **300 × 24 matrix** (300 time steps, 24 joint angles), ready for visualization in MATLAB using the code provided below.
 
 ---
 
 **Explanation:**
-- `readmatrix()` loads the gait data from `results.txt`.  
+- `readmatrix()` loads the gait data from `ga_results.txt`.  
 - `deg2rad()` converts joint angles to radians.  
 - The loop visualises each time step, animating the spider’s movement.
 

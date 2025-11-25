@@ -1,16 +1,12 @@
 import sys
 from pathlib import Path
 
-# Add parent directory to path for imports
-sys.path.insert(0, str(Path(__file__).parent.parent))
-
-# Use relative imports within the package
-from nn_without_pytorch import serialize
-from nn_without_pytorch import input_data
-from nn_without_pytorch.training import *
-from nn_without_pytorch.activation_functions import *
-from nn_without_pytorch.neural_network import Neural_network
-from nn_without_pytorch.optimiser import *
+from nn.serialise import save
+import nn.input_data as input_data
+from nn.training import *
+from nn.activation_functions import *
+from nn.neural_network import Neural_network
+from nn.optimiser import *
 
 
 # Define number of layers and neurons per layer
@@ -22,7 +18,7 @@ nn_save:str = "nn.pickle"
 # Ratio of data to use for training vs testing
 training_data_ratio:float = 0.95
 # Length of gait data to generate
-data_gait_length: int = 300
+data_gait_length: int = 100
 # Number of gait variations to generate
 gait_variations:int = 700
 
@@ -48,7 +44,7 @@ defaults = {
 
 def main(hidden_layers=hidden_layers,learning_rate=learning_rate,nn_save=nn_save,training_data_ratio=training_data_ratio,data_gait_length=data_gait_length,gait_variations=gait_variations,training_batch_size=training_batch_size,epochs=epochs,optimiser=opt):
     """Main function to create, train, and test a neural network for gait generation.
-    Args:
+    Parameters:
         hidden_layers (list[int], optional): List defining the number of neurons in each hidden layer. Defaults to hidden_layers.
         learning_rate (float, optional): Learning rate for training the neural network. Defaults to learning_rate.
         nn_save (str, optional): Filename to save the trained neural network. Defaults to nn_save.
@@ -72,7 +68,7 @@ def main(hidden_layers=hidden_layers,learning_rate=learning_rate,nn_save=nn_save
 
     # train and save resulting NN
     nn = train_NN(nn,train_in,train_out,epochs,training_batch_size, optimiser)
-    serialize.save(nn,nn_save)
+    save(nn,nn_save)
 
     # test trained nn with unseen input data
     test_NN(nn,test_in,test_out)

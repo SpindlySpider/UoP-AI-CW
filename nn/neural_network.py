@@ -2,7 +2,7 @@ import numpy as np
 from numpy._core.numerictypes import float64
 from numpy._typing import NDArray
 
-from nn_without_pytorch.activation_functions import *
+from nn.activation_functions import *
 
 class Neural_network():
     def __init__(self, hidden_layers:list[int] = [24],num_outputs:int = 24,num_inputs:int=24,learning_rate:float=0.5, activation_functions:list = [sigmoid]) -> None:

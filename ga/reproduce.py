@@ -1,19 +1,11 @@
-import sys
-from pathlib import Path
 import random
 
-# Add parent directory to path
-sys.path.insert(0, str(Path(__file__).parent.parent))
-
-try:
-    from ga.custom_types import Population, Individual
-except ImportError:
-    from custom_types import Population, Individual
+from ga.custom_types import Population, Individual
 
 def crossover(parents:Population,gait_length:int,crossover_rate:float) -> Population:
     '''
     Performs single-point crossover on a population of individuals.
-    Args:
+    Parameter:
         parents (Population): The population of individuals to perform crossover on.
         gait_length (int): The number of frames in the gait cycle.
         crossover_rate (float): The probability of performing crossover on a pair of parents.
@@ -51,7 +43,7 @@ def crossover(parents:Population,gait_length:int,crossover_rate:float) -> Popula
 def uniform_crossover(parents:Population,gait_length:int,crossover_rate:float) -> Population:
     '''
     Performs uniform crossover on a population of individuals. 
-    Args:
+    Parameters:
         parents (Population): The population of individuals to perform crossover on.
         gait_length (int): The number of frames in the gait cycle.
         crossover_rate (float): The probability of performing crossover on a pair of parents.
@@ -114,7 +106,7 @@ def uniform_crossover(parents:Population,gait_length:int,crossover_rate:float) -
 def mutate(population:Population,mut_rate:float) -> Population:
     '''
     Performs mutation on a population of individuals.
-    Args:
+    Parameters:
         population (Population): The population of individuals to mutate.
         mut_rate (float): The probability of mutating each gene.
     Returns:

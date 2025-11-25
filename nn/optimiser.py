@@ -1,6 +1,6 @@
 import numpy as np
 
-from nn_without_pytorch.neural_network import Neural_network
+from nn.neural_network import Neural_network
 
 def gradient_descent(nn:Neural_network) -> Neural_network:
     """

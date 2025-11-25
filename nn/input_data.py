@@ -29,6 +29,7 @@ def generate_training_data(gait_length:int = 1000,period:Period = 0.2,coxa_amp:f
     # normalize data between 0 and 1
     # actual range: coxa [-23, 23], tibia-femur approximately [-75, -20]
     # use range [-80, 30] to be safe (110 total range)
+
     for i in range(len(total_gait)):
         # normalize each joint value
         for j in range(len(total_gait[i])):
@@ -39,9 +40,13 @@ def generate_training_data(gait_length:int = 1000,period:Period = 0.2,coxa_amp:f
 
     # generate input output pairs
     # gait_length -1 because output is N+1
-    for i in range(gait_length -1):
+    for i in range(gait_length):
         inputs.append(total_gait[i])
-        outputs.append(total_gait[i+1])
+        if i < gait_length - 1:
+            outputs.append(total_gait[i+1])
+        else:
+            # Wrap around: last frame predicts first frame (cyclic gait)
+            outputs.append(total_gait[0])
     return (inputs,outputs)
 
 

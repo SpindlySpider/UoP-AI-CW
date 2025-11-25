@@ -1,24 +1,24 @@
 import sys
 from pathlib import Path
 
-# Add parent directory to access nn_without_pytorch
+# Add parent directory to access nn
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-import nn_without_pytorch.input_data as input_data
+import nn.input_data as input_data
 from pytorch_nn.torch_model import TorchNet
 from pytorch_nn.torch_training import train_torch, test_torch
-from pytorch_nn.serialize import save_torch  
+from pytorch_nn.serialise import save_torch  
 
 # Define number of layers and neurons per layer
 hidden_layers: list[int] = [128, 64, 32]
 # Learning rate for NN training
 learning_rate: float = 0.01
 # File to save trained NN to
-nn_save: str = "nn.pth"
+nn_save: str = "nn_pytorch.pth"
 # Ratio of data to use for training vs testing
 training_data_ratio: float = 0.95
 # Length of gait data to generate
-data_gait_length: int = 300
+data_gait_length: int = 100
 # Number of gait variations to generate
 gait_variations: int = 700
 
@@ -44,7 +44,7 @@ defaults = {
 
 def main(hidden_layers=hidden_layers, learning_rate=learning_rate, nn_save=nn_save, training_data_ratio=training_data_ratio, data_gait_length=data_gait_length, gait_variations=gait_variations, training_batch_size=training_batch_size, epochs=epochs, optimiser=opt):
     """Main function to create, train, and test a neural network for gait generation.
-    Args:
+    Parameters:
         hidden_layers (list[int], optional): List defining the number of neurons in each hidden layer. Defaults to hidden_layers.
         learning_rate (float, optional): Learning rate for training the neural network. Defaults to learning_rate.
         nn_save (str, optional): Filename to save the trained neural network. Defaults to nn_save.

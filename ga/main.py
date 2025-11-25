@@ -1,43 +1,31 @@
-from pathlib import Path
 import sys
-# Add parent directory to path for imports
-sys.path.insert(0, str(Path(__file__).parent.parent))
 
-try:
-    # Try absolute imports (when run from project root or via main.py)
-    from ga.fitness import Fitness
-    from ga.fitness_graph import plot_fitness_graph
-    import ga.initial_pop as pop
-    import ga.selection as selection
-    import ga.reproduce as reproduce
-    import ga.output as output
-    from ga.custom_types import Population
-except ImportError:
-    # Fall back to relative imports (when run directly from ga/ directory)
-    from fitness import Fitness
-    from fitness_graph import plot_fitness_graph
-    import initial_pop as pop
-    import selection as selection
-    import reproduce as reproduce
-    import output as output
-    from custom_types import Population
+from ga.fitness import Fitness
+from ga.fitness_graph import plot_fitness_graph
+import ga.initial_pop as pop
+import ga.selection as selection
+import ga.reproduce as reproduce
+import ga.output as output
+from ga.custom_types import Population
+from utils import *
 
-try:
-    from utils import *
-except ImportError:
-    # Define minimal utils if not available
-    pass
 
+#TODO: define a gait length, for training / getting fitness and one for output
+# since training is optimising the sine waves so it does not actually need to be the full 300 speeding up training time
 
 # define the set of frames in the gait cycle
-gait_length:int = 300
+gait_length:int = 50
+
+#NOTE: as the above todo says, we could use a var like this I will implement tonight
+#gait_length_output:int = 300
+
 # define search space
 population_size:int = 3000
 mutation_rate:float = 0.025
 crossover_rate:float = 0.7
-output_file:str = "results.txt"
+output_file:str = "ga_results.txt"
 # define fitness target score
-fitness_score_target:float = 1.0
+fitness_score_target:float = 1.5
 
 defaults = {
     "gait_length":gait_length,

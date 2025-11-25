@@ -1,10 +1,10 @@
 """
-Module used to serilize NN class load and dump
+Module used to serialise NN class load and dump
 """
 import pickle
 from pathlib import Path
 
-from nn_without_pytorch.neural_network import Neural_network
+from nn.neural_network import Neural_network
 
 def save(nn:Neural_network,out:str="nn.pickle"):
     """
@@ -13,10 +13,7 @@ def save(nn:Neural_network,out:str="nn.pickle"):
         nn (Neural_network): Neural network to save.
         out (str): Name of file to save to, defaults to "nn.pickle"
     """
-    # Ensure the path is relative to nn_without_pytorch/ folder if just a filename
-    if not Path(out).is_absolute() and not str(out).startswith('.'):
-        out = str(Path(__file__).parent / out)
-    
+
     file = open(out,"wb")
     pickle.dump(nn,file)
     file.close()
@@ -29,10 +26,7 @@ def load(file_name:str="nn.pickle") -> Neural_network:
     Returns:
         Neural network from file.
     """
-    # Ensure the path is relative to nn_without_pytorch/ folder if just a filename
-    if not Path(file_name).is_absolute() and not str(file_name).startswith('.'):
-        file_name = str(Path(__file__).parent / file_name)
-    
+
     try:
         file = open(file_name,"rb")
         nn = pickle.load(file)

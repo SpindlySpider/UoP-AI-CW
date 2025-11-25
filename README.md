@@ -2,13 +2,14 @@
 
 ## Table of Contents
 1. [Overview](#overview)
-2. [System Architecture](#system-architecture)
-3. [CLI Features](#cli-features)
-4. [Usage Guide](#usage-guide)
-5. [Component Integration](#component-integration)
-6. [Neural Network Implementations](#neural-network-implementations)
-7. [Configuration Options](#configuration-options)
-8. [File Outputs](#file-outputs)
+2. [Project Structure](#project-structure)
+3. [System Architecture](#system-architecture)
+4. [CLI Features](#cli-features)
+5. [Usage Guide](#usage-guide)
+6. [Component Integration](#component-integration)
+7. [Neural Network Implementations](#neural-network-implementations)
+8. [Configuration Options](#configuration-options)
+9. [File Outputs](#file-outputs)
 
 ---
 
@@ -22,6 +23,66 @@ The **main.py** file serves as the central command-line interface (CLI) for the 
    - **PyTorch Implementation** - GPU-accelerated deep learning framework for production use
 
 This modular CLI design allows users to seamlessly switch between evolutionary optimisation and machine learning approaches, or combine both for comprehensive gait generation and analysis.
+
+---
+
+## Project Structure
+
+```
+├── .git/                          # Git version control
+├── .gitignore                     # Git ignore rules
+├── venv/                          # Python virtual environment
+├── __pycache__/                   # Python bytecode cache
+│
+├── main.py                        # Main CLI entry point
+├── utils.py                       # CLI utility functions
+├── requirements.txt               # Python dependencies
+├── README.md                      # This documentation
+│
+├── ga_results.txt                 # Genetic algorithm output
+├── nn.pickle                      # Trained NumPy neural network
+├── nn_results.txt                 # NumPy NN training results
+├── nn_predict_results.txt         # NumPy NN prediction output
+├── nn_pytorch.pth                 # Trained PyTorch neural network
+│
+├── ga/                            # Genetic Algorithm module
+│   ├── main.py                    # GA entry point
+│   ├── custom_types.py            # Type definitions
+│   ├── fitness.py                 # Fitness evaluation
+│   ├── fitness_graph.py           # Fitness visualization
+│   ├── initial_pop.py             # Population initialization
+│   ├── output.py                  # Result output handling
+│   ├── reproduce.py               # Crossover & mutation
+│   ├── selection.py               # Selection operators
+│   ├── target_sol.py              # Target solution generator
+│   ├── GA_documentation.md        # GA documentation
+│   ├── images/                    # GA visualization outputs
+│   └── __pycache__/               # Python bytecode cache
+│
+├── nn/                            # Custom NumPy Neural Network
+│   ├── main.py                    # NN training entry point
+│   ├── neural_network.py          # Network architecture
+│   ├── activation_functions.py    # Activation implementations
+│   ├── error_funcs.py             # Loss functions
+│   ├── optimiser.py               # Gradient descent & Adam
+│   ├── training.py                # Training loop
+│   ├── input_data.py              # Data generation
+│   ├── load_and_predict.py        # Inference & prediction
+│   ├── serialise.py               # Model save/load (pickle)
+│   ├── graph_results.py           # Training visualization
+│   ├── NN_documentations.md       # NN documentation
+│   ├── doc-images/                # Documentation images
+│   └── __pycache__/               # Python bytecode cache
+│
+└── pytorch_nn/                    # PyTorch Neural Network
+    ├── main.py                    # PyTorch training entry point
+    ├── torch_model.py             # PyTorch model (nn.Module)
+    ├── torch_training.py          # PyTorch training loop
+    ├── load_and_predict.py        # PyTorch inference
+    ├── serialise.py               # Model save/load (.pth)
+    ├── graph_results.py           # Training visualization
+    └── __pycache__/               # Python bytecode cache
+```
 
 ---
 
@@ -45,7 +106,7 @@ main.py (CLI Entry Point)
 | Component | Purpose | Reference |
 |-----------|---------|-----------|
 | **Genetic Algorithm** | Evolves complete gait patterns using sine-wave chromosome encoding | [GA_documentation.md](./ga/GA_documentation.md) |
-| **Neural Network** | Predicts sequential gait frames through supervised learning | [NN_documentation.md](./nn_without_pytorch/NN_documentations.md) |
+| **Neural Network** | Predicts sequential gait frames through supervised learning | [NN_documentations.md](./nn/NN_documentations.md) |
 | **CLI Utilities** | Provides interactive menu navigation and parameter configuration | `utils.py` |
 
 ---
@@ -112,6 +173,22 @@ The CLI provides flexible input methods for different use cases:
 ---
 
 ## Usage Guide
+
+### Creating an virtual environment and installing dependencies
+using `python3 <=` create a virtual environment to download dependencies
+starting from the root of the repo.
+create virtual environment.
+```bash
+python3 -m venv .venv
+```
+activate virtual environment.
+```bash
+source .venv/bin/activate
+```
+install dependencies.
+```bash
+pip install -r requirements.txt
+```
 
 ### Running the Application
 
@@ -235,7 +312,7 @@ input = handle_lists(float, 24)  # Manual
 # Get prediction configuration
 predict_defaults = {
     "nn_path": "./nn.pickle",
-    "output_file_name": "./predict_results.txt",
+    "output_file_name": "./nn_predict_results.txt",
     "input": input,
     "gait_length": 100
 }
@@ -245,7 +322,7 @@ defaults = get_defaults(predict_defaults)
 predict.load_and_predict(**defaults)
 ```
 
-**For detailed NN implementation**, see [NN_documentations.md](./nn_without_pytorch/NN_documentations.md)
+**For detailed NN implementation**, see [NN_documentations.md](./nn/NN_documentations.md)
 
 ---
 
@@ -289,7 +366,7 @@ The system provides **two neural network implementations** with identical interf
 | **Speed** | Moderate (CPU only) | Fast (GPU/CPU) |
 | **Dependencies** | NumPy only | PyTorch framework |
 | **Learning** | Great for education | Production ready |
-| **GPU Support** | (✘) No | ✓ Yes |
+| **GPU Support** | No | Yes |
 | **Model Size** | Larger (full objects) | Smaller (weights only) |
 | **Compatibility** | Python specific | Cross-platform |
 
@@ -366,9 +443,9 @@ load_and_predict(
 | Parameter | Type | Description | Default |
 |-----------|------|-------------|---------|
 | `nn_path` | str | Path to trained model | "./nn.pickle" |
-| `output_file_name` | str | Prediction results file | "./predict_results.txt" |
+| `output_file_name` | str | Prediction results file | "./nn_predict_results.txt" |
 | `input` | list[float] | Initial 24 joint angles | (random/manual) |
-| `gait_length` | int | Number of frames to predict | 300 |
+| `gait_length` | int | Number of frames to predict | 100 |
 
 ---
 
@@ -376,11 +453,11 @@ load_and_predict(
 
 ### Genetic Algorithm Output
 
-**File**: `results.txt` (default)
+**File**: `ga_results.txt` (default)
 
 **Format**: 300×24 matrix (rows = time steps, columns = joint angles)
 
-**Description**: Complete evolved gait pattern with all 24 joint angles across the full gait cycle
+**Description**: Complete evolved gait pattern with all 24 joint angles across the full 300-frame gait cycle
 
 **MATLAB Compatible**: Can be directly imported into MATLAB for visualisation and analysis
 
@@ -404,11 +481,11 @@ plot(gait_data(:,1));  % Plot first joint's motion
 
 ### Neural Network Prediction Output
 
-**File**: `predict_results.txt` (default)
+**File**: `nn_predict_results.txt` (default)
 
-**Format**: (gait_length+1)×24 matrix
+**Format**: 101×24 matrix (100 predicted frames + 1 initial input frame)
 
-**Description**: Sequential gait predictions starting from input frame
+**Description**: Sequential gait predictions starting from input frame. The NumPy NN implementation generates 100-frame gaits, while the GA generates 300-frame gaits.
 
 **Usage**: Can be analysed to evaluate prediction quality and gait continuity
 
@@ -507,7 +584,7 @@ Potential CLI improvements:
 ## References
 
 - **Genetic Algorithm Implementation**: See [GA_documentation.md](./ga/GA_documentation.md)
-- **Neural Network Implementation**: See [NN_documentations.md](./nn_without_pytorch/NN_documentations.md)
+- **Neural Network Implementation**: See [NN_documentations.md](./nn/NN_documentations.md)
 - **Utility Functions**: See `utils.py` for CLI helper functions
 
 ---
