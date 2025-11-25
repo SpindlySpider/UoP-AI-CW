@@ -112,9 +112,9 @@ Both optimisers were tested with the same sample size which has been shuffled af
 $$W_{new} = W_{old} - \eta {\frac{\delta{E}}{\delta{W_{old}}}} $$
 where:
 
-<!-- $$\eta$$ - is learning rate -->
+- $\eta$ = is learning rate
 
-$$\eta {\frac{\delta{E}}{\delta{W_{old}}}}$$ - is partial derivitive is the gradient of error with respect to $$W_{old}$$
+- $\eta {\frac{\delta{E}}{\delta{W_{old}}}}$ = gradient of error with respect to $$W_{old}$$
 
 **Results**:
 - **Training Loss**: 0.011322 → 0.001249 (89% reduction)
