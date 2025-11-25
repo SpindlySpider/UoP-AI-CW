@@ -635,7 +635,7 @@ python target_sol.py
 The generated gait data is automatically saved for future comparison and analysis.  
 The script produces a **`sol.txt`** file containing a **300 × 24 matrix**, fully compatible with **MATLAB** for import and further processing.
 
-Gait behavior can be customized using adjustable parameters, allowing for a wide range of motion patterns to be produced.  
+Gait behaviour can be customised using adjustable parameters, allowing for a wide range of motion patterns to be produced.  
 These parameters can be modified directly through the:
 
 [ga/`target_sol.py`](https://github.com/SpindlySpider/UoP-AI-CW/blob/main/ga/target_sol.py)
@@ -657,7 +657,7 @@ def produce_target(gait_length:int, period:Period, coxa_amplitude:float, tibia_f
 
     # generate frames based on the gait length
     for idx in range(gait_length):
-        # joint's target for the frame current frame
+        # joint's target for the current frame
         frame:list[float] = []
         # generate for 24 joints
         for joint in range(24):
@@ -702,7 +702,7 @@ def produce_target(gait_length:int, period:Period, coxa_amplitude:float, tibia_f
 
 ---
 
-## MATLAB Visualization
+## MATLAB Visualisation
 
 To visualize the gait in **MATLAB**, use the following script:
 
@@ -947,7 +947,7 @@ The resulting gait data is saved to `results.txt` as a **300 × 24 matrix** (300
 | Library | Purpose |
 |----------|----------|
 | [NumPy](https://numpy.org/) | Numerical computation and matrix operations |
-| [Matplotlib (pyplot)](https://matplotlib.org/) | Visualization and plotting of gait data |
+| [Matplotlib (pyplot)](https://matplotlib.org/) | Visualisation and plotting of gait data |
 | **random** | Randomized initialization and mutation processes |
 | **math** | Trigonometric and mathematical calculations for gait motion |
 
