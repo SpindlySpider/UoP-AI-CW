@@ -37,7 +37,7 @@
 
 ## Overview
 
-The goal of this project is to evolve a **complete gait pattern** — a coordinated walking motion — for a simplified **3D spider model** using a **Genetic Algorithm (GA)**.
+The goal of this project is to evolve a **complete gait pattern** for a simplified **3D spider model** using a **Genetic Algorithm (GA)**.
 
 ### Spider Model
 - **8 legs**, each with **3 joints**: coxa, femur, and tibia.  
@@ -53,13 +53,6 @@ The GA explores the space of possible walking patterns using the following compo
 | **Selection** | Chooses fitter individuals based on performance metrics. |
 | **Reproduction** | Creates new individuals through crossover and mutation. |
 | **Termination** | Ends when improvements plateau or a maximum generation count is reached. |
-
-This implementation is focused on achieving a balance between:
-- **Biological realism**
-- **Computational efficiency**
-- **Ease of implementation**
-
-The final objective is a **stable, coordinated, and efficient gait**.
 
 ---
 
@@ -86,9 +79,7 @@ Each joint’s motion is represented by a **sine-wave function** characterised b
 The wide range of possible values for these parameters creates a high-dimensional search space, providing the Genetic Algorithm (GA) with a large search space to be explored.
 
 #### Representation Rationale
-- **Sine-wave encoding** produces smooth, periodic motion aligned with natural walking.
-- Ensures **continuous, non-jerky movement**.
-- Compact encoding enables **faster optimisation**.
+The Sine-wave encoding ensures that the movement of the spider is smooth and enables faster optimisation due to the compact coding.
 
 **Trade-off:** Restricts solutions to periodic gaits; possibly too restrictive for more complicated or irregular movements 
 
