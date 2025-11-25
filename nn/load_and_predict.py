@@ -6,7 +6,7 @@ import numpy as np
 from ga.custom_types import Gait
 
 from nn.neural_network import Neural_network
-import nn.serialize as serialize
+import nn.serialise as serialize
 
 # Normalization constants matching input_data.py training normalization
 # Maps [-50, 30] to [0, 1] using (x + 50) / 80
