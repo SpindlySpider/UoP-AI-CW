@@ -18,14 +18,18 @@ def get_training_data() -> tuple[Gait,Gait]:
         tuple with input data and output data, same indexes correspond to input and labeled output
     """
 
-    gaits_prefix = "./ga/results/"
-    # get target gait from GA results
-    # get all files in ga/results
     total_gait:list = []
-    gaits:list = os.listdir(gaits_prefix)
+    # get root node of repo
+    repo_dir = Path(__file__).parent.parent
+    gaits_dir = repo_dir.joinpath("ga/results/")
+
+    # get all files in ga/results
+    gaits:list = os.listdir(gaits_dir)
+    print(f"reading gaits from {gaits_dir}")
+    print(f"found {len(gaits)} gaits, using these to train neural network")
     for gait_name in gaits:
         # load gaits and append each frame to total gait
-        gait = load_gait(f"{gaits_prefix}/{gait_name}")
+        gait = load_gait(str(gaits_dir.joinpath(gait_name)))
         [total_gait.append(frame) for frame in gait]
 
 

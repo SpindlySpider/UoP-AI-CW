@@ -21,7 +21,7 @@ def crossover(parents:Population,gait_length:int,crossover_rate:float) -> Popula
         # ensure even num of parents
         offspring.append(parents.pop())
         pop_size -= 1
-    
+
     # perform crossover in pairs
     for i in range(0, pop_size-1,2):
         # get two adjacent individuals that will be parents

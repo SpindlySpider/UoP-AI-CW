@@ -20,8 +20,11 @@ final_gait_length:int = 1000
 population_size:int = 3000
 mutation_rate:float = 0.025
 crossover_rate:float = 0.7
-output_file:str = f"./ga/results/ga_results_{round(time())}.txt"
-# define fitness target score
+
+
+ga_dir = Path(__file__).parent
+output_file:str = str(ga_dir.joinpath(f"results/ga_results_{round(time())}.txt"))
+
 fitness_score_target:float = 1.5
 
 defaults = {
