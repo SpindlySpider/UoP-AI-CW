@@ -82,7 +82,7 @@ def main(gait_compare_length:int = gait_compare_length,final_gait_length:int=fin
             last_100_avg: float = sum(fitness_over_time[-100:]) / 100
             if round(last_100_avg , 3) == round(current_best_fitness, 3):
                 print("Fitness target consistently met over 100 generations with the best fitness score being:", current_best_fitness)
-                sys.exit(0)
+                break
 
         # select individuals for next generation using the functions from selection module(python file)
         population = selection.tournament(population,fitness_list,10)
