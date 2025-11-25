@@ -7,22 +7,20 @@
 4. [CLI Features](#cli-features)
 5. [Installation & Usage Guide](#installation-&-usage-guide)
 6. [Component Integration](#component-integration)
-7. [Neural Network Implementations](#neural-network-implementations)
-8. [Configuration Options](#configuration-options)
-9. [File Outputs](#file-outputs)
+7. [Configuration Options](#configuration-options)
+8. [File Outputs](#file-outputs)
 
 ---
 
 ## Overview
 
-The **main.py** file serves as the central command-line interface (CLI) for the Spider Generation & Prediction System, providing a unified access point to multiple AI approaches for generating and predicting spider locomotion patterns:
+The **main.py** file serves as the command-line interface (CLI) for the Spider Generation & Prediction System, providing an access point to multiple AI approaches for generating and predicting spider gait:
 
-1. **Genetic Algorithm (GA)** - Evolves optimal gait patterns through evolutionary optimization
-2. **Neural Network (NN)** - Learns to predict sequential gait frames from training data
-   - **From Scratch Implementation** - Pure Python implementation for educational purposes
-   - **PyTorch Implementation** - GPU-accelerated deep learning framework for production use
+**Genetic Algorithm (GA)** - Evolves optimal gait patterns through comparison to target solution.
 
-This modular CLI design allows users to seamlessly switch between evolutionary optimization and machine learning approaches, or use them in combination for comprehensive gait generation and analysis.
+**Neural Network (NN)** - Learns to predict sequential gait frames from training data:
+   - **From Scratch Implementation** - Pure Python implementation.
+   - **PyTorch Implementation** - GPU-accelerated deep learning framework.
 
 ---
 
@@ -31,9 +29,7 @@ This modular CLI design allows users to seamlessly switch between evolutionary o
 ```
 ├── .git/                          # Git version control
 ├── .gitignore                     # Git ignore rules
-├── venv/                          # Python virtual environment
-├── __pycache__/                   # Python bytecode cache
-│
+
 ├── main.py                        # Main CLI entry point
 ├── utils.py                       # CLI utility functions
 ├── requirements.txt               # Python dependencies
@@ -57,7 +53,7 @@ This modular CLI design allows users to seamlessly switch between evolutionary o
 │   ├── target_sol.py              # Target solution generator
 │   ├── GA_documentation.md        # GA documentation
 │   ├── images/                    # GA visualization outputs
-│   └── __pycache__/               # Python bytecode cache
+│   ├── results/                   # Resulting GAs after being run
 │
 ├── nn/                            # Custom NumPy Neural Network
 │   ├── main.py                    # NN training entry point
@@ -72,7 +68,6 @@ This modular CLI design allows users to seamlessly switch between evolutionary o
 │   ├── graph_results.py           # Training visualization
 │   ├── NN_documentations.md       # NN documentation
 │   ├── doc-images/                # Documentation images
-│   └── __pycache__/               # Python bytecode cache
 │
 └── pytorch_nn/                    # PyTorch Neural Network
     ├── main.py                    # PyTorch training entry point
@@ -81,7 +76,6 @@ This modular CLI design allows users to seamlessly switch between evolutionary o
     ├── load_and_predict.py        # PyTorch inference
     ├── serialise.py               # Model save/load (.pth)
     ├── graph_results.py           # Training visualization
-    └── __pycache__/               # Python bytecode cache
 ```
 
 ---
@@ -131,19 +125,13 @@ Main Menu
 ```
 
 #### Menu Navigation
-- **Numbered Selection**: Users select options by entering corresponding numbers (0, 1, 2, etc.)
-- **Input Validation**: Automatically validates user input and provides helpful error messages
-- **Clear Feedback**: Each selection is confirmed with visual separators for clarity
+Users are able to select different options using numbers (e.g. 0,1,2). This menu navigation also includes input validation, with type checking when modifying default values. 
 
 ### 2. Configuration Management
 
-Both GA and NN modules support **customizable parameters** with an intuitive modification interface:
-
-#### Features:
-- **Display Defaults**: Shows all current parameter values before execution
-- **Interactive Modification**: Allows selective parameter changes through guided prompts
-- **Type Safety**: Enforces correct data types for each parameter
-- **Save/Discard Options**: Users can save changes or revert to defaults
+Both the GA and NN allow users to customize parameters form inside the CLI. There are a few quality of life features such as:
+- displaying the current configuration before running the GA or NN
+- allowing for saving / discarding modifications.
 
 #### Example Workflow:
 ```
@@ -165,9 +153,9 @@ The CLI provides flexible input methods for different use cases:
 - **Variable-Length Lists**: For hidden layer configuration
 - **Type Validation**: Ensures correct data types (float/int)
 
-#### Input Modes
-- **Random Generation**: Automatically generates valid random inputs
-- **Manual Entry**: Guided step-by-step input for precise control
+#### Input Modes for prediction
+- **Random Generation**: Generates a size 24 array of random float values to test the neural networks predictions.
+- **Manual Entry**: Allows user to enter 24 different float values.
 
 ---
 
@@ -228,7 +216,7 @@ to start the CLI application and access genetic algorithm and neural network fea
 3. When prompted about defaults, enter `N` to use default parameters
 4. The GA will execute and generate an optimized gait pattern
 
-**Output**: Creates `results.txt` containing a 300×24 matrix of joint angles
+**Output**: Creates `results.txt` containing a 1000×24 matrix of joint angles, the large size is for the neural network to ensure there is enough data.
 
 #### Example 2: Training a Neural Network with Custom Parameters
 
@@ -314,8 +302,6 @@ nn.main(**defaults)
     "learning_rate": float,          # e.g., 0.01
     "nn_save": str,                  # e.g., "nn.pickle"
     "training_data_ratio": float,    # e.g., 0.95
-    "data_gait_length": int,         # e.g., 40
-    "gait_variations": int,          # e.g., 700
     "training_batch_size": int,      # e.g., 1
     "epochs": int                    # e.g., 100
     "optimiser": str                 # e.g., adam
@@ -349,90 +335,6 @@ predict.load_and_predict(**defaults)
 
 ---
 
-## Neural Network Implementations
-
-The system provides **two neural network implementations** with identical interfaces but different underlying technologies:
-
-### From Scratch Implementation (`nn/`)
-
-**Purpose**: Educational reference and lightweight deployment
-
-**Key Features**:
-- Pure Python implementation using NumPy
-- From scratch backpropagation and gradient descent
-- No external deep learning frameworks required
-- Ideal for understanding neural network mechanics
-
-**Model Format**: `.pickle` (serialized Python objects)
-
-**Optimizers**: `gradient_descent`, `adam`
-
-### PyTorch Implementation (`pytorch_nn/`)
-
-**Purpose**: Production use with GPU acceleration
-
-**Key Features**:
-- Built on PyTorch deep learning framework
-- GPU acceleration via CUDA (when available)
-- Automatic differentiation for backpropagation
-- Optimized matrix operations
-- Industry-standard architecture
-
-**Model Format**: `.pth` (PyTorch state dict)
-
-**Optimizers**: `sgd`, `adam`
-
-### Implementation Comparison
-
-| Feature | From Scratch | PyTorch |
-|---------|--------------|---------|
-| **Speed** | Moderate (CPU only) | Fast (GPU/CPU) |
-| **Dependencies** | NumPy only | PyTorch framework |
-| **Learning** | Great for education | Production ready |
-| **GPU Support** | No | Yes |
-| **Model Size** | Larger (full objects) | Smaller (weights only) |
-| **Compatibility** | Python specific | Cross-platform |
-
-### Identical API Interface
-
-Both implementations share the **exact same interface**:
-
-```python
-# Training (both implementations)
-main(
-    hidden_layers=[128, 64, 32],
-    learning_rate=0.01,
-    epochs=100,
-    ...
-)
-
-# Prediction (both implementations)
-load_and_predict(
-    input=[...],           # 24 joint angles
-    nn_path="model_file",  # .pickle or .pth
-    output_file_name="results.txt",
-    gait_length=300
-)
-```
-
-### Choosing an Implementation
-
-**Use From Scratch Implementation when**:
-- Learning about neural network internals
-- No GPU available and dataset is small
-- Avoiding heavy framework dependencies
-- Teaching or demonstrating concepts
-
-**Use PyTorch when**:
-- Training large models with extensive data
-- GPU acceleration is available
-- Production deployment requirements
-- Leveraging modern deep learning features
-
-**Both produce identical results** with the same hyperparameters, ensuring consistency across implementations.
-
----
-
 ## Configuration Options
 
 ### Genetic Algorithm Configuration
@@ -440,10 +342,11 @@ load_and_predict(
 | Parameter | Type | Description | Default |
 |-----------|------|-------------|---------|
 | `population_size` | int | Number of individuals in each generation | 100 |
-| `gait_length` | int | Number of time steps in gait cycle | 300 |
-| `num_generations` | int | Maximum evolutionary iterations | 1000 |
+| `gait_compare_length` | int | Number of time steps / frames for each individual, this can be a low number as each individual is not the final time step size. A lower number here reduces computational overhead during execution. | 50 |
+| `final_gait_length` | int | The number time steps / frame for the outputted result. The default value of 1000 is chosen to generate more training data for the neural network. | 1000 |
+| `num_generations` | int | Maximum evolutionary iterations | 100 |
 | `mutation_rate` | float | Probability of gene mutation | 0.1 |
-| `crossover_rate` | float | Probability of parent crossover | 0.7 |
+| `crossover_rate` | float | Probability of parent crossover occuring. If parent pairs are not selected for crossover they move into the next generation. | 0.7 |
 | `tournament_size` | int | Individuals selected for tournament | 5 |
 | `output_file` | str | Results file path | "results.txt" |
 
@@ -455,8 +358,6 @@ load_and_predict(
 | `learning_rate` | float | Training step size | 0.01 |
 | `nn_save` | str | Model save location | "nn.pickle" |
 | `training_data_ratio` | float | Train/test split ratio | 0.95 |
-| `data_gait_length` | int | Length of training sequences | 300 |
-| `gait_variations` | int | Number of training examples | 700 |
 | `training_batch_size` | int | Samples per training batch | 1 |
 | `epochs` | int | Training iterations | 100 |
 | `optimiser` | str | Optimizer algorithm | "gradient_descent" |
@@ -468,7 +369,7 @@ load_and_predict(
 | `nn_path` | str | Path to trained model | "./nn.pickle" |
 | `output_file_name` | str | Prediction results file | "./nn_predict_results.txt" |
 | `input` | list[float] | Initial 24 joint angles | (random/manual) |
-| `gait_length` | int | Number of frames to predict | 100 |
+| `gait_length` | int | Number of frames to predict | 1000 |
 
 ---
 
@@ -562,19 +463,16 @@ The CLI includes robust error handling:
 
 For optimal results, use both systems in sequence:
 
-1. **Phase 1: Evolution**
+1. **Phase 1: Genetic Algorithm**
    - Run GA to generate high-quality gait data
-   - Save multiple evolved solutions with different parameters
+   - Save multiple results to allow give the NN diverse training data
 
-2. **Phase 2: Learning**
-   - Use evolved gaits as training data for neural network
-   - Train NN to learn patterns from optimized gaits
+2. **Phase 2: Neural Network Training**
+   - Train NN using multiple gaits.
 
-3. **Phase 3: Prediction**
-   - Use trained NN for real-time gait generation
-   - Generate variations by starting from different initial poses
-
-This hybrid approach combines the **optimization strength of GA** with the **prediction speed of NN**.
+3. **Phase 3: Neural Network Prediction**
+   - Use a trained neural network to predict the next time steps.
+   - Verify in matlab the results of the predicted gait.
 
 ---
 
@@ -585,16 +483,13 @@ This hybrid approach combines the **optimization strength of GA** with the **pre
 | Issue | Cause | Solution |
 |-------|-------|----------|
 | "Module not found" | Missing dependencies | Run `pip install -r requirements.txt` |
-| "Invalid input type" | Wrong data format | Check parameter types in configuration |
 | "File not found" | Incorrect path | Verify file paths are absolute or relative to CWD |
 | "Training not converging" | Poor hyperparameters | Adjust learning rate or increase epochs |
 | "GA fitness plateauing" | Premature convergence | Increase mutation rate or population size |
 
 ---
 
-## Future Enhancements
-
-Potential CLI improvements:
+## Future Improvements
 
 - **Batch Processing**: Run multiple configurations automatically
 - **Visualization**: Real-time fitness/loss plotting during execution
@@ -608,15 +503,3 @@ Potential CLI improvements:
 
 - **Genetic Algorithm Implementation**: See [GA_documentation.md](./ga/GA_documentation.md)
 - **Neural Network Implementation**: See [NN_documentations.md](./nn/NN_documentations.md)
-- **Utility Functions**: See `utils.py` for CLI helper functions
-
----
-
-## Summary
-
-The `main.py` CLI provides a **unified interface** for spider gait generation using two complementary AI approaches:
-
-- **Genetic Algorithm**: Evolutionary optimization for discovering optimal gait patterns
-- **Neural Network**: Supervised learning for rapid gait prediction
-
-With its **interactive menu system**, **flexible configuration**, and **robust error handling**, the CLI enables both researchers and practitioners to efficiently generate, train, and predict spider gait patterns.
