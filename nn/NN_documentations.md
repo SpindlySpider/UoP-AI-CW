@@ -137,13 +137,13 @@ where:
 - $\eta {\frac{\delta{E}}{\delta{W_{old}}}}$ = gradient of error with respect to $$W_{old}$$
 
 **Results**:
-- **Training Loss**: 0.02362148095410073 -> 0.0009933257943769472 (95% reduction)
-- **Test Loss**: 0.0009564335448358874
+- **Training Loss**: 0.03598855588900905 -> 0.0010135974419259715 (95% reduction)
+- **Test Loss**: 0.001067763894035297
 - **Stability**: Good result with very smooth error minimisation curve
 
 **Training Graph Progress**:
 
-![Gradient Descent Loss](doc-images/1000-epoch-batch-size-1-nn-sgd.png)
+![Gradient Descent Loss](./doc-images/sgd-ep500-lr001.png)
 
 **Analysis**:
 
@@ -157,13 +157,13 @@ From the training progress we can see an unusually smooth curve for a model usin
 **Algorithm**: Adaptive Moment Estimation with momentum
 
 **Results**:
-- **Training Loss**: 0.008526951838577693 -> 0.0024427080098061438 (71% reduction)
-- **Test Loss**: 0.0016466393393722994
+- **Training Loss**: 0.008190058273522118 -> 0.00010437256305459837 (71% reduction)
+- **Test Loss**: 0.00023561222080829665
 - **Stability**: Poor - 10+ major loss spikes
 
 **Training Progress**:
 
-![Adam Default LR](./doc-images/adam-0.01-loss-over-1000-epoch-batch-size-1.png)
+![Adam Default LR](./doc-images/adam-ep500-lr001.png)
 
 **Analysis**: 
 Severe instability over 1000 epochs during execution overflow warnings occurred which indicate gradient explosions despite clipping.
@@ -177,11 +177,11 @@ Additionally another issue we could be facing is our activation functions becomi
 
 **Results with LR = 0.001**:
 
-![Adam LR 0.001](doc-images/adam-0.001-loss-over-1000-epoch-batch-size-1.png)
+![Adam LR 0.001](./doc-images/adam-ep500-lr0001.png)
 
 **Results**:
-- **Training Loss**: 0.011783093635080013 -> 2.9006536549066343e-05 (99.7538% reduction)
-- **Test Loss**: 2.1905038846978885e-05
+- **Training Loss**: 0.018982283008555922 -> 5.767988611904117e-05 (99.7538% reduction)
+- **Test Loss**: 2.8265682014709896e-05
 - **Stability**: Extremely stable - ultra-smooth convergence
 
 **Analysis**:
@@ -202,13 +202,13 @@ where:
 - $\eta {\frac{\delta{E}}{\delta{W_{old}}}}$ = gradient of error with respect to $$W_{old}$$
 
 **Results**:
-- **Training Loss**: 0.041026469973187485 -> 0.004460067474155154 (89.1288% reduction)
-- **Test Loss**: 0.00469362060577518
+- **Training Loss**: 0.03495881138356216 -> 0.0010041029007837273  (89.1288% reduction)
+- **Test Loss**: 0.0008892338786418603
 - **Stability**: Extremely stable - ultra-smooth convergence
 
 **Training Progress**:
 
-![Gradient Descent LR 0.001](doc-images/sgd-0001-1000-epoch-loss.png)
+![Gradient Descent LR 0.001](./doc-images/sgd-ep500-lr0001.png)
 
 **Analysis**:
 Exceptionally smooth exponential decay with even more gradual convergence than LR=0.01. The lower learning rate produces an extremely stable training curve with zero visible oscillations and the loss decreases more slowly but very predictably.
