@@ -85,8 +85,6 @@ The **main.py** file serves as the command-line interface (CLI) for the Spider G
 ├── nn_predict_results.txt         # NumPy NN prediction output
 ├── requirements.txt               # Python dependencies
 └── utils.py                       # CLI utility functions
-
->>>>>>> NNs-comparisons
 ```
 
 ---
