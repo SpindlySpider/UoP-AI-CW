@@ -165,7 +165,8 @@ From the training progress we can see an unusually smooth curve for a model usin
 
 ![Adam Default LR](./doc-images/adam-0.01-loss-over-1000-epoch-batch-size-1.png)
 
-**Analysis**: Severe instability with loss spikes at epochs 33, 39, 52, 57, 62-63, 70, 80, 88. One spike reached 0.0053 (4× baseline) and overflow warnings indicate gradient explosions despite clipping.
+**Analysis**: 
+Severe instability over 1000 epochs during execution overflow warnings occurred which indicate gradient explosions despite clipping.
 
 This could be because the learning rate was too high for ADAM, we used a learning rate of `0.01` which could could a overshoot when combined with the momentum.
 Additionally another issue we could be facing is our activation functions becoming saturated, leading to results close to the boundaries (0 and 1).
@@ -176,7 +177,12 @@ Additionally another issue we could be facing is our activation functions becomi
 
 **Results with LR = 0.001**:
 
-![Adam LR 0.001](doc-images/adam_learning_rate_0.001.png)
+![Adam LR 0.001](doc-images/adam-0.001-loss-over-1000-epoch-batch-size-1.png)
+
+**Results**:
+- **Training Loss**: 0.011783093635080013 → 2.9006536549066343e-05 (90% reduction)
+- **Test Loss**: 2.1905038846978885e-05
+- **Stability**: Extremely stable - ultra-smooth convergence
 
 **Analysis**:
 Reducing learning rate to 0.001 dramatically improves stability but can still shows minor oscillations but no major spikes. It converges to similar loss as gradient descent but takes longer.
@@ -199,7 +205,6 @@ where:
 **Results**:
 - **Training Loss**: 0.015 → 0.0015 (90% reduction)
 - **Test Loss**: Similar to LR=0.01
-- **Training Time**: Longer per loss reduction
 - **Stability**: Extremely stable - ultra-smooth convergence
 
 **Training Progress**:
