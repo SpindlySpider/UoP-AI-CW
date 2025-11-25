@@ -1,5 +1,5 @@
-import sys
 from time import time
+from pathlib import Path
 
 from ga.fitness import Fitness
 from ga.fitness_graph import plot_fitness_graph
