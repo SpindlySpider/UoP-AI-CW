@@ -69,7 +69,7 @@ def shuffle_data(input:list,label:list) -> tuple[NDArray,NDArray]:
     shuffled_in, shuffled_label = np.array(input)[permutated_idxs],np.array(label)[permutated_idxs]
     return (shuffled_in,shuffled_label)
 
-def seperate_train_test_data(train_ratio:float = 0.8) -> dict[str:tuple[Gait,Gait]]:
+def separate_train_test_data(train_ratio:float = 0.8) -> dict[str:tuple[Gait,Gait]]:
     """
     Separates GA results into training and test data to train NN
     Parameters:

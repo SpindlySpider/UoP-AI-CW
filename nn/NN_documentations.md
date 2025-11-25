@@ -110,24 +110,25 @@ Where:
 
 ### Optimiser Comparison: Gradient Descent vs Adam
 
-Both optimisers were tested with the same sample size which has been shuffled afer each epoch to prevent overfitting. The results below show **tested training runs**
+Both optimisers were tested with the same sample size which has been shuffled after each epoch to prevent overfitting. The results below show **tested training runs**
 
 
-#### Dafault Configuration
+#### Default Configuration
 
 | Parameter | Value |
 |-----------|-------|
-| **Training Data** | 66500 samples (700 gait variations × 100 gait length × 0.95) |
-| **Test Data** | 3500 samples (5% holdout) |
+| **Training Data** | 2850 samples (3 gait variations × 1000 gait length × 0.95) |
+| **Test Data** |  150 samples (5% holdout) |
 | **Batch Size** | 1 (SGD - Stochastic Gradient Descent) |
-| **Epochs** | 100 |
+| **Epochs** | 1000 |
 | **Learning Rate** | 0.01 (both optimisers) |
 
 ---
 
 ### Stochastic Gradient Descent
+**Results with LR = 0.01**:
 
-**Algorithm**: 
+**Algorithm**:
 $$W_{new} = W_{old} - \eta {\frac{\delta{E}}{\delta{W_{old}}}} $$
 where:
 
@@ -136,117 +137,13 @@ where:
 - $\eta {\frac{\delta{E}}{\delta{W_{old}}}}$ = gradient of error with respect to $$W_{old}$$
 
 **Results**:
-- **Training Loss**: 0.011322 → 0.001249 (89% reduction)
-- **Test Loss**: 0.001287
-- **Stability**: Perfect - zero spikes
+- **Training Loss**: 0.02362148095410073 -> 0.0009933257943769472 (95% reduction)
+- **Test Loss**: 0.0009564335448358874
+- **Stability**: Good result with very smooth error minimisation curve
 
-**Training Progress**:
+**Training Graph Progress**:
 
-![Gradient Descent Loss](doc-images/gradient_descent_default_learning%20_rate.png)
-
-```
-mean loss 0.006543352293831645 | epoch: 0
-mean loss 0.0020868219787277954 | epoch: 1
-mean loss 0.0017995032342672402 | epoch: 2
-mean loss 0.001566663938591621 | epoch: 3
-mean loss 0.0014782805349112557 | epoch: 4
-mean loss 0.0014493327547754865 | epoch: 5
-mean loss 0.001435576006630105 | epoch: 6
-mean loss 0.0014246388048977968 | epoch: 7
-mean loss 0.0014169143229480494 | epoch: 8
-mean loss 0.0014099851054869455 | epoch: 9
-mean loss 0.001403787964358822 | epoch: 10
-mean loss 0.0013975912484549113 | epoch: 11
-mean loss 0.001393414861142576 | epoch: 12
-mean loss 0.0013884181621127605 | epoch: 13
-mean loss 0.0013833534425486313 | epoch: 14
-mean loss 0.0013800623956949486 | epoch: 15
-mean loss 0.001375397734672272 | epoch: 16
-mean loss 0.0013718314213320407 | epoch: 17
-mean loss 0.0013686490273032252 | epoch: 18
-mean loss 0.0013649065505880126 | epoch: 19
-mean loss 0.0013623221651652996 | epoch: 20
-mean loss 0.0013587804649004107 | epoch: 21
-mean loss 0.0013569473285121088 | epoch: 22
-mean loss 0.0013541027099102517 | epoch: 23
-mean loss 0.001350461589809123 | epoch: 24
-mean loss 0.0013487932995453673 | epoch: 25
-mean loss 0.001345953150429313 | epoch: 26
-mean loss 0.0013440032957477423 | epoch: 27
-mean loss 0.0013411488293233376 | epoch: 28
-mean loss 0.0013394763497337446 | epoch: 29
-mean loss 0.001337225154662251 | epoch: 30
-mean loss 0.0013355436218965414 | epoch: 31
-mean loss 0.0013331624784187312 | epoch: 32
-mean loss 0.001332479904041529 | epoch: 33
-mean loss 0.0013299655169450122 | epoch: 34
-mean loss 0.0013278744833401346 | epoch: 35
-mean loss 0.00132715202583943 | epoch: 36
-mean loss 0.0013254023224412795 | epoch: 37
-mean loss 0.001323135478080652 | epoch: 38
-mean loss 0.001322018510181775 | epoch: 39
-mean loss 0.0013204570987975627 | epoch: 40
-mean loss 0.0013194352532777305 | epoch: 41
-mean loss 0.0013176491994983121 | epoch: 42
-mean loss 0.0013164438978300874 | epoch: 43
-mean loss 0.0013154242812264847 | epoch: 44
-mean loss 0.0013141161663067454 | epoch: 45
-mean loss 0.0013128543946878026 | epoch: 46
-mean loss 0.0013114459972774321 | epoch: 47
-mean loss 0.0013099653288575419 | epoch: 48
-mean loss 0.0013088313476903293 | epoch: 49
-mean loss 0.0013076170846819677 | epoch: 50
-mean loss 0.0013064194510646653 | epoch: 51
-mean loss 0.0013060026157806002 | epoch: 52
-mean loss 0.0013048514982897683 | epoch: 53
-mean loss 0.0013037070373163966 | epoch: 54
-mean loss 0.0013023241048287348 | epoch: 55
-mean loss 0.001301857762841715 | epoch: 56
-mean loss 0.0013005587348102158 | epoch: 57
-mean loss 0.0012998643257298426 | epoch: 58
-mean loss 0.0012986489038241422 | epoch: 59
-mean loss 0.0012974611908309775 | epoch: 60
-mean loss 0.001296922442269489 | epoch: 61
-mean loss 0.0012960327233811299 | epoch: 62
-mean loss 0.0012952488830718753 | epoch: 63
-mean loss 0.0012952636239904984 | epoch: 64
-mean loss 0.0012931016289402454 | epoch: 65
-mean loss 0.0012923659439801984 | epoch: 66
-mean loss 0.0012920505550748438 | epoch: 67
-mean loss 0.0012911550663428876 | epoch: 68
-mean loss 0.0012901573931814716 | epoch: 69
-mean loss 0.0012900713255592498 | epoch: 70
-mean loss 0.001288852198103771 | epoch: 71
-mean loss 0.0012885958808119484 | epoch: 72
-mean loss 0.0012885249949058776 | epoch: 73
-mean loss 0.0012867330671688451 | epoch: 74
-mean loss 0.0012863471883117663 | epoch: 75
-mean loss 0.001285780847777799 | epoch: 76
-mean loss 0.0012853657826033833 | epoch: 77
-mean loss 0.0012848836444308482 | epoch: 78
-mean loss 0.0012841696597236077 | epoch: 79
-mean loss 0.0012838709509999228 | epoch: 80
-mean loss 0.0012831851023124687 | epoch: 81
-mean loss 0.001282943875004581 | epoch: 82
-mean loss 0.001281905065543272 | epoch: 83
-mean loss 0.0012823735745739252 | epoch: 84
-mean loss 0.0012804931209585606 | epoch: 85
-mean loss 0.0012802978970256674 | epoch: 86
-mean loss 0.0012798811229688247 | epoch: 87
-mean loss 0.0012798607485067163 | epoch: 88
-mean loss 0.0012795608452719754 | epoch: 89
-mean loss 0.0012791883066626442 | epoch: 90
-mean loss 0.0012782681551322186 | epoch: 91
-mean loss 0.001278242401865201 | epoch: 92
-mean loss 0.0012778088634409599 | epoch: 93
-mean loss 0.0012775405996678238 | epoch: 94
-mean loss 0.0012773829253191805 | epoch: 95
-mean loss 0.0012771083415047439 | epoch: 96
-mean loss 0.001276506859598713 | epoch: 97
-mean loss 0.0012760870582471636 | epoch: 98
-mean loss 0.0012761309185062505 | epoch: 99
-MSE loss is: 0.0013259913678137683
-```
+![Gradient Descent Loss](doc-images/1000-epoch-batch-size-1-nn-sgd.png)
 
 **Analysis**:
 
@@ -255,17 +152,18 @@ From the training progress we can see an unusually smooth curve for a model usin
 ---
 
 ### Adam Optimiser
+**Results with LR = 0.01**:
 
 **Algorithm**: Adaptive Moment Estimation with momentum
 
 **Results**:
-- **Training Loss**: 0.002011 -> 0.001383 (31% reduction)
-- **Test Loss**: 0.001342  
+- **Training Loss**: 0.008526951838577693 -> 0.0024427080098061438 (71% reduction)
+- **Test Loss**: 0.0016466393393722994
 - **Stability**: Poor - 10+ major loss spikes
 
 **Training Progress**:
 
-![Adam Default LR](doc-images/adam_default_learning_rate.png)
+![Adam Default LR](./doc-images/adam-0.01-loss-over-1000-epoch-batch-size-1.png)
 
 **Analysis**: Severe instability with loss spikes at epochs 33, 39, 52, 57, 62-63, 70, 80, 88. One spike reached 0.0053 (4× baseline) and overflow warnings indicate gradient explosions despite clipping.
 

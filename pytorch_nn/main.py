@@ -22,7 +22,7 @@ training_data_ratio: float = 0.95
 # Size of training batches
 training_batch_size: int = 1
 # Number of training epochs
-epochs: int = 100
+epochs: int = 1000
 opt: str = "sgd"
 
 # Default parameters for main function
@@ -52,7 +52,7 @@ def main(hidden_layers=hidden_layers, learning_rate=learning_rate, nn_save=nn_sa
     model = TorchNet(input_size=24, hidden_sizes=hidden_layers, output_size=24, activation='sigmoid')
 
     # get training data
-    data = input_data.seperate_train_test_data(training_data_ratio)
+    data = input_data.separate_train_test_data(training_data_ratio)
     # define training set
     train_in, train_out = data["training"]
     # define testing set

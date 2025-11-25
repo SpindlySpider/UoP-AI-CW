@@ -49,7 +49,7 @@ def main(hidden_layers=hidden_layers,learning_rate=learning_rate,nn_save=nn_save
     nn = Neural_network(hidden_layers=hidden_layers,learning_rate=learning_rate,activation_functions=activation_functions)
 
     # get training data
-    data = input_data.seperate_train_test_data(training_data_ratio)
+    data = input_data.separate_train_test_data(training_data_ratio)
     # define training set
     train_in, train_out = data["training"]
     # define testing set
