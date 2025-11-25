@@ -98,7 +98,7 @@ $$
 \text{MSE} = \frac{1}{n} \sum (t - p)^2
 $$
 
-Fitness is computed as:
+Fitness is calculated using the equation:
 
 $$
 \text{fitness} = \frac{1}{1 + \text{MSE}}
@@ -254,7 +254,7 @@ def gen_gait(individual: Individual, gait_length: int) -> Gait:
 ### Selection Methods
 
 Initially, both **tournament selection** and **roulette wheel selection** were implemented to evaluate each option.   
-It was ultimately decided that **Tournament selection** would be used due to its simplicity and the precise control it offers over selection pressure, making it a reliable and efficient method for guiding the evolutionary process.
+It was ultimately decided that **Tournament selection** would be used due to its simplicity, making it a reliable and efficient method for guiding the evolutionary process.
 
 
 #### Method
@@ -314,9 +314,7 @@ def tournament(population: Population, fitness: list[float], num_selected: int) 
 #### Crossover
 Both **normal crossover** and **uniform crossover** were implemented and tested for performance. **Uniform crossover** was chosen as it consistently produced more diverse offspring, which  resulted in faster convergence and improved optimisation quality.
 
-The **uniform crossover** implementation:
-- Randomly swaps  corresponding **amplitude**, **vertical offset**, **horizontal offset** and **period**, as well as **negative flag** values between two parents.  
-- Generates **two offspring** per crossover operation.
+**Uniform crossover** randomly swaps  corresponding **amplitude**, **vertical offset**, **horizontal offset** and **period**, as well as **negative flag** values between two parents and generates **two offspring** per crossover operation.
 
 #### Code
 
