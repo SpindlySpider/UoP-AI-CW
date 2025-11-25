@@ -1,22 +1,14 @@
-import sys
 from pathlib import Path
 
-# Add parent directory to path
-sys.path.insert(0, str(Path(__file__).parent.parent))
-
-try:
-    from ga.custom_types import Gait, Individual
-    import ga.fitness as fitness
-except ImportError:
-    from custom_types import Gait, Individual
-    import fitness as fitness
+from ga.custom_types import Gait, Individual
+import ga.fitness as fitness
 # use functions here for outputting the final best GA to a string that matlab can take
 # docs here: https://uk.mathworks.com/help/matlab/ref/readmatrix.html
 
 def output(filename:str,solution:Individual):
     '''
     Outputs the given solution to a file in a comma-separated format which can be read by MATLAB.
-    Args:
+    Parameters:
         filename (str): The name of the file to output the solution to.
         solution (Individual): The solution to be outputted.
     '''
@@ -32,7 +24,7 @@ def output(filename:str,solution:Individual):
 def output_gait(filename:str,individual:Individual,gait_length:int):
     '''
     Outputs the gait generated from the given individual to a file in a comma-separated format which can be read by MATLAB.
-    Args:
+    Parameters:
         filename (str): The name of the file to output the gait to.
         individual (Individual): The individual to generate the gait from.
         gait_length (int): The length of the gait.

@@ -3,20 +3,10 @@ from pathlib import Path
 import random as rd
 import numpy as np
 
-# Add parent directory to path for imports
-sys.path.insert(0, str(Path(__file__).parent.parent))
 from ga.custom_types import Gait
 
-try:
-    # Try absolute imports (when run from project root or via main.py)
-
-    from nn.neural_network import Neural_network
-    import nn.serialise as serialize
-except ImportError:
-    # Fall back to relative imports (when run directly from nn/ directory)
-    sys.path.insert(0, str(Path(__file__).parent.parent / 'ga'))
-    from neural_network import Neural_network
-    import serialise as serialize
+from nn.neural_network import Neural_network
+import nn.serialize as serialize
 
 # Normalization constants matching input_data.py training normalization
 # Maps [-50, 30] to [0, 1] using (x + 50) / 80
@@ -39,10 +29,10 @@ def predict(nn:Neural_network,input:list[float]) -> list[float]:
 
 
 # Normalization/denormalization matching input_data.py
-# Training uses: (x + 80) / 110 for normalization
-# So denormalization is: (x * 110) - 80
-normalize = lambda x : (x - minimum_angle) / angle_diff  # (x + 80) / 110
-denormalize = lambda x : (x * angle_diff) + minimum_angle  # (x * 110) - 80
+# Training uses: (x + 50) / 80 for normalization
+# So denormalization is: (x * 80) - 50
+normalize = lambda x : (x - minimum_angle) / angle_diff  # (x + 50) / 80
+denormalize = lambda x : (x * angle_diff) + minimum_angle  # (x * 80) - 50
 
 def predict_gait(nn:Neural_network, input:list[float],gait_length:int = 300) -> Gait:
     """
