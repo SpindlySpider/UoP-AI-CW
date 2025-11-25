@@ -37,7 +37,7 @@ defaults = {
 def main(gait_compare_length:int = gait_compare_length,final_gait_length:int=final_gait_length,population_size:int = population_size,mutation_rate:float = mutation_rate, crossover_rate:float = crossover_rate, output_file:str = output_file,fitness_score_target:float = fitness_score_target):
     '''
     Main file to run genetic algorithm for gait generation of the spider.
-    The Genetic algorithm evolves the population over a defined set number of generations and outputs the best solution found.
+    The Genetic algorithm evolves the population until a fitness score is reached or the fitness score plateaus for 100 generations.
     Draws a fitness graph at the end showing best and average fitness scores over generations.
     A max population size and gait length can be defined to control the search space.
     '''
@@ -49,14 +49,14 @@ def main(gait_compare_length:int = gait_compare_length,final_gait_length:int=fin
     fitness_over_time: list[float] = []
     # list to store average fitness scores over generations for plotting
     avg_fitness_over_time: list[float] = []
-    # run GA for set number of generations defined above
+
+    # gen used to track what the current generation is
     gen:int = 0
     current_best_fitness:float = 0.0
     while current_best_fitness < fitness_score_target:
         # stores the fitness score of each individual in the population
+        fitness_list: list[float] = []
         # stores the index of the best individual in current population
-        fitness_list: list[float] = []  
-        # generate fitness list
         best_idx: int = 0
         # go through each individual in the population and get the fitness score 
         for individual in population:
