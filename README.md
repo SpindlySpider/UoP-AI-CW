@@ -1,11 +1,11 @@
-# Spider Gait Generation System - Main CLI Documentation
+# Spider Gait Generation & Prediction - Main CLI Documentation
 
 ## Table of Contents
 1. [Overview](#overview)
 2. [Project Structure](#project-structure)
 3. [System Architecture](#system-architecture)
 4. [CLI Features](#cli-features)
-5. [Usage Guide](#usage-guide)
+5. [Installation & Usage Guide](#installation-&-usage-guide)
 6. [Component Integration](#component-integration)
 7. [Neural Network Implementations](#neural-network-implementations)
 8. [Configuration Options](#configuration-options)
@@ -15,7 +15,7 @@
 
 ## Overview
 
-The **main.py** file serves as the central command-line interface (CLI) for the Spider Gait Generation System, providing a unified access point to multiple AI approaches for generating and predicting spider locomotion patterns:
+The **main.py** file serves as the central command-line interface (CLI) for the Spider Generation & Prediction System, providing a unified access point to multiple AI approaches for generating and predicting spider locomotion patterns:
 
 1. **Genetic Algorithm (GA)** - Evolves optimal gait patterns through evolutionary optimization
 2. **Neural Network (NN)** - Learns to predict sequential gait frames from training data
@@ -172,11 +172,28 @@ The CLI provides flexible input methods for different use cases:
 
 ---
 
-## Usage Guide
+## Installation & Usage Guide
 
-### Creating an virtual environment and installing dependencies
-using `python3 <=` create a virtual environment to download dependencies
-starting from the root of the repo.
+![Python](https://img.shields.io/badge/Python-3.10%2B-blue?logo=python&logoColor=white)
+
+Follow these steps to install and run this project.
+
+---
+
+### 1. Install Python
+
+Ensure that **Python 3.10+** is installed on your system.  
+You can verify your version using:
+
+```bash
+python --version
+```
+
+If Python is not installed, download it from the [official Python website](https://www.python.org/downloads/).
+
+---
+### 2. Creating an virtual environment
+from the root of the repo e.g. `some-path/UoP-AI-CW/`.
 create virtual environment.
 ```bash
 python3 -m venv .venv
@@ -185,16 +202,23 @@ activate virtual environment.
 ```bash
 source .venv/bin/activate
 ```
-install dependencies.
+---
+
+### 3. Install Required Libraries
+
+Use the following command to install all dependencies:
+
 ```bash
 pip install -r requirements.txt
 ```
+---
 
-### Running the Application
-
+### 4. Starting the CLI
+from the root of the repo e.g. `some-path/UoP-AI-CW/` run:
 ```bash
 python main.py
 ```
+to start the CLI application and access genetic algorithm and neural network features.
 
 ### Workflow Examples
 

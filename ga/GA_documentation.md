@@ -67,7 +67,7 @@ The final objective is a **stable, coordinated, and efficient gait**.
 
 ### Initialization
 
-Each **individual** in the population represents a complete gait.  
+Each **individual** in the population represents a complete gait.
 Each chromosome consists of  5 parameters (amp,p,offset,e.t.c.) controlling the oscillation of a joint. Per limb there is 3 joints. Finally there are 2 unique limbs per side on this spider. So in total **5x3x2x2 = 60 genes**
 
 Each side (left and right) has two unique sine waves per joint, for a total of six. The pattern on each side follows an A, B, A, B sequence, meaning the front legs follow the 3rd legs and the 2nd legs follow the rear legs.
@@ -262,7 +262,7 @@ def gen_gait(individual: Individual, gait_length: int) -> Gait:
 
 ### Selection Methods
 
-Both **tournament selection** and **roulette wheel selection** were implemented.  
+Both **tournament selection** and **roulette wheel selection** were implemented.
 **Tournament selection** was ultimately chosen due to its simplicity and the precise control it offers over selection pressure, making it a reliable and efficient method for guiding the evolutionary process.
 
 
@@ -584,53 +584,7 @@ project/
 
 ## Usage Instructions
 
-![Python](https://img.shields.io/badge/Python-3.10%2B-blue?logo=python&logoColor=white)
-
-Follow these steps to install and run the Genetic Algorithm project.
-
----
-
-### 1. Install Python
-
-Ensure that **Python 3.10+** is installed on your system.  
-You can verify your version using:
-
-```bash
-python --version
-```
-
-If Python is not installed, download it from the [official Python website](https://www.python.org/downloads/).
-
----
-
-### 2. Install Required Libraries
-
-Use the following command to install all dependencies:
-
-```bash
-pip install -r requirements.txt
-```
-
----
-
-### 3. Run the Genetic Algorithm
-
-Execute the main program to start the Genetic Algorithm and evolve gait patterns:
-
-```bash
-python ga/main.py
-```
-The code generates a ga_results.txt file that contains a 300x24 matrix that can be imported into matlab.
----
-
-
-### 4. Generate a Target Gait (Without GA)
-
-To generate a **reference gait** without using the Genetic Algorithm:
-
-```bash
-python target_sol.py
-```
+<!-- # change this to customisable parameters? -->
 
 The generated gait data is automatically saved for future comparison and analysis.  
 The script produces a **`sol.txt`** file containing a **300 × 24 matrix**, fully compatible with **MATLAB** for import and further processing.
