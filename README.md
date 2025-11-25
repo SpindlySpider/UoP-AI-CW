@@ -101,13 +101,12 @@ main.py (CLI Entry Point)
     └── handle_lists()      # Input validation
 ```
 
-### Key Components
+### Components
 
-| Component | Purpose | Reference |
-|-----------|---------|-----------|
-| **Genetic Algorithm** | Evolves complete gait patterns using sine-wave chromosome encoding | [GA_documentation.md](./ga/GA_documentation.md) |
-| **Neural Network** | Predicts sequential gait frames through supervised learning | [NN_documentations.md](./nn/NN_documentations.md) |
-| **CLI Utilities** | Provides interactive menu navigation and parameter configuration | `utils.py` |
+For further details about the GA and NN documentation please see:
+[genetic algorithm](./ga/GA_documentation.md) docs found at `ga/GA_documentation.md`.
+[neural network](./nn/NN_documentations.md) docs found at `nn/NN_documentation.md`.
+
 
 ---
 
