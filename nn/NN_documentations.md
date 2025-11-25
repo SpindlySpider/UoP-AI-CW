@@ -180,14 +180,13 @@ Additionally another issue we could be facing is our activation functions becomi
 ![Adam LR 0.001](doc-images/adam-0.001-loss-over-1000-epoch-batch-size-1.png)
 
 **Results**:
-- **Training Loss**: 0.011783093635080013 → 2.9006536549066343e-05 (90% reduction)
+- **Training Loss**: 0.011783093635080013 -> 2.9006536549066343e-05 (99.7538% reduction)
 - **Test Loss**: 2.1905038846978885e-05
 - **Stability**: Extremely stable - ultra-smooth convergence
 
 **Analysis**:
-Reducing learning rate to 0.001 dramatically improves stability but can still shows minor oscillations but no major spikes. It converges to similar loss as gradient descent but takes longer.
 
-We can conclude that ADAM can work with a lower learning rate (e.g. `0.001`) and possibly different activation functions such as reLU. However gradient descent is much more reliable in this scenario.
+Reducing learning rate to 0.001 dramatically improves stability. It converges to a lower loss than gradient descent.
 
 ---
 
@@ -203,20 +202,18 @@ where:
 - $\eta {\frac{\delta{E}}{\delta{W_{old}}}}$ = gradient of error with respect to $$W_{old}$$
 
 **Results**:
-- **Training Loss**: 0.015 → 0.0015 (90% reduction)
-- **Test Loss**: Similar to LR=0.01
+- **Training Loss**: 0.041026469973187485 -> 0.004460067474155154 (89.1288% reduction)
+- **Test Loss**: 0.00469362060577518
 - **Stability**: Extremely stable - ultra-smooth convergence
 
 **Training Progress**:
 
-![Gradient Descent LR 0.001](doc-images/gradient_descent_learning_rate_0.001.png)
+![Gradient Descent LR 0.001](doc-images/sgd-0001-1000-epoch-loss.png)
 
 **Analysis**:
 Exceptionally smooth exponential decay with even more gradual convergence than LR=0.01. The lower learning rate produces an extremely stable training curve with zero visible oscillations and the loss decreases more slowly but very predictably.
 
 The trade off for the lower learning rate is that, while more stable and conservative, the NN learns significantly slower. We can compare this to the SGD with `0.01` LR and see that they a similar minimum error, however with a higher learning rate it converges on that point much faster (>20 epochs).
-
----
 
 ### Learning Rate Modification Summary
 
@@ -228,10 +225,10 @@ The trade off for the lower learning rate is that, while more stable and conserv
 | **Adam** | 0.001 | Stable with good convergence | Useable |
 
 Because of this we decided to use stochastic gradient descent with a learning rate of `0.01`, for the following reasons:
-- Best observed performance of `0.00125`.
 - Stable loss minimization.
 - computationally simple.
 - Optimal balance of speed and stability.
+- Results are not over fit.
 
 ---
 
@@ -274,22 +271,11 @@ The network reaches a **reasonable solution** where predicted joint angles close
 
 ### Training Data Generation
 
-**Source**: Synthetic gaits generated using parametric sine wave functions
-
-**Process**:
-1. **Generate Base Gaits**: Use genetic algorithm's sine-based gait generator
-2. **Randomise Parameters**: Create 700 variations by varying:
-   - Period: [0.1, 1.0] seconds (gait speed)
-   - Coxa amplitude: [15°, 23°] (horizontal leg swing)
-   - Tibia-femur vertical shift: [40°, 55°] (leg height)
-   - Tibia-femur amplitude: [15°, 35°] (vertical movement)
-3. **Extract Frames**: Each gait = 40 time steps
-4. **Create Pairs**: `(frame[t], frame[t+1])` for supervised learning (39 pairs per gait since last frame has no next)
-5. **Combine**: 700 gaits × 100 gait variations = 70000 total samples 
+data is sourced from the genetic algorithm results found at `ga/results/*`
 
 **Data Split**:
-- **Training**: 95% (66500 samples)
-- **Testing**: 5% (3500 samples)
+- **Training**: 95% (2850 samples)
+- **Testing**: 5% (149 samples)
 
 ### Input/Output Format
 
@@ -752,7 +738,7 @@ Using the **same initial pose** (from GA-generated gait), both implementations p
 
 This neural network successfully learns to predict successive joint configuration using:
 
-1. **Well-designed architecture** - which uses a 3 hidden layer neural network with 128→64→32 neurons, which allows for non linear relationships to be learnt.
+1. **Well-designed architecture** - which uses a 3 hidden layer neural network with 128 -> 64 -> 32 neurons, which allows for non linear relationships to be learnt.
 2. **Suitable activation** - sigmoid for bounded outputs between 0 and 1
 3. **Suitable loss function** - MSE for regression
 4. **Stable training method** - gradient descent, LR=0.01
