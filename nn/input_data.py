@@ -21,13 +21,11 @@ def get_training_data() -> tuple[Gait,Gait]:
         tuple with input data and output data, same indexes correspond to input and labeled output
     """
 
-    # generate target gait
+    # get target gait from GA results
     total_gait:Gait = load_gait()
     gait_length:int = len(total_gait)
 
     # normalize data between 0 and 1
-    # actual range: coxa [-23, 23], tibia-femur approximately [-75, -20]
-    # use range [-80, 30] to be safe (110 total range)
     total_gait = normalize(np.array(total_gait))
 
     # split into input and output data

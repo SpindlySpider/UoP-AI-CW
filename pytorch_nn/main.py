@@ -31,8 +31,6 @@ defaults = {
     "learning_rate": learning_rate,
     "nn_save": nn_save,
     "training_data_ratio": training_data_ratio,
-    "data_gait_length": data_gait_length,
-    "gait_variations": gait_variations,
     "training_batch_size": training_batch_size,
     "epochs": epochs,
     "optimiser": opt,
