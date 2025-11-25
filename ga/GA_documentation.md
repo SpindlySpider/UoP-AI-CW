@@ -316,6 +316,7 @@ Both **normal crossover** and **uniform crossover** were implemented and tested 
 
 **Uniform crossover** randomly swaps  corresponding **amplitude**, **vertical offset**, **horizontal offset** and **period**, as well as **negative flag** values between two parents and generates **two offspring** per crossover operation.
 
+
 #### Code
 
 [ga/`reproduce.py`](https://github.com/SpindlySpider/UoP-AI-CW/blob/main/ga/reproduce.py)
