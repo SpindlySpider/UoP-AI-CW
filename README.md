@@ -15,73 +15,64 @@
 
 ## Overview
 
-The **main.py** file serves as the central command-line interface (CLI) for the Spider Gait Generation System, providing a unified access point to multiple AI approaches for generating and predicting spider locomotion patterns:
+The **main.py** file serves as the central command-line interface (CLI) for the Spider Gait Generation System, providing a unified access point to multiple AI approaches for generating and predicting spider gait patterns:
 
-1. **Genetic Algorithm (GA)** - Evolves optimal gait patterns through evolutionary optimization
+1. **Genetic Algorithm (GA)** - Evolves optimal gait patterns through evolutionary optimisation
 2. **Neural Network (NN)** - Learns to predict sequential gait frames from training data
    - **From Scratch Implementation** - Pure Python implementation for educational purposes
    - **PyTorch Implementation** - GPU-accelerated deep learning framework for production use
 
-This modular CLI design allows users to seamlessly switch between evolutionary optimization and machine learning approaches, or use them in combination for comprehensive gait generation and analysis.
+This modular CLI design allows users to seamlessly switch between evolutionary optimisation and machine learning approaches, or combine both for comprehensive gait generation and analysis.
 
 ---
 
 ## Project Structure
 
 ```
-├── .git/                          # Git version control
-├── .gitignore                     # Git ignore rules
-├── venv/                          # Python virtual environment
-├── __pycache__/                   # Python bytecode cache
-│
-├── main.py                        # Main CLI entry point
-├── utils.py                       # CLI utility functions
-├── requirements.txt               # Python dependencies
-├── README.md                      # This documentation
-│
-├── ga_results.txt                 # Genetic algorithm output
-├── nn.pickle                      # Trained NumPy neural network
-├── nn_results.txt                 # NumPy NN training results
-├── nn_predict_results.txt         # NumPy NN prediction output
-├── nn_pytorch.pth                 # Trained PyTorch neural network
-│
 ├── ga/                            # Genetic Algorithm module
-│   ├── main.py                    # GA entry point
+│   ├── images/                    # GA visualization 
+│   ├── GA_documentation.md        # GA documentation
 │   ├── custom_types.py            # Type definitions
 │   ├── fitness.py                 # Fitness evaluation
 │   ├── fitness_graph.py           # Fitness visualization
 │   ├── initial_pop.py             # Population initialization
+│   ├── main.py                    # GA entry point
 │   ├── output.py                  # Result output handling
 │   ├── reproduce.py               # Crossover & mutation
 │   ├── selection.py               # Selection operators
 │   ├── target_sol.py              # Target solution generator
-│   ├── GA_documentation.md        # GA documentation
-│   ├── images/                    # GA visualization outputs
-│   └── __pycache__/               # Python bytecode cache
 │
 ├── nn/                            # Custom NumPy Neural Network
-│   ├── main.py                    # NN training entry point
-│   ├── neural_network.py          # Network architecture
+│   ├── doc-images/                # Documentation images
+│   ├── NN_documentations.md       # NN documentation
 │   ├── activation_functions.py    # Activation implementations
 │   ├── error_funcs.py             # Loss functions
-│   ├── optimiser.py               # Gradient descent & Adam
-│   ├── training.py                # Training loop
+│   ├── graph_results.py           # Training visualization
 │   ├── input_data.py              # Data generation
 │   ├── load_and_predict.py        # Inference & prediction
+│   ├── main.py                    # NN training entry point
+│   ├── neural_network.py          # Network architecture
+│   ├── optimiser.py               # Gradient descent & Adam
 │   ├── serialise.py               # Model save/load (pickle)
-│   ├── graph_results.py           # Training visualization
-│   ├── NN_documentations.md       # NN documentation
-│   ├── doc-images/                # Documentation images
-│   └── __pycache__/               # Python bytecode cache
+│   └── training.py                # Training loop
 │
-└── pytorch_nn/                    # PyTorch Neural Network
-    ├── main.py                    # PyTorch training entry point
-    ├── torch_model.py             # PyTorch model (nn.Module)
-    ├── torch_training.py          # PyTorch training loop
-    ├── load_and_predict.py        # PyTorch inference
-    ├── serialise.py               # Model save/load (.pth)
-    ├── graph_results.py           # Training visualization
-    └── __pycache__/               # Python bytecode cache
+│── pytorch_nn/                    # PyTorch Neural Network
+│   ├── graph_results.py           # Training visualization
+│   ├── load_and_predict.py        # PyTorch inference
+│   ├── main.py                    # PyTorch training entry point
+│   ├── serialise.py               # Model save/load (.pth)
+│   ├── torch_model.py             # PyTorch model (nn.Module)
+│   └── torch_training.py          # PyTorch training loop
+│ 
+├── .gitignore                     # Specifies files Git should ignore
+├── README.md                      # This documentation
+├── ga_results.txt                 # Genetic algorithm output
+├── main.py                        # Main CLI entry point
+├── nn.pickle                      # Trained NumPy neural network
+├── nn_predict_results.txt         # NumPy NN prediction output
+├── requirements.txt               # Python dependencies
+└── utils.py                       # CLI utility functions
+
 ```
 
 ---
@@ -97,7 +88,8 @@ main.py (CLI Entry Point)
 └── Utilities Module (utils.py)
     ├── get_choice()        # Interactive menu system
     ├── get_defaults()      # Configuration management
-    ├── modify_default()    # Parameter customization
+    ├── display_defaults()  # Display configuration
+    ├── modify_default()    # Parameter customisation
     └── handle_lists()      # Input validation
 ```
 
@@ -138,7 +130,7 @@ Main Menu
 
 ### 2. Configuration Management
 
-Both GA and NN modules support **customizable parameters** with an intuitive modification interface:
+Both GA and NN modules support **customisable parameters** with an intuitive modification interface:
 
 #### Features:
 - **Display Defaults**: Shows all current parameter values before execution
@@ -154,7 +146,7 @@ starting with these defaults:
   2) nn save: nn.pickle
   ...
 ====================
-would you like to change anything? (y/N): y
+Would you like to change anything? (y/N): y
 ```
 
 ### 3. Input Handling
@@ -203,7 +195,7 @@ python main.py
 1. Start the application
 2. Select `0` for Genetic Algorithm
 3. When prompted about defaults, enter `N` to use default parameters
-4. The GA will execute and generate an optimized gait pattern
+4. The GA will execute and generate an optimised gait pattern
 
 **Output**: Creates `results.txt` containing a 300×24 matrix of joint angles
 
@@ -211,27 +203,29 @@ python main.py
 
 1. Start the application
 2. Select `1` for Neural Network
-3. Select `0` for Train
-4. When prompted, enter `y` to modify defaults
-5. Select parameters to modify (e.g., `0` for hidden layers)
-6. Enter new values (e.g., `[256, 128, 64]`)
-7. Select `save and exit` to confirm changes
-8. Training begins with custom configuration
+3. Select `0` for a Neural Network without PyTorch or `1` with PyTorch
+4. Select `0` for Train
+5. When prompted, enter `y` to modify defaults
+6. Select parameters to modify (e.g., `0` for hidden layers)
+7. Enter new values (e.g., `[256, 128, 64]`)
+8. Select `save and exit` to confirm changes
+9. Training begins with a custom configuration
 
-**Output**: Creates `nn.pickle` containing the trained model
+**Output**: Creates `nn.pickle` containing the trained model without PyTorch or `nn_pytorch.pth` otherwise
 
 #### Example 3: Making Predictions with Trained Neural Network
 
 1. Start the application
 2. Select `1` for Neural Network
-3. Select `1` for Predict
-4. Choose input method:
+3. Select `0` for a Neural Network without PyTorch or `1` with PyTorch
+4. Select `1` for Predict
+5. Choose input method:
    - **Random**: Select `0` - generates 24 random joint angles
    - **Manual**: Select `1` - enter 24 values sequentially
-5. Optionally modify prediction parameters (gait length, output file)
-6. Neural network generates sequential predictions
+6. Optionally modify prediction parameters (gait length, output file)
+7. Neural network generates sequential predictions
 
-**Output**: Creates `predict_results.txt` containing predicted gait sequence
+**Output**: Creates `nn_predict_results.txt` containing predicted gait sequence using a Non PyTorch trained network or `pytorch_predict_results.txt` otherwise
 
 ---
 
@@ -254,13 +248,12 @@ ga.main(**defaults)
 #### GA Default Parameters
 ```python
 {
-    "population_size": int,
-    "gait_length": int,
-    "num_generations": int,
-    "mutation_rate": float,
-    "crossover_rate": float,
-    "tournament_size": int,
-    "output_file": str
+    "gait_length":gait_length,
+    "population_size": population_size,
+    "mutation_rate": mutation_rate,
+    "crossover_rate": crossover_rate,
+    "output_file": output_file,
+    "fitness_score_target": fitness_score_target
 }
 ```
 
@@ -277,15 +270,24 @@ The CLI provides two operational modes for the neural network:
 ```python
 import nn.main as nn
 
+import pytorch_nn.main as pytorch_nn
+
 # Get NN training configuration
 defaults = get_defaults(nn.defaults)
 
+# Set the correct modules based on choice
+if nn_choice == "pytorch": # PyTorch implementation
+    nn_module = pytorch_nn
+else:  # from scratch implementation
+    nn_module = nn
+
 # Train neural network
-nn.main(**defaults)
+nn_module.main(**defaults)
 ```
 
 **Training Parameters**:
 ```python
+
 {
     "hidden_layers": list[int],      # e.g., [128, 64, 32]
     "learning_rate": float,          # e.g., 0.01
@@ -295,7 +297,11 @@ nn.main(**defaults)
     "gait_variations": int,          # e.g., 700
     "training_batch_size": int,      # e.g., 1
     "epochs": int                    # e.g., 100
+
+    #pytorch implementation
     "optimiser": str                 # e.g., adam
+    #from scratch implementation
+    "optimiser": opt                 # e.g., adam
 }
 ```
 
@@ -303,6 +309,18 @@ nn.main(**defaults)
 
 ```python
 import nn.load_and_predict as predict
+
+import pytorch_nn.load_and_predict as pytorch_predict
+
+if nn_choice == "pytorch": # PyTorch implementation
+    predict_module = pytorch_predict
+    model_extension = "nn_pytorch.pth"
+    predict_file_name = "pytorch_predict_results.txt"
+else:  # from scratch implementation
+    predict_module = predict
+    model_extension = "nn.pickle"
+    predict_file_name = "nn_predict_results.txt"
+        
 
 # Generate or collect input
 input = [random.randint(-100, 100) for _ in range(24)]  # Random
@@ -316,10 +334,11 @@ predict_defaults = {
     "input": input,
     "gait_length": 100
 }
+
 defaults = get_defaults(predict_defaults)
 
-# Generate predictions
-predict.load_and_predict(**defaults)
+# unpacks default values to named params of load_and_predict
+predict_module.load_and_predict(**defaults)
 ```
 
 **For detailed NN implementation**, see [NN_documentations.md](./nn/NN_documentations.md)
@@ -340,9 +359,9 @@ The system provides **two neural network implementations** with identical interf
 - No external deep learning frameworks required
 - Ideal for understanding neural network mechanics
 
-**Model Format**: `.pickle` (serialized Python objects)
+**Model Format**: `.pickle` (serialised Python objects)
 
-**Optimizers**: `gradient_descent`, `adam`
+**Optimisers**: `gradient_descent`, `adam`
 
 ### PyTorch Implementation (`pytorch_nn/`)
 
@@ -352,12 +371,12 @@ The system provides **two neural network implementations** with identical interf
 - Built on PyTorch deep learning framework
 - GPU acceleration via CUDA (when available)
 - Automatic differentiation for backpropagation
-- Optimized matrix operations
+- Optimised matrix operations
 - Industry-standard architecture
 
 **Model Format**: `.pth` (PyTorch state dict)
 
-**Optimizers**: `sgd`, `adam`
+**Optimisers**: `sgd`, `adam`
 
 ### Implementation Comparison
 
@@ -370,7 +389,7 @@ The system provides **two neural network implementations** with identical interf
 | **Model Size** | Larger (full objects) | Smaller (weights only) |
 | **Compatibility** | Python specific | Cross-platform |
 
-### Identical API Interface
+### Identical Interface
 
 Both implementations share the **exact same interface**:
 
@@ -396,7 +415,7 @@ load_and_predict(
 
 **Use From Scratch Implementation when**:
 - Learning about neural network internals
-- No GPU available and dataset is small
+- No GPU available, and the dataset is small
 - Avoiding heavy framework dependencies
 - Teaching or demonstrating concepts
 
@@ -422,7 +441,7 @@ load_and_predict(
 | `mutation_rate` | float | Probability of gene mutation | 0.1 |
 | `crossover_rate` | float | Probability of parent crossover | 0.7 |
 | `tournament_size` | int | Individuals selected for tournament | 5 |
-| `output_file` | str | Results file path | "results.txt" |
+| `output_file` | str | Results file path | "ga_results.txt" |
 
 ### Neural Network Training Configuration
 
@@ -436,7 +455,7 @@ load_and_predict(
 | `gait_variations` | int | Number of training examples | 700 |
 | `training_batch_size` | int | Samples per training batch | 1 |
 | `epochs` | int | Training iterations | 100 |
-| `optimiser` | str | Optimizer algorithm | "gradient_descent" |
+| `optimiser` | str | Optimiser algorithm | "gradient_descent" |
 
 ### Neural Network Prediction Configuration
 
@@ -459,11 +478,11 @@ load_and_predict(
 
 **Description**: Complete evolved gait pattern with all 24 joint angles across the full 300-frame gait cycle
 
-**MATLAB Compatible**: Can be directly imported into MATLAB for visualization and analysis
+**MATLAB Compatible**: Can be directly imported into MATLAB for visualisation and analysis
 
 ```matlab
 % In MATLAB:
-gait_data = load('results.txt');
+gait_data = load(filename); % filename can be e.g. 'results.txt'
 plot(gait_data(:,1));  % Plot first joint's motion
 ```
 
@@ -471,7 +490,7 @@ plot(gait_data(:,1));  % Plot first joint's motion
 
 **File**: `nn.pickle` (default)
 
-**Format**: Serialized Neural Network object
+**Format**: Serialised Neural Network object
 
 **Description**: Trained model containing:
 - Network architecture (layer sizes)
@@ -487,7 +506,7 @@ plot(gait_data(:,1));  % Plot first joint's motion
 
 **Description**: Sequential gait predictions starting from input frame. The NumPy NN implementation generates 100-frame gaits, while the GA generates 300-frame gaits.
 
-**Usage**: Can be analyzed to evaluate prediction quality and gait continuity
+**Usage**: Can be analysed to evaluate prediction quality and gait continuity
 
 ---
 
@@ -545,7 +564,7 @@ For optimal results, use both systems in sequence:
 
 2. **Phase 2: Learning**
    - Use evolved gaits as training data for neural network
-   - Train NN to learn patterns from optimized gaits
+   - Train NN to learn patterns from optimised gaits
 
 3. **Phase 3: Prediction**
    - Use trained NN for real-time gait generation
@@ -574,7 +593,7 @@ This hybrid approach combines the **optimization strength of GA** with the **pre
 Potential CLI improvements:
 
 - **Batch Processing**: Run multiple configurations automatically
-- **Visualization**: Real-time fitness/loss plotting during execution
+- **Visualisation**: Real-time fitness/loss plotting during execution
 - **Comparison Mode**: Automatically compare GA vs NN outputs
 - **Resume Training**: Save and restore training checkpoints
 - **Export Formats**: Support for multiple output formats (CSV, JSON, etc.)
@@ -593,7 +612,7 @@ Potential CLI improvements:
 
 The `main.py` CLI provides a **unified interface** for spider gait generation using two complementary AI approaches:
 
-- **Genetic Algorithm**: Evolutionary optimization for discovering optimal gait patterns
+- **Genetic Algorithm**: Evolutionary optimisation for discovering optimal gait patterns
 - **Neural Network**: Supervised learning for rapid gait prediction
 
 With its **interactive menu system**, **flexible configuration**, and **robust error handling**, the CLI enables both researchers and practitioners to efficiently generate, train, and predict spider gait patterns.

@@ -34,12 +34,12 @@ def main():
             sys.exit(0)
         
         # Set the correct modules based on choice
-        if nn_choice == "pytorch":
+        if nn_choice == "pytorch": # PyTorch implementation
             nn_module = pytorch_nn
             predict_module = pytorch_predict
             model_extension = "nn_pytorch.pth"
             predict_file_name = "pytorch_predict_results.txt"
-        else:  # from scratch (numpy)
+        else:  # from scratch implementation
             nn_module = nn
             predict_module = predict
             model_extension = "nn.pickle"
