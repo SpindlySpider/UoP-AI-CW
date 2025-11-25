@@ -377,41 +377,39 @@ predict.load_and_predict(**defaults)
 
 ### Genetic Algorithm Output
 
-**File**: `ga_results.txt` (default)
+The genetic algorithm by default will output a gait from the best individual to a file called `ga_results_{unix time}.txt`.
+Where unix time is replaced with the current time since epoch, this was chosen to prevent overwriting results.
+This file will include 24 values per line, which correspond to joint angles.
+Additionally the file will be 1000 lines long by default to allow for diverse training data for the neural network, this can be changed.
 
-**Format**: 300×24 matrix (rows = time steps, columns = joint angles)
-
-**Description**: Complete evolved gait pattern with all 24 joint angles across the full 300-frame gait cycle
-
-**MATLAB Compatible**: Can be directly imported into MATLAB for visualization and analysis
+Finally the resulting output `ga_results_{unix time}.txt` can be imported into matlab and the gait can be viewed by adding these lines to the existing `spider.m` file.
 
 ```matlab
 % In MATLAB:
-gait_data = load('results.txt');
-plot(gait_data(:,1));  % Plot first joint's motion
+%  the file path of read matrix should be the resulting ga output, this is an example
+
+v = readmatrix('./ga/results/ga_results_1764094990.txt')
+
+A = deg2rad(v)
+
+for idx = 1:size(v,1)
+    plot_spider_pose(A(idx,:))
+    pause(0.0001)
+end
 ```
 
-### Neural Network Training Output
+### Neural Network Outputs
 
-**File**: `nn.pickle` (default)
+#### Training
 
-**Format**: Serialized Neural Network object
+The neural network from scratch by default will load `nn.pickle`. This file is a pickled (serialised) neural network object.
+This neural network includes: learned weights and biases and specific layer sizes e.g. `[128,64,32]`
 
-**Description**: Trained model containing:
-- Network architecture (layer sizes)
-- Learned weights and biases
-- Activation functions
-- Training configuration
+#### Prediction
 
-### Neural Network Prediction Output
-
-**File**: `nn_predict_results.txt` (default)
-
-**Format**: 101×24 matrix (100 predicted frames + 1 initial input frame)
-
-**Description**: Sequential gait predictions starting from input frame. The NumPy NN implementation generates 100-frame gaits, while the GA generates 300-frame gaits.
-
-**Usage**: Can be analyzed to evaluate prediction quality and gait continuity
+The neural network will output a file called `nn_predict_results.txt` by default.
+This file has a similar format to the GA output, except by default is 101 lines instead of 1000.
+The file represents the result of starting from an initial pose, predicting and then feeding those predictions back into the neural network 100 times.
 
 ---
 
