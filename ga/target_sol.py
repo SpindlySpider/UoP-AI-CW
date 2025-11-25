@@ -70,10 +70,10 @@ def random_sol(gait_length:int) -> Individual:
     Parameters:
         gait_length (int): The length of the gait
     '''
-    period:Period = round(random.uniform(0.05,1),3)
-    coxa_amplitude: float = round(random.uniform(5,23),3)
-    tibia_femur_v_shift: float = round(random.uniform(40,50),3)
-    tibia_femur_amplitude: float = round(random.uniform(5,30),3)
+    period:Period = round(random.uniform(0.1,1),3)
+    coxa_amplitude: float = round(random.uniform(20,23),3)
+    tibia_femur_v_shift: float = round(random.uniform(45,50),3)
+    tibia_femur_amplitude: float = round(random.uniform(20,30),3)
     optimal_solution: Individual = produce_target(gait_length,period,coxa_amplitude,tibia_femur_v_shift,tibia_femur_amplitude)
     return optimal_solution
 
