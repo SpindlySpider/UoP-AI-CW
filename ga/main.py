@@ -23,7 +23,7 @@ crossover_rate:float = 0.7
 
 
 ga_dir = Path(__file__).parent
-output_file:str = str(ga_dir.joinpath(f"results/ga_results_{round(time())}.txt"))
+output_file:str = str(ga_dir.joinpath(f"results/ga_results.txt"))
 
 fitness_score_target:float = 1.5
 
