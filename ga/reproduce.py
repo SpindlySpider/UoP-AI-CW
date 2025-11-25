@@ -1,4 +1,4 @@
-from custom_types import Population, Individual
+from ga.custom_types import Population, Individual
 import random
 
 def crossover(parents:Population,gait_length:int,crossover_rate:float) -> Population:

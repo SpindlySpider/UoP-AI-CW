@@ -1,4 +1,4 @@
-from custom_types import Population
+from ga.custom_types import Population
 import random
 
 def roulette(population: Population, fitness: list[float]) -> Population:

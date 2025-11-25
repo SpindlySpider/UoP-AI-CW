@@ -27,10 +27,9 @@ def plot_fitness_graph(fitness_values, avg_fitness_values, generations):
     plt.legend()
     # Show tight layout
     plt.tight_layout()
-    # Show the plot
     plt.show()
-plt.legend()
-plt.savefig(f"fitness-over-{generations}-gens.png")
+    # Save figure
+    plt.savefig(f"fitness-over-{generations}-gens.png")
 
 
 

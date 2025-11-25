@@ -1,9 +1,9 @@
 import math
 
 from numpy import random
-import output
+import ga.output as output
 import matplotlib.pyplot as plt
-from custom_types import Individual, Period
+from ga.custom_types import Individual, Period
 
 def produce_target(gait_length:int, period:Period, coxa_amplitude:float, tibia_femur_v_shift:float, tibia_femur_amplitude:float) -> Individual:
     '''

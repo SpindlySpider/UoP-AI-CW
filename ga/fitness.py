@@ -1,6 +1,6 @@
-from custom_types import Individual, Gait
+from ga.custom_types import Individual, Gait
 import math
-import target_sol
+import ga.target_sol as target_sol
 
 class Fitness:
     """
