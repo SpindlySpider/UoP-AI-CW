@@ -1,15 +1,12 @@
 import sys
-from nn.load_and_predict import normalize
+import os
 from pathlib import Path
+
+from nn.load_and_predict import normalize
 from numpy.typing import NDArray
 import numpy as np
-import random
-
-# Add parent directories to access ga module
-sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
 from ga.custom_types import Gait
-from ga.target_sol import produce_target
 from ga.custom_types import *
 
 
@@ -21,8 +18,17 @@ def get_training_data() -> tuple[Gait,Gait]:
         tuple with input data and output data, same indexes correspond to input and labeled output
     """
 
+    gaits_prefix = "./ga/results/"
     # get target gait from GA results
-    total_gait:Gait = load_gait()
+    # get all files in ga/results
+    total_gait:list = []
+    gaits:list = os.listdir(gaits_prefix)
+    for gait_name in gaits:
+        # load gaits and append each frame to total gait
+        gait = load_gait(f"{gaits_prefix}/{gait_name}")
+        [total_gait.append(frame) for frame in gait]
+
+
     gait_length:int = len(total_gait)
 
     # normalize data between 0 and 1

@@ -9,7 +9,7 @@ from nn.optimiser import *
 # Define number of layers and neurons per layer
 hidden_layers:list[int] = [64,32]
 # Learning rate for NN training
-learning_rate:float = 0.001
+learning_rate:float = 0.01
 # File to save trained NN to
 nn_save:str = "nn.pickle"
 # Ratio of data to use for training vs testing
@@ -18,7 +18,7 @@ training_data_ratio:float = 0.95
 # Size of training batches
 training_batch_size:int = 1
 # Number of training epochs
-epochs:int = 10000
+epochs:int = 1000
 opt:str = "gradient_descent"
 
 # Default parameters for main function

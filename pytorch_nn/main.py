@@ -59,7 +59,7 @@ def main(hidden_layers=hidden_layers, learning_rate=learning_rate, nn_save=nn_sa
     test_in, test_out = data["test"]
 
     # train and save resulting model
-    model, losses = train_torch(model, train_in, train_out, epochs=epochs, batch_size=training_batch_size, lr=learning_rate, optimizer_name=optimiser)
+    model, _ = train_torch(model, train_in, train_out, epochs=epochs, batch_size=training_batch_size, lr=learning_rate, optimizer_name=optimiser)
     save_torch(model, out=nn_save)
 
     # test trained model with unseen input data
