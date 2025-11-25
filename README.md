@@ -98,7 +98,9 @@ main.py (CLI Entry Point)
 ### Components
 
 For further details about the GA and NN documentation please see:
+
 [genetic algorithm](./ga/GA_documentation.md) docs found at `ga/GA_documentation.md`.
+
 [neural network](./nn/NN_documentations.md) docs found at `nn/NN_documentation.md`.
 
 
