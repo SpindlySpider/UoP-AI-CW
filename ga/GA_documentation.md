@@ -316,6 +316,7 @@ Both **normal crossover** and **uniform crossover** were implemented and tested 
 
 **Uniform crossover** randomly swaps  corresponding **amplitude**, **vertical offset**, **horizontal offset** and **period**, as well as **negative flag** values between two parents and generates **two offspring** per crossover operation.
 
+During the crossover process, all individuals selected from the tournament go into a list. From there, each pair has a 0.7 chance of going through uniform crossover; if they are not selected, they go directly into the new population.
 
 #### Code
 
