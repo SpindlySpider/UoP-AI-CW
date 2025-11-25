@@ -1,5 +1,23 @@
 # Neural Network for Spider Gait Prediction
 
+## Table of Contents
+1. [Overview](#overview)
+2. [Network Architecture](#network-architecture)
+   - [Structure](#structure)
+   - [Architecture Justification](#architecture-justification)
+3. [Activation Functions](#activation-functions)
+4. [Loss Functions](#loss-functions)
+5. [Training Method](#training-method)
+6. [Backpropagation & Convergence](#backpropagation-&-convergence)
+7. [Data Handling & Input/Output Format](#data-handling-&-input/output-format)
+8. [Performance Visualisation](#performance-visualisation)
+9. [MATLAB visualisation](#matlab-visualisation)
+10. [Explaination & Justification](#explaination-&-justificiation)
+11. [PyTorch Implementation Details](#pytorch-implementation-details)
+12. [conclusion](#pytorch-implementation-details)
+
+---
+
 ## Overview
 
 Our neural network predicts the **next frame of a spider's gait** from its current joint configuration. The spider has 8 legs with 3 joints for each (coxa, femur, tibia), resulting in **24 degrees of freedom**. 
@@ -11,7 +29,7 @@ We have provided two implementations: **`nn/`** (NumPy from scratch) and **`pyto
 
 ---
 
-## 1. Network Architecture
+## Network Architecture
 
 ### Structure
 
@@ -41,7 +59,7 @@ Output Layer:    24 neurons + Sigmoid activation (predicted joint angles)
 
 ---
 
-## 2. Activation Functions
+## Activation Functions
 
 **Choice**: **Sigmoid** activation for all layers
 
@@ -60,7 +78,8 @@ Output Layer:    24 neurons + Sigmoid activation (predicted joint angles)
 
 ---
 
-## 3. Loss Function
+
+## Loss Function
 
 **Choice**: **Mean Squared Error (MSE)**
 
@@ -87,7 +106,7 @@ Where:
 
 ---
 
-## 4. Training Method
+## Training Method
 
 ### Optimiser Comparison: Gradient Descent vs Adam
 
@@ -313,7 +332,7 @@ Because of this we decided to use stochastic gradient descent with a learning ra
 
 ---
 
-## 5. Backpropagation & Convergence
+## Backpropagation & Convergence
 
 ### Backpropagation Implementation
 
@@ -348,7 +367,7 @@ The network reaches a **reasonable solution** where predicted joint angles close
 
 ---
 
-## 6. Data Handling & Input/Output Format
+## Data Handling & Input/Output Format
 
 ### Training Data Generation
 
@@ -408,7 +427,7 @@ denormalize = lambda x : (x * angle_diff) + minimum_angle  # (x * 80) - 50
 
 ---
 
-## 7. Performance Visualisation
+## Performance Visualisation
 
 ### Training Loss Curves
 
@@ -703,7 +722,7 @@ end
 ```
 ---
 
-## 8. Explanation & Justification
+## Explanation & Justification
 
 ### Key Design Choices
 
@@ -740,7 +759,7 @@ end
 
 ---
 
-## 9. PyTorch Implementation Details
+## PyTorch Implementation Details
 
 The **`pytorch_nn/`** implementation provides a PyTorch version that exactly replicates the NumPy implementation in **`nn/`**. The following changes were made to adapt the code:
 
