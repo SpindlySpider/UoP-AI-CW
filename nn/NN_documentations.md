@@ -274,8 +274,10 @@ We can conclude that ADAM can work with a lower learning rate (e.g. `0.001`) and
 
 $$W_{new} = W_{old} - \eta {\frac{\delta{E}}{\delta{W_{old}}}} $$
 where:
-<!-- $$\eta$$ - is learning rate of `0.001` -->
-$$\eta {\frac{\delta{E}}{\delta{W_{old}}}}$$ - is partial derivitive is the gradient of error with respect to $$W_{old}$$
+
+- $\eta$ = is learning rate
+
+- $\eta {\frac{\delta{E}}{\delta{W_{old}}}}$ = gradient of error with respect to $$W_{old}$$
 
 **Results**:
 - **Training Loss**: 0.015 → 0.0015 (90% reduction)
