@@ -18,9 +18,6 @@ nn_save: str = "nn_pytorch.pth"
 # Ratio of data to use for training vs testing
 training_data_ratio: float = 0.95
 # Length of gait data to generate
-data_gait_length: int = 100
-# Number of gait variations to generate
-gait_variations: int = 700
 
 # Size of training batches
 training_batch_size: int = 1
@@ -42,15 +39,13 @@ defaults = {
 }
 
 
-def main(hidden_layers=hidden_layers, learning_rate=learning_rate, nn_save=nn_save, training_data_ratio=training_data_ratio, data_gait_length=data_gait_length, gait_variations=gait_variations, training_batch_size=training_batch_size, epochs=epochs, optimiser=opt):
+def main(hidden_layers=hidden_layers, learning_rate=learning_rate, nn_save=nn_save, training_data_ratio=training_data_ratio, training_batch_size=training_batch_size, epochs=epochs, optimiser=opt):
     """Main function to create, train, and test a neural network for gait generation.
     Parameters:
         hidden_layers (list[int], optional): List defining the number of neurons in each hidden layer. Defaults to hidden_layers.
         learning_rate (float, optional): Learning rate for training the neural network. Defaults to learning_rate.
         nn_save (str, optional): Filename to save the trained neural network. Defaults to nn_save.
         training_data_ratio (float, optional): Ratio of data to use for training vs testing. Defaults to training_data_ratio.
-        data_gait_length (int, optional): Length of gait data to generate. Defaults to data_gait_length.
-        gait_variations (int, optional): Number of gait variations to generate. Defaults to gait_variations.
         training_batch_size (int, optional): Size of training batches. Defaults to training_batch_size.
         epochs (int, optional): Number of training epochs. Defaults to epochs.
         optimiser (str, optional): Optimizer to use for training. Defaults to opt.
@@ -59,7 +54,7 @@ def main(hidden_layers=hidden_layers, learning_rate=learning_rate, nn_save=nn_sa
     model = TorchNet(input_size=24, hidden_sizes=hidden_layers, output_size=24, activation='sigmoid')
 
     # get training data
-    data = input_data.generate_train_test_data(training_data_ratio, data_gait_length, gait_variations)
+    data = input_data.seperate_train_test_data(training_data_ratio)
     # define training set
     train_in, train_out = data["training"]
     # define testing set
