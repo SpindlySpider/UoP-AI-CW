@@ -1,4 +1,5 @@
 import sys
+from time import time
 
 from ga.fitness import Fitness
 from ga.fitness_graph import plot_fitness_graph
@@ -19,7 +20,7 @@ final_gait_length:int = 1000
 population_size:int = 3000
 mutation_rate:float = 0.025
 crossover_rate:float = 0.7
-output_file:str = "./ga/results/ga_results.txt"
+output_file:str = f"./ga/results/ga_results_{round(time())}.txt"
 # define fitness target score
 fitness_score_target:float = 1.5
 
