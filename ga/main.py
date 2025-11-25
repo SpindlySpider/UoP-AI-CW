@@ -10,14 +10,8 @@ from ga.custom_types import Population
 from utils import *
 
 
-#TODO: define a gait length, for training / getting fitness and one for output
-# since training is optimising the sine waves so it does not actually need to be the full 300 speeding up training time
-
 # define the set of frames in the gait cycle
-gait_length:int = 50
-
-#NOTE: as the above todo says, we could use a var like this I will implement tonight
-#gait_length_output:int = 300
+gait_length:int = 300
 
 # define search space
 population_size:int = 3000
