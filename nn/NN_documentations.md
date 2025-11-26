@@ -181,11 +181,11 @@ Additionally another issue we could be facing is our activation functions becomi
 **Results**:
 - **Training Loss**: 0.018982283008555922 -> 5.767988611904117e-05 (99.7538% reduction)
 - **Test Loss**: 2.8265682014709896e-05
-- **Stability**: Extremely stable - ultra-smooth convergence
+- **Stability**: Acceptable with consistent tiny oscillations.
 
 **Analysis**:
 
-From this data we can conclude that reducing Adams learning rate to `0.001` improves stability while minimising oscillations. Over all Adam has been more effective in minimising loss compared to gradient descent.
+From this data we can conclude that reducing Adams learning rate to `0.001` improves stability while reducing oscillations, however they are still visible. Dispite this adam still offers a significantly lower error compared to gradient descent.
 
 ---
 
@@ -220,14 +220,12 @@ The trade off for the lower learning rate is that, while more stable and conserv
 |-----------|----|----|---------|
 | **Gradient Descent** | 0.01 | Stable with fast convergence | Strong solution |
 | **Gradient Descent** | 0.001 | Very stable, slower convergence | Acceptable performance |
-| **Adam** | 0.01 | Unstable loss minimisation unusable | Too inconstant to use with high LR |
-| **Adam** | 0.001 | Stable with good convergence | Useable |
+| **Adam** | 0.01 | Acceptable stability | Useable however other solutions perform better |
+| **Adam** | 0.001 | Stable with good convergence and minimal oscillations | Optimal solution |
 
-Because of this we decided to use stochastic gradient descent with a learning rate of `0.01`, for the following reasons:
+Because of this we decided to use adam with a learning rate of `0.001`, for the following reasons:
 - Stable loss minimisation.
-- computationally simple.
 - Optimal balance of speed and stability.
-- Results are not over fit.
 
 ---
 
@@ -273,8 +271,8 @@ The network reaches a **reasonable solution** where predicted joint angles close
 data is sourced from the genetic algorithm results found at `ga/results/*`
 
 **Data Split**:
-- **Training**: 95% (2850 samples)
-- **Testing**: 5% (149 samples)
+- **Training**: 95% (950 samples)
+- **Testing**: 5% (50 samples)
 
 ### Input/Output Format
 
