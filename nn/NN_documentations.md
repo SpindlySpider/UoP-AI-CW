@@ -6,7 +6,7 @@
    - [Structure](#structure)
    - [Architecture Justification](#architecture-justification)
 3. [Activation Functions](#activation-functions)
-4. [Loss Function](#loss-functions)
+4. [Loss Function](#loss-function)
 5. [Training Method](#training-method)
 6. [Backpropagation & Convergence](#backpropagation-and-convergence)
 7. [Data Handling & Input/Output Format](#data-handling-and-input-output-format)
