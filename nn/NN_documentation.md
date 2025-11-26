@@ -1,13 +1,33 @@
 # Neural Network for Spider Gait Prediction
 
-## Overview
-
-This neural network predicts the **next frame of a spider's gait** from its current joint configuration. The spider has 8 legs with 3 joints each (coxa, femur, tibia), totaling **24 degrees of freedom**. 
-**Input/Output**: `[24 joint angles] → Neural Network → [24 predicted joint angles]`
+## Table of Contents
+1. [Overview](#overview)
+2. [Network Architecture](#network-architecture)
+   - [Structure](#structure)
+   - [Architecture Justification](#architecture-justification)
+3. [Activation Functions](#activation-functions)
+4. [Loss Function](#loss-function)
+5. [Training Method](#training-method)
+6. [Backpropagation & Convergence](#backpropagation-and-convergence)
+7. [Data Handling & Input/Output Format](#data-handling-and-input-output-format)
+8. [MATLAB visualisation](#matlab-visualisation)
+9. [Explaination & Justification](#explanation-and-justification)
+10. [Conclusion](#conclusion)
 
 ---
 
-## 1. Network Architecture
+## Overview
+
+Our neural network predicts the **next frame of a spider's gait** from its current joint configuration. The spider has 8 legs with 3 joints for each (coxa, femur, tibia), resulting in **24 degrees of freedom**. 
+**Input/Output**: `[24 joint angles] -> Neural Network -> [24 predicted joint angles]`
+
+### Implementations
+
+We have provided two implementations: **`nn/`** (NumPy from scratch) and **`pytorch_nn/`** (PyTorch framework). The PyTorch version replicates the architecture, training procedure, and hyperparameters of the NumPy implementation for the purpose of direct comparison of the neural networks. However, PyTorch runs significantly slower, with batch size 1, due to framework overhead, PyTorch is optimised for larger batches where GPU acceleration and vectorisation provide substantial speedups, but with single-sample batches, the tensor conversion and computational graph overhead outweighs these benefits compared to our NumPy's direct array operations.
+
+---
+
+## Network Architecture
 
 ### Structure
 
@@ -25,19 +45,19 @@ Output Layer:    24 neurons + Sigmoid activation (predicted joint angles)
 
 | Decision | Rationale |
 |----------|-----------|
-| **3 Hidden Layers [128, 64, 32]** | Progressive dimensionality reduction for hierarchical feature extraction. Balances capacity with training efficiency. |
+| **3 Hidden Layers [128, 64, 32]** | Progressive dimensionality reduction for the extraction of hierarchical features. Balances capacity with training efficiency. |
 | **Input/Output Shape (24, 24)** | Matches spider's 24 joints. Direct frame-to-frame prediction enables recursive gait generation. |
 | **Decreasing Layer Sizes** | Funnels high-dimensional input through compressed representations, learning essential motion patterns. |
 | **Fully-Connected (Dense)** | All joints influence each other - legs coordinate during walking. Dense connections capture inter-joint dependencies. |
 
-**Why This Depth?**
+**Number of layer**
 - **Too shallow (1-2 layers)**: Cannot learn complex temporal patterns
 - **Too deep (5+ layers)**: Overfits small dataset, slower training, vanishing gradients
 - **3 layers**: Optimal for this problem's complexity
 
 ---
 
-## 2. Activation Functions
+## Activation Functions
 
 **Choice**: **Sigmoid** activation for all layers
 
@@ -45,20 +65,19 @@ Output Layer:    24 neurons + Sigmoid activation (predicted joint angles)
 
 | Aspect | Sigmoid Benefits | Why Suitable |
 |--------|------------------|--------------|
-| **Output Range** | [0, 1] | Matches normalized joint angle range perfectly |
-| **Smooth Gradients** | Differentiable everywhere | Enables stable backpropagation |
+| **Output Range** | [0, 1] | Matches normalised joint angle range |
 | **Non-linearity** | S-curve shape | Captures complex motion patterns |
-| **Biological Realism** | Smooth transitions | Mirrors natural joint movement |
 
 **Formula**: $\sigma(x) = \frac{1}{1 + e^{-x}}$
 
 **Derivative** (for backpropagation): $\sigma'(x) = \sigma(x)(1 - \sigma(x))$
 
-**Trade-off**: Sigmoid can cause vanishing gradients in very deep networks, but at 3 layers this is manageable. The bounded output range [0,1] is ideal for our normalized data.
+**Trade-off: In very deep networks, sigmoid may result in vanishing gradients, but it is manageable at three layers. For our normalised data, the bounded output range [0,1] is optimal.
 
 ---
 
-## 3. Loss Function
+
+## Loss Function
 
 **Choice**: **Mean Squared Error (MSE)**
 
@@ -76,149 +95,139 @@ Where:
 | Reason | Explanation |
 |--------|-------------|
 | **Regression Task** | Predicting continuous values (angles), not classification |
-| **Penalizes Large Errors** | Squared term heavily penalizes predictions far from target |
+| **Penalises Large Errors** | Squared term heavily penalises predictions far from target |
 | **Differentiable** | Smooth gradient enables efficient backpropagation |
 | **Balanced Across Joints** | Treats all 24 joints equally in error calculation |
 
 **Why Not Other Loss Functions?**
-- **MAE (Mean Absolute Error)**: Less sensitive to outliers, but we want to heavily penalize bad predictions
-- **Cross-Entropy**: For classification only, not regression
-- **Huber Loss**: Useful for noisy data, but our synthetic data is clean
+- **MAE (Mean Absolute Error)**: Less sensitive to outliers, but we want to heavily penalise bad predictions
 
 ---
 
-## 4. Training Method & Learning Rate
+## Training Method
 
-### Optimizer Comparison: Gradient Descent vs Adam
+### Optimiser Comparison: Gradient Descent vs Adam
 
-Both optimizers were tested extensively. Results below show **actual training runs** on identical data.
+Both optimisers were tested with the same sample size which has been shuffled after each epoch to prevent overfitting. The results below show **tested training runs**
 
-#### Configuration
+
+#### Default Configuration
 
 | Parameter | Value |
 |-----------|-------|
-| **Training Data** | 25,935 samples (700 gait variations × 39 pairs each × 0.95) |
-| **Test Data** | 1,365 samples (5% holdout) |
+| **Training Data** | 950 samples (1 gait variations × 1000 gait length × 0.95) |
+| **Test Data** |  50 samples (5% holdout) |
 | **Batch Size** | 1 (SGD - Stochastic Gradient Descent) |
-| **Epochs** | 100 |
-| **Learning Rate** | 0.01 (both optimizers) |
+| **Epochs** | 500 |
+| **Learning Rate** | 0.01 (both optimisers) |
 
 ---
 
-### Gradient Descent (✓) RECOMMENDED
+### Stochastic Gradient Descent
+**Results with LR = 0.01**:
 
-**Algorithm**: $W_{new} = W_{old} - \alpha \nabla L$
+**Algorithm**:
+$$W_{new} = W_{old} - \eta {\frac{\delta{E}}{\delta{W_{old}}}} $$
+where:
+
+- $\eta$ = is learning rate
+
+- $\eta {\frac{\delta{E}}{\delta{W_{old}}}}$ = gradient of error with respect to $$W_{old}$$
 
 **Results**:
-- **Training Loss**: 0.011322 → 0.001249 (89% reduction)
-- **Test Loss**: 0.001287
-- **Training Time**: 231.91 seconds (~4 minutes)
-- **Stability**: Perfect - zero spikes
+- **Training Loss**: 0.03598855588900905 -> 0.0010135974419259715 (95% reduction)
+- **Test Loss**: 0.001067763894035297
+- **Stability**: Good result with very smooth error minimisation curve
 
-**Training Progress**:
+**Training Graph Progress**:
 
-![Gradient Descent Loss](doc-images/gradient_decent_default_learning%20_rate.png)
+![Gradient Descent Loss](./doc-images/sgd-ep500-lr001.png)
 
-**Analysis**: Smooth exponential decay from epoch 0 to 100. No oscillations or instabilities. The learning rate of 0.01 is well-tuned - loss decreases steadily without overshooting.
+**Analysis**:
 
-**Why It Works**:
-- **Simple updates**: Direct gradient application without momentum
-- **Stable convergence**: Predictable, deterministic weight changes
-- **Low computational overhead**: Fast per-epoch execution
-- **Suitable LR**: 0.01 allows steady progress without divergence
+From the training progress we can see an unusually smooth curve for a model using stochastic gradient descent. Typically we would expect SGD to produce a 'noisy' graph with frequent oscillations. However the smoothness here implies that out learning rate is low enough to keep the descent steady. However, it is also possible that the noise is too small too see, compared to how much the total loss has dropped.
 
 ---
 
-### Adam Optimizer (!) UNSTABLE (Default Settings)
+### Adam Optimiser
+**Results with LR = 0.01**:
 
 **Algorithm**: Adaptive Moment Estimation with momentum
 
 **Results**:
-- **Training Loss**: 0.002011 → 0.001383 (31% reduction)
-- **Test Loss**: 0.001342  
-- **Training Time**: 2381.02 seconds (~40 minutes) - **10× slower**
-- **Stability**: Poor - 10+ major loss spikes
+- **Training Loss**: 0.008190058273522118 -> 0.00010437256305459837 (71% reduction)
+- **Test Loss**: 0.00023561222080829665
+- **Stability**: Acceptable with consistent minor oscillations.
 
 **Training Progress**:
 
-![Adam Default LR](doc-images/adam_default_learning_rate.png)
+![Adam Default LR](./doc-images/adam-ep500-lr001.png)
 
-**Analysis**: Severe instability with loss spikes at epochs 33, 39, 52, 57, 62-63, 70, 80, 88. One spike reached 0.0053 (4× baseline). Overflow warnings indicate gradient explosions despite clipping.
-
-**Why It Failed**:
-- **LR too high**: 0.01 causes overshooting when combined with momentum
-- **Sigmoid saturation**: Adaptive rates amplified saturation at boundaries
-- **Gradient explosions**: Default clip value (1.0) insufficient
-- **Degenerate predictions**: Network outputs freeze at -50° or 30° (boundaries)
+**Analysis**: 
+Over the 500 epochs there are consistent minor oscillations which result in a "noisy" graph.
+Reasons for this "noise" because the learning rate was too high for adam, resulting in, overshoot minimisation when combined with the momentum.
+Additionally another issue we could be facing is our activation functions becoming saturated, leading to results close to the boundaries (0 and 1).
 
 ---
 
-### Adam with Tuned Learning Rate (✓) IMPROVED
+### Adam with Modified Learning Rate
 
 **Results with LR = 0.001**:
 
-![Adam LR 0.001](doc-images/adam_learning_rate_0.001.png)
+![Adam LR 0.001](./doc-images/adam-ep500-lr0001.png)
 
-**Analysis**: Reducing learning rate to 0.001 dramatically improves stability. Still shows minor oscillations but no major spikes. Converges to similar loss as gradient descent but takes longer.
+**Results**:
+- **Training Loss**: 0.018982283008555922 -> 5.767988611904117e-05 (99.7538% reduction)
+- **Test Loss**: 2.8265682014709896e-05
+- **Stability**: Acceptable with consistent tiny oscillations.
 
-**Conclusion**: Adam **can work** with proper tuning (LR=0.001, possibly ReLU activations), but gradient descent is simpler and more reliable for this problem.
+**Analysis**:
+
+From this data we can conclude that reducing Adams learning rate to `0.001` improves stability while reducing oscillations, however they are still visible. Despite this adam still offers a significantly lower error compared to gradient descent.
 
 ---
 
-### Gradient Descent with LR = 0.001 (✓) CONSERVATIVE ALTERNATIVE
+### Stochastic Gradient Descent with Modified learning rate
 
-**Algorithm**: $W_{new} = W_{old} - 0.001 \times \nabla L$ (lower learning rate)
+**Results with LR = 0.001**:
+
+$$W_{new} = W_{old} - \eta {\frac{\delta{E}}{\delta{W_{old}}}} $$
+where:
+
+- $\eta$ = is learning rate
+
+- $\eta {\frac{\delta{E}}{\delta{W_{old}}}}$ = gradient of error with respect to $$W_{old}$$
 
 **Results**:
-- **Training Loss**: 0.015 → 0.0015 (90% reduction)
-- **Test Loss**: Similar to LR=0.01
-- **Training Time**: Longer per loss reduction
-- **Stability**: Extremely stable - ultra-smooth convergence
+- **Training Loss**: 0.03495881138356216 -> 0.0010041029007837273  (89.1288% reduction)
+- **Test Loss**: 0.0008892338786418603
+- **Stability**: Extremely stable loss minimisation
 
 **Training Progress**:
 
-![Gradient Descent LR 0.001](doc-images/gradient_decent_learning_rate_0.001.png)
+![Gradient Descent LR 0.001](./doc-images/sgd-ep500-lr0001.png)
 
-**Analysis**: Exceptionally smooth exponential decay with even more gradual convergence than LR=0.01. The lower learning rate produces an extremely stable training curve with zero oscillations. Loss decreases more slowly but very predictably.
+**Analysis**:
+Extremely stable and smooth decay with a gradual convergence. This is because of the lower learning rate (`0.001`) which produces a stable training curve with zero visible oscillations.
 
-**Why It Works**:
-- **Gentle updates**: Smaller steps prevent any overshooting
-- **Maximum stability**: Ultra-conservative approach eliminates all risk
-- **Fine control**: Precise weight adjustments near optimal point
-- **Safe choice**: Guaranteed stability for sensitive problems
+The trade off for the lower learning rate is that, while more stable and conservative, the NN learns significantly slower. We can compare this to the SGD with `0.01` LR and see that they a similar minimum error, however with a higher learning rate it converges on that point much faster (>20 epochs).
 
-**When to Use 0.001**:
-- Initial experiments show instability at higher rates
-- Fine-tuning a pre-trained network
-- Working with sensitive or poorly-conditioned problems
-- Maximum stability is priority over training speed
-- Transfer learning scenarios
+### Learning Rate Modification Summary
 
-**Trade-off**: While more conservative and stable, the slower convergence means 2-3× more epochs needed to reach the same loss as LR=0.01. Since 0.01 is already perfectly stable for this problem, 0.001 provides minimal benefit at significant time cost.
-
----
-
-### Learning Rate Tuning Summary
-
-| Optimizer | LR | Result | Verdict |
+| Optimiser | LR | Result | Verdict |
 |-----------|----|----|---------|
-| **Gradient Descent** | 0.01 | (✓) Stable, fast convergence | **Optimal** |
-| **Gradient Descent** | 0.001 | (✓) Very stable, slower | Conservative alternative |
-| **Adam** | 0.01 | (✗) Unstable, unusable | Too high |
-| **Adam** | 0.001 | (✓) Stable, good convergence | Workable with tuning |
+| **Gradient Descent** | 0.01 | Stable with fast convergence | Strong solution |
+| **Gradient Descent** | 0.001 | Very stable, slower convergence | Acceptable performance |
+| **Adam** | 0.01 | Acceptable stability | Useable however other solutions perform better |
+| **Adam** | 0.001 | Stable with good convergence and minimal oscillations | Optimal solution |
 
-**Final Choice**: **Gradient Descent with LR = 0.01**
-- Best performance (lowest loss: 0.00125)
-- Fastest training (232s)
-- Perfectly stable (zero issues)
-- Simplest to tune (one hyperparameter)
-- Optimal balance of speed and stability
-
-**Alternative**: Use LR = 0.001 only if extreme stability is required or if experimenting with more complex architectures that might be sensitive to higher learning rates.
+Because of this we decided to use adam with a learning rate of `0.001`, for the following reasons:
+- Stable loss minimisation.
+- Optimal balance of speed and stability.
 
 ---
 
-## 5. Backpropagation & Convergence
+## Backpropagation and Convergence
 
 ### Backpropagation Implementation
 
@@ -234,45 +243,34 @@ For each layer i (backward):
 **Evidence of Correct Implementation**:
 
 1. **Loss Decreases**: 89% reduction over 100 epochs proves gradients flow correctly
-2. **Smooth Convergence**: No erratic behavior suggests proper gradient calculation
-3. **Generalization**: Test loss (0.00129) close to training loss (0.00125) indicates learned patterns, not memorization
+2. **Smooth Convergence**: No erratic behaviour suggests proper gradient calculation
+3. **Generalisation**: Test loss (0.00129) close to training loss (0.00125) indicates learned patterns and not memorisation
 
 ### Convergence Analysis
 
 | Metric | Value | Indicates |
 |--------|-------|-----------|
-| **Initial Loss** | 0.011322 | Random initialization baseline |
+| **Initial Loss** | 0.011322 | Random initialisation baseline |
 | **Epoch 10 Loss** | 0.001498 | Rapid early learning |
 | **Epoch 50 Loss** | 0.001294 | Continued refinement |
 | **Final Loss** | 0.001249 | Converged to stable minimum |
-| **Test Loss** | 0.001287 | Generalizes well (+3% from training) |
+| **Test Loss** | 0.001287 | Generalises well (+3% from training) |
 
-**Convergence Pattern**: Exponential decay → Logarithmic refinement → Plateau
+**Convergence Pattern**: Exponential decay -> Logarithmic refinement -> Plateau
 
-The network reaches a **reasonable solution** where predicted joint angles closely match targets (average error ~4° per joint after denormalization).
+The network reaches a **reasonable solution** where predicted joint angles closely match targets (average error ~4° per joint after denormalisation).
 
 ---
 
-## 6. Data Handling & Input/Output Format
+## Data Handling and Input Output Format
 
 ### Training Data Generation
 
-**Source**: Synthetic gaits generated using parametric sine wave functions
-
-**Process**:
-1. **Generate Base Gaits**: Use genetic algorithm's sine-based gait generator
-2. **Randomize Parameters**: Create 700 variations by varying:
-   - Period: [0.1, 1.0] seconds (gait speed)
-   - Coxa amplitude: [15°, 23°] (horizontal leg swing)
-   - Tibia-femur vertical shift: [40°, 55°] (leg height)
-   - Tibia-femur amplitude: [15°, 35°] (vertical movement)
-3. **Extract Frames**: Each gait = 40 time steps
-4. **Create Pairs**: `(frame[t], frame[t+1])` for supervised learning (39 pairs per gait since last frame has no next)
-5. **Combine**: 700 gaits × 39 pairs = 27,300 total samples
+data is sourced from the genetic algorithm results found at `ga/results/*`
 
 **Data Split**:
-- **Training**: 95% (25,935 samples)
-- **Testing**: 5% (1,365 samples)
+- **Training**: 95% (950 samples)
+- **Testing**: 5% (50 samples)
 
 ### Input/Output Format
 
@@ -280,150 +278,42 @@ The network reaches a **reasonable solution** where predicted joint angles close
 - Coxa joints: approximately [-23°, 23°]
 - Tibia/Femur joints: approximately [-75°, -20°]
 
-**Normalization**: Map to [0, 1] using expanded bounds
+**Normalisation**: Map to [0, 1] using expanded bounds
 
 [nn/`input_data.py`](https://github.com/SpindlySpider/UoP-AI-CW/blob/main/nn/input_data.py)
 
 ```python
 # Used in both input_data.py and load_and_predict.py
-normalized = (raw_angle + 80) / 110  # Maps [-80°, 30°] → [0, 1]
+normalise = lambda x : (x - minimum_angle) / angle_diff  # (x + 50) / 80
 ```
 
-**Why [-80°, 30°] bounds (110° range)?**
+**Why [-50°, 30°] bounds (80° range)?**
 - Code comment states: "actual range: coxa [-23, 23], tibia-femur approximately [-75, -20]"
-- Expanded to [-80°, 30°] to provide safety margin beyond observed extremes
-- Ensures no joint angle exceeds [0, 1] bounds after normalization
+- Expanded to [-50°, 30°] to provide safety margin beyond observed extremes
+- Ensures no joint angle exceeds [0, 1] bounds after normalisation
 - Consistent scaling prevents some joints dominating loss
 - Enables stable sigmoid outputs without saturation
 
 ### Output Format
 
-**Network Output**: 24 normalized values in [0, 1]
+**Network Output**: 24 normalised values in [0, 1]
 
-**Denormalization**: Convert back to degrees
+**Denormalisation**: Convert back to degrees
 
 [nn/`load_and_predict.py`](https://github.com/SpindlySpider/UoP-AI-CW/blob/main/nn/load_and_predict.py)
 
 ```python
 # Used in both training and prediction
-raw_angle = (normalized × 110) - 80  # Maps [0, 1] → [-80°, 30°]
+denormalise = lambda x : (x * angle_diff) + minimum_angle  # (x * 80) - 50
 ```
 
 **Usage**: Predicted frame becomes input for next prediction, enabling recursive gait generation
 
 ---
 
-## 7. Performance Visualization
+## MATLAB Visualisation
 
-### Training Loss Curves
-
-**Gradient Descent**:
-
-![GD Loss](doc-images/gradient_decent_default_learning%20_rate.png)
-
-- **Pattern**: Smooth exponential decay
-- **Epochs 0-10**: Rapid drop (0.0113 → 0.0015)
-- **Epochs 10-100**: Steady refinement (0.0015 → 0.0012)
-- **Final Training Loss**: 0.001249
-- **Final Test Loss**: 0.001287 (+3%)
-
----
-
-### Sample Outputs: Predicted vs Target Joint Angles
-
-**Test Input** (initial pose from GA-generated gait):
-```
-[0.51, -50.00, -50.00, 2.55, -27.66, -26.26, 0.51, -50.00, -50.00, 
- 2.55, -27.66, -26.26, 3.23, -50.00, -50.00, -4.93, -26.37, -26.26,
- 3.23, -50.00, -50.00, -4.93, -26.37, -26.26]
-```
-
-**Network Prediction** (next frame):
-```
-[6.73, -50.26, -50.09, -6.71, -35.07, -34.99, 6.80, -50.21, -50.35,
- -7.01, -34.92, -35.06, -6.70, -50.18, -50.12, 6.83, -34.85, -34.99,
- -6.84, -50.22, -50.20, 7.05, -35.01, -34.88]
-```
-
-**Target Values** (actual next frame from GA):
-```
-[17.29, -44.17, -46.70, -14.27, -39.54, -35.91, 17.29, -44.17, -46.70,
- -14.27, -39.54, -35.91, -13.73, -50.00, -50.00, 12.17, -37.64, -36.26,
- -13.73, -50.00, -50.00, 12.17, -37.64, -36.26]
-```
-
-**Comparison** (first 6 joints):
-
-| Joint | Predicted | Target | Error |
-|-------|-----------|--------|-------|
-| 1 (Coxa) | 6.73° | 17.29° | 10.56° |
-| 2 (Femur) | -50.26° | -44.17° | 6.09° |
-| 3 (Tibia) | -50.09° | -46.70° | 3.39° |
-| 4 (Coxa) | -6.71° | -14.27° | 7.56° |
-| 5 (Femur) | -35.07° | -39.54° | 4.47° |
-| 6 (Tibia) | -34.99° | -35.91° | 0.92° |
-
-**Analysis**: 
-- **Average Error**: ~5.5° per joint across all 24 joints
-- **Pattern Mismatch**: The network predicts smoother, more symmetric motion patterns compared to the GA-generated gait which has higher amplitude variations
-- **Key Difference**: The NN was trained on smoother parametric sine-based gaits, while this GA output (from 277-generation run achieving fitness 1.5035) shows more dynamic asymmetric movement (note joints 1 and 4 with ~7-11° errors)
-- **Generalization**: Despite never seeing this exact GA gait pattern during training, the network produces physically plausible joint angles within valid ranges
-
----
-
-### Gait Sequence Generation
-
-**Recursive Prediction**: The network generates complete gait sequences by feeding each prediction back as input for the next frame.
-
-**Implementation**: [nn/`load_and_predict.py`](https://github.com/SpindlySpider/UoP-AI-CW/blob/main/nn/load_and_predict.py)
-
-```python
-def predict_gait(nn:Neural_network, input:list[float], gait_length:int = 300) -> Gait:
-    """
-    Recursively predict entire gait from one input.
-    Parameters:
-        nn: neural network to use to predict
-        input: list of 24 floats representing joint angles in degrees
-        gait_length: length of gait to produce (how many predictions)
-    Returns:
-        Complete gait sequence
-    """
-    gait = []
-    gait.append(np.array(input))
-    for i in range(gait_length):
-        # predict next frame, starting from input
-        prediction = predict(nn, gait[i])
-        # reshape for output
-        gait.append(prediction.reshape(prediction.shape[1]))
-    return gait
-```
-
-**Example** (first 10 frames from GA initial pose, showing Leg 1's 3 joints):
-
-```python
-Frame 0 (input):  [0.51, -50.00, -50.00]    # Initial pose from GA
-Frame 1:          [6.73, -50.26, -50.09]    # NN prediction
-Frame 2:          [13.73, -47.21, -47.20]   # NN prediction
-Frame 3:          [16.05, -40.93, -40.85]   # NN prediction
-Frame 4:          [14.11, -34.39, -34.47]   # NN prediction
-Frame 5:          [8.70, -30.78, -31.05]    # NN prediction
-Frame 6:          [0.81, -32.74, -33.01]    # NN prediction
-Frame 7:          [-7.45, -40.23, -40.27]   # NN prediction
-Frame 8:          [-12.73, -47.28, -47.18]  # NN prediction
-Frame 9:          [-13.51, -50.29, -50.31]  # NN prediction
-Frame 10:         [-10.85, -51.20, -51.32]  # NN prediction
-```
-
-**Analysis**: 
-- **Smooth Transitions**: No sudden jumps between frames, demonstrating stable temporal dynamics
-- **Oscillatory Pattern**: Angles show natural cyclic movement (coxa: 0.51° → 16.05° → -13.51° → -10.85°, demonstrating learned periodic motion)
-- **Physically Plausible**: All angles remain within valid ranges, no boundary saturation
-- **Recursive Stability**: Network maintains coherent predictions over 300 frames (full gait in `predict_results.txt`)
-- **Learned Motion**: Shows natural leg movement pattern with coordinated joint oscillations - network learned temporal dependencies from training data
-
-## MATLAB Visualization
-
-To visualize the gait in **MATLAB**, use the following script:
+To visualise the gait in **MATLAB**, use the following script:
 
 ```matlab
 function plot_spider_pose(angles)
@@ -598,7 +488,7 @@ function v_rot = rotate_vector(v, axis, angle)
 end
 
 
-v = readmatrix('predict_results.txt');
+v = readmatrix('nn_predict_results.txt');
 A = deg2rad(v);
 
 for idx = 1:size(v,1)
@@ -608,22 +498,22 @@ end
 ```
 ---
 
-## 8. Explanation & Justification
+## Explanation and Justification
 
 ### Key Design Choices
 
 | Choice | Justification | Trade-offs |
 |--------|---------------|------------|
-| **MLP Architecture** | Simple, proven for regression tasks. Fully-connected layers capture joint interdependencies. | Not optimized for sequential data (RNN would be), but works well for frame-to-frame prediction. |
-| **Sigmoid Activation** | Output range [0,1] matches normalized data perfectly. Smooth for continuous motion. | Vanishing gradients in deep networks. Mitigated by keeping network shallow (3 layers). |
-| **MSE Loss** | Standard for regression. Penalizes large errors heavily, encouraging accurate predictions. | Sensitive to outliers. Acceptable since our synthetic data is clean. |
-| **Gradient Descent** | Stable, fast, simple to tune. One hyperparameter (LR). | Theoretically slower than adaptive methods, but empirically fastest here. |
-| **LR = 0.01** | Optimal for this problem - fast convergence without overshooting. | Too high for Adam. Problem-specific tuning required. |
-| **Batch Size = 1** | SGD (Stochastic Gradient Descent) updates weights after each sample. Simpler implementation. | Noisier gradients than mini-batch. Acceptable with low LR and stable optimizer. |
-| **Synthetic Data (target_sol)** | Parametric sine-based generator produces optimal gaits instantly. GA alternative is too slow (minutes per gait) and non-deterministic (fitness varies). Fast data generation enables large training sets. | May not capture real spider physics (friction, inertia). Good for learning motion patterns. |
-| **95/5 Split** | Large training set maximizes learning. 5% test sufficient for validation. | Could use cross-validation for more robust estimates, but single split adequate. |
+| **Neural Network Architecture** | Simple, proven for regression tasks. Fully-connected layers capture joint interdependencies. | Not optimised for sequential data (RNN would be), but works well for frame-to-frame prediction. |
+| **Sigmoid Activation** | Output range [0,1] matches normalised data perfectly. Smooth for continuous motion. | Vanishing gradients in deep networks. Mitigated by keeping network shallow (3 layers). |
+| **MSE Loss** | Standard for regression. Penalises large errors heavily, encouraging accurate predictions. | Sensitive to outliers. |
+| **Gradient Descent** | Stable, fast, simple to tune. One hyperparameter (Learning Rate). | Theoretically slower than adaptive methods, but fastest here. |
+| **Learning Rate = 0.01** | Optimal for this problem - fast convergence without overshooting. | Too high for Adam. (Tuning Required) |
+| **Batch Size = 1** | SGD (Stochastic Gradient Descent) updates weights after each sample. Simpler implementation. | Noisier gradients than mini-batch. Acceptable with low Learning Rate and stable optimiser. |
+| **GA results** | Used for training. Sine-based generation produces optimal gaits instantly. GA alternative is too slow (minutes per gait). Fast data generation enables large training sets. | May not capture real spider physics (friction, inertia). Good for learning motion patterns. |
+| **95/5 Split** | Large training set maximises learning. 5% test sufficient for validation. | Could use cross-validation for more robust estimates, but single split adequate. |
 
-### Understanding of Trade-offs
+### Trade-offs
 
 **Depth vs. Complexity**:
 - Deeper networks learn more complex patterns but risk overfitting on small datasets
@@ -631,28 +521,23 @@ end
 
 **Activation Functions**:
 - ReLU would prevent vanishing gradients but unbounded outputs require careful output clipping
-- Sigmoid's bounded range is ideal for our normalized data
+- Sigmoid's bounded range is ideal for our normalised data
 
-**Optimizers**:
+**Optimisers**:
 - Adam adapts per-parameter learning rates, theoretically better for complex loss landscapes
 - Gradient descent simpler but requires well-tuned global learning rate
-- **Our finding**: Gradient decent is superior with proper tuning, despite Adam's theoretical advantages
+- **Our finding**: Although Adam has more oscillations it achieves a lower loss compared to gradient descent so we ended up using it.
 
 **Learning Rate**:
-- Higher LR (0.1): Faster convergence but risks divergence
-- Lower LR (0.001): More stable but slower
-- **0.01**: Sweet spot for GD on this problem
+- Higher Learning Rate (0.1): Faster convergence but risks divergence
+- Lower Learning Rate (0.001): More stable but slower
+- **0.001**: Sweet spot for Adam on this problem
 
 ---
 
 ## Conclusion
 
-This neural network successfully learns to predict spider gait sequences through:
+This neural network successfully learns to predict successive joint configuration using our well designed architecture which uses a 3 hidden layer neural network with 128->64->32 neurons, allowing non-linear relationships to be learnt. We used a sigmoid activation for outputs between 0 and 1, and apply MSE as the loss function for regression. A stable training process was achieved using gradient descent with a learning rate of 0.01, where backpropagation led to an 89% loss reduction and smooth convergence. Input data was normalised, and additional synthetic samples were generated using multiple target solutions to enhance training performance.
 
-1. **Well-designed architecture** (3-layer MLP with 128→64→32 neurons)
-2. **Appropriate activation** (sigmoid for bounded outputs)
-3. **Suitable loss function** (MSE for regression)
-4. **Stable training method** (gradient descent, LR=0.01)
-5. **Correct backpropagation** (89% loss reduction, smooth convergence)
-6. **Thoughtful data handling** (normalized inputs, synthetic training data)
+Both **Non PyTorch** and **PyTorch** implementations achieve very similar results, giving more validity to out neural network created from scratch, while demonstrating modern framework integration.
 

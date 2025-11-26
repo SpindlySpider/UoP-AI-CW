@@ -1,23 +1,14 @@
-import sys
-from pathlib import Path
 import math
 from numpy import random
 import matplotlib.pyplot as plt
 
-# Add parent directory to path
-sys.path.insert(0, str(Path(__file__).parent.parent))
-
-try:
-    import ga.output as output
-    from ga.custom_types import Individual, Period
-except ImportError:
-    import output as output
-    from custom_types import Individual, Period
+import ga.output as output
+from ga.custom_types import Individual, Period
 
 def produce_target(gait_length:int, period:Period, coxa_amplitude:float, tibia_femur_v_shift:float, tibia_femur_amplitude:float) -> Individual:
     '''
     Produce target gait based on sine wave parameters
-    Args:
+    Parameters:
         gait_length (int): The length of the gait
         period (float): The period of the sine wave
         coxa_amplitude (float): The amplitude of the coxa joint movement
@@ -76,20 +67,20 @@ def produce_target(gait_length:int, period:Period, coxa_amplitude:float, tibia_f
 def random_sol(gait_length:int) -> Individual:
     '''
     Generate a random solution for based on the target gait parameter
-    Args:
+    Parameters:
         gait_length (int): The length of the gait
     '''
-    period:Period = round(random.uniform(0.05,1),3)
-    coxa_amplitude: float = round(random.uniform(5,23),3)
-    tibia_femur_v_shift: float = round(random.uniform(40,50),3)
-    tibia_femur_amplitude: float = round(random.uniform(5,30),3)
+    period:Period = round(random.uniform(0.1,1),3)
+    coxa_amplitude: float = round(random.uniform(20,23),3)
+    tibia_femur_v_shift: float = round(random.uniform(45,50),3)
+    tibia_femur_amplitude: float = round(random.uniform(20,30),3)
     optimal_solution: Individual = produce_target(gait_length,period,coxa_amplitude,tibia_femur_v_shift,tibia_femur_amplitude)
     return optimal_solution
 
 def generate_graph(individual):
     '''
     Generate a graph from the individual's joint angles over time
-    Args:
+    Parameters:
         individual (Individual): The individual's joint angles
     '''
     # get frames for plotting

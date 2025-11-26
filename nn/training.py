@@ -1,24 +1,12 @@
-import sys
-from pathlib import Path
 from numpy.typing import NDArray
 from numpy._core.numerictypes import float64
 import numpy as np
 
-# Add parent directory to path
-sys.path.insert(0, str(Path(__file__).parent.parent))
-
-try:
-    import nn.graph_results as graph_results
-    from nn.neural_network import Neural_network
-    import nn.input_data as input_data
-    from nn.error_funcs import mse
-    import nn.optimiser as opt
-except ImportError:
-    import graph_results as graph_results
-    from neural_network import Neural_network
-    import input_data as input_data
-    from error_funcs import mse
-    import optimiser as opt
+import nn.graph_results as graph_results
+import nn.input_data as input_data
+from nn.neural_network import Neural_network
+from nn.error_funcs import mse
+import nn.optimiser as opt
 
 def train_NN(nn:Neural_network,input_list:NDArray[float64],target_list:NDArray[float64],epochs:int, batch_size:int, optimiser:str) -> Neural_network:
     """
@@ -74,7 +62,7 @@ def train_NN(nn:Neural_network,input_list:NDArray[float64],target_list:NDArray[f
         # average loss for epoch
         loss_per_epoch.append(mse_loss/((len(input_list) // batch_size)))
 
-        print(f"mean loss {loss_per_epoch[-1]} | epoch: {epoch}")
+        print(f"epoch {epoch}/{epochs} | mean loss {loss_per_epoch[-1]}")
     graph_results.plot_loss_graph(loss_per_epoch,epochs,batch_size)
     return nn
 

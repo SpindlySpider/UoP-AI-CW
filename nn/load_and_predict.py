@@ -3,27 +3,16 @@ from pathlib import Path
 import random as rd
 import numpy as np
 
-# Add parent directory to path for imports
-sys.path.insert(0, str(Path(__file__).parent.parent))
 from ga.custom_types import Gait
-from ga.output import output
 
-try:
-    # Try absolute imports (when run from project root or via main.py)
+from nn.neural_network import Neural_network
+import nn.serialise as serialize
 
-    from nn.neural_network import Neural_network
-    import nn.serialize as serialize
-except ImportError:
-    # Fall back to relative imports (when run directly from nn/ directory)
-    sys.path.insert(0, str(Path(__file__).parent.parent / 'ga'))
-    from neural_network import Neural_network
-    import serialize as serialize
-
-# Normalization constants matching input_data.py training normalization
-# Maps [-80, 30] to [0, 1] using (x + 80) / 110
-minimum_angle = -80
+# Normalisation constants matching input_data.py training normalisation
+# Maps [-50, 30] to [0, 1] using (x + 50) / 80
+minimum_angle = -50
 maximum_angle = 30
-angle_diff = maximum_angle - minimum_angle  # = 110
+angle_diff = abs(minimum_angle) + abs(maximum_angle)
 
 def predict(nn:Neural_network,input:list[float]) -> list[float]:
     """
@@ -34,16 +23,16 @@ def predict(nn:Neural_network,input:list[float]) -> list[float]:
     Returns:
         list of 24 values, next predicted frame for all joints.
     """
-    input = normalize(input)
+    input = normalise(input)
     predict = nn.feed_forward(input)
-    return denormalize(predict)
+    return denormalise(predict)
 
 
-# Normalization/denormalization matching input_data.py
-# Training uses: (x + 80) / 110 for normalization
-# So denormalization is: (x * 110) - 80
-normalize = lambda x : (x - minimum_angle) / angle_diff  # (x + 80) / 110
-denormalize = lambda x : (x * angle_diff) + minimum_angle  # (x * 110) - 80
+# Normalisation/denormalisation matching input_data.py
+# Training uses: (x + 50) / 80 for normalisation
+# So denormalisation is: (x * 80) - 50
+normalise = lambda x : (x - minimum_angle) / angle_diff  # (x + 50) / 80
+denormalise = lambda x : (x * angle_diff) + minimum_angle  # (x * 80) - 50
 
 def predict_gait(nn:Neural_network, input:list[float],gait_length:int = 300) -> Gait:
     """
@@ -77,8 +66,10 @@ def load_and_predict(input:list[float],nn_path:str = "nn.pickle",output_file_nam
     print(f"predicting next {gait_length} poses")
     nn = serialize.load(nn_path)
     gait = predict_gait(nn,input,gait_length)
-    # save predicted gait to file results.txt
-    output(output_file_name,gait)
+    # save predicted gait to file in root directory
+    with open(output_file_name, 'w') as f:
+        for frame in gait:
+            f.write(','.join(map(str, frame)) + '\n')
     print(f"predicted gait saved to {output_file_name}")
 
 

@@ -1,16 +1,7 @@
-import sys
-from pathlib import Path
 import math
 
-# Add parent directory to path
-sys.path.insert(0, str(Path(__file__).parent.parent))
-
-try:
-    from ga.custom_types import Individual, Gait
-    import ga.target_sol as target_sol
-except ImportError:
-    from custom_types import Individual, Gait
-    import target_sol as target_sol
+from ga.custom_types import Individual, Gait
+import ga.target_sol as target_sol
 
 class Fitness:
     """
@@ -43,7 +34,7 @@ class Fitness:
         Compute the fitness of a given individual by comparing it to the target gait.
 
         The comparison uses Mean Squared Error (MSE) for each joint (coxa, femur, tibia),
-        normalized and inverted so that higher fitness corresponds to lower error.
+        normalised and inverted so that higher fitness corresponds to lower error.
 
         Parameters:
             individual (Individual): The individual whose gait is to be evaluated.
@@ -78,7 +69,7 @@ class Fitness:
                 err: float = (target_val - pred_val) ** 2
                 fit_dict[joint] += err
 
-        # Normalize errors and invert (1 / (1 + MSE)) for fitness
+        # Normalise errors and invert (1 / (1 + MSE)) for fitness
         for joint in joint_names:
             j: float = fit_dict[joint]
             j = (j / (4 * self.gait_length))  # Average per joint
