@@ -289,7 +289,7 @@ data is sourced from the genetic algorithm results found at `ga/results/*`
 
 ```python
 # Used in both input_data.py and load_and_predict.py
-normalize = lambda x : (x - minimum_angle) / angle_diff  # (x + 50) / 80
+normalise = lambda x : (x - minimum_angle) / angle_diff  # (x + 50) / 80
 ```
 
 **Why [-50°, 30°] bounds (80° range)?**
@@ -309,7 +309,7 @@ normalize = lambda x : (x - minimum_angle) / angle_diff  # (x + 50) / 80
 
 ```python
 # Used in both training and prediction
-denormalize = lambda x : (x * angle_diff) + minimum_angle  # (x * 80) - 50
+denormalise = lambda x : (x * angle_diff) + minimum_angle  # (x * 80) - 50
 ```
 
 **Usage**: Predicted frame becomes input for next prediction, enabling recursive gait generation

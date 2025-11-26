@@ -8,7 +8,7 @@ from ga.custom_types import Gait
 from nn.neural_network import Neural_network
 import nn.serialise as serialize
 
-# Normalization constants matching input_data.py training normalization
+# Normalisation constants matching input_data.py training normalisation
 # Maps [-50, 30] to [0, 1] using (x + 50) / 80
 minimum_angle = -50
 maximum_angle = 30
@@ -23,16 +23,16 @@ def predict(nn:Neural_network,input:list[float]) -> list[float]:
     Returns:
         list of 24 values, next predicted frame for all joints.
     """
-    input = normalize(input)
+    input = normalise(input)
     predict = nn.feed_forward(input)
-    return denormalize(predict)
+    return denormalise(predict)
 
 
-# Normalization/denormalization matching input_data.py
-# Training uses: (x + 50) / 80 for normalization
-# So denormalization is: (x * 80) - 50
-normalize = lambda x : (x - minimum_angle) / angle_diff  # (x + 50) / 80
-denormalize = lambda x : (x * angle_diff) + minimum_angle  # (x * 80) - 50
+# Normalisation/denormalisation matching input_data.py
+# Training uses: (x + 50) / 80 for normalisation
+# So denormalisation is: (x * 80) - 50
+normalise = lambda x : (x - minimum_angle) / angle_diff  # (x + 50) / 80
+denormalise = lambda x : (x * angle_diff) + minimum_angle  # (x * 80) - 50
 
 def predict_gait(nn:Neural_network, input:list[float],gait_length:int = 300) -> Gait:
     """

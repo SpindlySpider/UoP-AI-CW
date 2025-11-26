@@ -3,6 +3,7 @@ from pathlib import Path
 import random as rd
 import numpy as np
 import torch
+from nn.input_data import normalise, denormalise
 
 # Add parent directory to access ga module
 sys.path.insert(0, str(Path(__file__).parent.parent))
@@ -11,7 +12,7 @@ from ga.custom_types import Gait
 from pytorch_nn.torch_model import TorchNet
 from pytorch_nn import serialise
 
-# Normalization constants matching input_data.py training normalization
+# Normalisation constants matching input_data.py training normalization
 # Maps [-50, 30] to [0, 1] using (x + 50) / 80
 minimum_angle = -50
 maximum_angle = 30
@@ -26,23 +27,18 @@ def predict(model:TorchNet, input:list[float]) -> np.ndarray:
     Returns:
         numpy array of 24 values, next predicted frame for all joints.
     """
-    input_normalized = normalize(input)
-    
+    input_normalised = normalise(input)
+
     # Convert to tensor and add batch dimension
     device = next(model.parameters()).device
-    input_tensor = torch.from_numpy(np.array(input_normalized, dtype=np.float32)).unsqueeze(0).to(device)
-    
+    input_tensor = torch.from_numpy(np.array(input_normalised, dtype=np.float32)).unsqueeze(0).to(device)
+
     model.eval()
     with torch.no_grad():
         prediction = model(input_tensor).cpu().numpy()
-    
-    return denormalize(prediction)
 
-# Normalization/denormalization matching input_data.py
-# Training uses: (x + 50) / 80 for normalization
-# So denormalization is: (x * 80) - 50
-normalize = lambda x : (x + abs(minimum_angle))/angle_diff
-denormalize = lambda x : (x*angle_diff) - abs(minimum_angle)
+    return denormalise(prediction)
+
 
 def predict_gait(model:TorchNet, input:list[float], gait_length:int = 100) -> Gait:
     """

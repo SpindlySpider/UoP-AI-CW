@@ -2,7 +2,7 @@ import sys
 import os
 from pathlib import Path
 
-from nn.load_and_predict import normalize
+from nn.load_and_predict import normalise
 from numpy.typing import NDArray
 import numpy as np
 
@@ -35,8 +35,8 @@ def get_training_data() -> tuple[Gait,Gait]:
 
     gait_length:int = len(total_gait)
 
-    # normalize data between 0 and 1
-    total_gait = normalize(np.array(total_gait))
+    # normalise data between 0 and 1
+    total_gait = normalise(np.array(total_gait))
 
     # split into input and output data
     inputs:list[list[float]] = []

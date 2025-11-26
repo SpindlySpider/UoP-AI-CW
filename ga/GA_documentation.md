@@ -113,7 +113,7 @@ The smaller the error, the higher the fitness score.
 | **Error Inversion** | `1 / (1 + MSE)` | Normalises to 0–1 range, suitable for GA | Compresses large error values |
 | **Target Gait** | Pre-generated once | Improves efficiency, ensures consistency | May bias evolution |
 | **Symmetry** | Evaluate only unique 12 joints | Enforces biological realism, reduces cost | Prevents asymmetric gait discovery |
-| **Normalization** | Averaged per joint | Fairness between individuals | Requires fixed gait length |
+| **Normalisation** | Averaged per joint | Fairness between individuals | Requires fixed gait length |
 | **Equal Joint Weighting** | All joints contribute equally | Simplifies implementation | Ignores biomechanical differences |
 
 ---
@@ -892,7 +892,7 @@ The resulting gait data is saved to `ga_results.txt` as a **300 × 24 matrix** (
 |----------|----------|
 | [NumPy](https://numpy.org/) | Numerical computation and matrix operations |
 | [Matplotlib (pyplot)](https://matplotlib.org/) | Visualisation and plotting of gait data |
-| **random** | Randomised initialization and mutation processes |
+| **random** | Randomised initialisation and mutation processes |
 | **math** | Trigonometric and mathematical calculations for gait motion |
 
 ---
