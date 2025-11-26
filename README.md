@@ -43,12 +43,12 @@ The **main.py** file serves as the command-line interface (CLI) for the Spider G
 ├── nn_pytorch.pth                 # Trained PyTorch neural network
 │
 ├── ga/                            # Genetic Algorithm module
-│   ├── images/                    # GA visualization 
+│   ├── images/                    # GA visualisation
 │   ├── GA_documentation.md        # GA documentation
 │   ├── custom_types.py            # Type definitions
 │   ├── fitness.py                 # Fitness evaluation
-│   ├── fitness_graph.py           # Fitness visualization
-│   ├── initial_pop.py             # Population initialization
+│   ├── fitness_graph.py           # Fitness visualisation
+│   ├── initial_pop.py             # Population initialisation
 │   ├── main.py                    # GA entry point
 │   ├── output.py                  # Result output handling
 │   ├── reproduce.py               # Crossover & mutation
@@ -61,7 +61,7 @@ The **main.py** file serves as the command-line interface (CLI) for the Spider G
 │   ├── NN_documentations.md       # NN documentation
 │   ├── activation_functions.py    # Activation implementations
 │   ├── error_funcs.py             # Loss functions
-│   ├── graph_results.py           # Training visualization
+│   ├── graph_results.py           # Training visualisation
 │   ├── input_data.py              # Data generation
 │   ├── load_and_predict.py        # Inference & prediction
 │   ├── main.py                    # NN training entry point
@@ -71,7 +71,7 @@ The **main.py** file serves as the command-line interface (CLI) for the Spider G
 │   └── training.py                # Training loop
 │
 │── pytorch_nn/                    # PyTorch Neural Network
-│   ├── graph_results.py           # Training visualization
+│   ├── graph_results.py           # Training visualisation
 │   ├── load_and_predict.py        # PyTorch inference
 │   ├── main.py                    # PyTorch training entry point
 │   ├── serialise.py               # Model save/load (.pth)
@@ -142,7 +142,7 @@ Users are able to select different options using numbers (e.g. 0,1,2). This menu
 
 ### 2. Configuration Management
 
-Both the GA and NN allow users to customize parameters form inside the CLI. There are a few quality of life features such as:
+Both the GA and NN allow users to customise parameters form inside the CLI. There are a few quality of life features such as:
 - displaying the current configuration before running the GA or NN
 - allowing for saving / discarding modifications.
 
@@ -484,7 +484,7 @@ The CLI includes robust error handling:
 1. **Use adequate training data** (≥500 gait variations recommended)
 2. **Tune learning rate** based on convergence speed (0.001-0.1 typical range)
 3. **Experiment with architecture** (hidden layers) for optimal performance
-4. **Validate with test set** to ensure generalization
+4. **Validate with test set** to ensure generalisation
 
 ### For Neural Network Prediction
 1. **Start with biologically plausible inputs** (-50° to 30° per joint)

@@ -221,11 +221,11 @@ The trade off for the lower learning rate is that, while more stable and conserv
 |-----------|----|----|---------|
 | **Gradient Descent** | 0.01 | Stable with fast convergence | Strong solution |
 | **Gradient Descent** | 0.001 | Very stable, slower convergence | Acceptable performance |
-| **Adam** | 0.01 | Unstable loss minimization unusable | Too inconstant to use with high LR |
+| **Adam** | 0.01 | Unstable loss minimisation unusable | Too inconstant to use with high LR |
 | **Adam** | 0.001 | Stable with good convergence | Useable |
 
 Because of this we decided to use stochastic gradient descent with a learning rate of `0.01`, for the following reasons:
-- Stable loss minimization.
+- Stable loss minimisation.
 - computationally simple.
 - Optimal balance of speed and stability.
 - Results are not over fit.
@@ -322,7 +322,7 @@ denormalize = lambda x : (x * angle_diff) + minimum_angle  # (x * 80) - 50
 
 **Gradient Descent**:
 
-![GD Loss](doc-images/gradient_descent_default_learning%20_rate.png)
+![GD Loss](./doc-images/sgd-ep500-lr001.png)
 
 - **Pattern**: Smooth exponential decay
 - **Epochs 0-10**: Rapid drop (0.0113 -> 0.0015)
@@ -691,7 +691,7 @@ PyTorch eliminates ~50 lines of core backpropagation code (gradient calculations
 
 #### Training Loss Curves
 
-![Custom NumPy Implementation - Gradient Descent](doc-images/gradient_descent_default_learning%20_rate.png)
+![Custom NumPy Implementation - Gradient Descent](./doc-images/sgd-ep500-lr001.png)
 ![PyTorch Implementation - 100 Epochs](doc-images/pytorch-over-100%20epochs_default_learning_rate.png)
 
 **Observations**:

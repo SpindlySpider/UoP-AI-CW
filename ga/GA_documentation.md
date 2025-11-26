@@ -648,7 +648,7 @@ def produce_target(gait_length:int, period:Period, coxa_amplitude:float, tibia_f
 
 ## MATLAB Visualisation
 
-To visualize the gait in **MATLAB**, use the following script:
+To visualise the gait in **MATLAB**, use the following script:
 
 ```matlab
 function plot_spider_pose(angles)
@@ -875,7 +875,7 @@ generation: 277 | best fitness: 1.5035 ✓ (Target reached)
 - **Final convergence**: Generations 250-277 refined the gait from 1.38 to 1.50
 - **Total runtime**: 277 generations to achieve an optimal gait pattern exceeding the target threshold
 
-The resulting gait data is saved to `ga_results.txt` as a **300 × 24 matrix** (300 time steps, 24 joint angles), ready for visualization in MATLAB using the code provided below.
+The resulting gait data is saved to `ga_results.txt` as a **300 × 24 matrix** (300 time steps, 24 joint angles), ready for visualisation in MATLAB using the code provided below.
 
 ---
 
@@ -892,7 +892,7 @@ The resulting gait data is saved to `ga_results.txt` as a **300 × 24 matrix** (
 |----------|----------|
 | [NumPy](https://numpy.org/) | Numerical computation and matrix operations |
 | [Matplotlib (pyplot)](https://matplotlib.org/) | Visualisation and plotting of gait data |
-| **random** | Randomized initialization and mutation processes |
+| **random** | Randomised initialization and mutation processes |
 | **math** | Trigonometric and mathematical calculations for gait motion |
 
 ---
