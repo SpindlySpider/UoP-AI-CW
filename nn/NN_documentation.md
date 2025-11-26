@@ -106,6 +106,8 @@ Where:
 
 ## Training Method
 
+All gifs of gait included here are started from the initial position of [0,0,...,0] with 24 0's. The NN then predicts what the next time step should be and this is saved as the next frame. This is repeated 100 times.
+
 ### Optimiser Comparison: Gradient Descent vs Adam
 
 Both optimisers were tested with the same sample size which has been shuffled after each epoch to prevent overfitting. The results below show **tested training runs**
@@ -137,7 +139,7 @@ where:
 **Results with LR = 0.01**:
 
 **Results**:
-- **Training Loss**: 0.03598855588900905 -> 0.0010135974419259715 (95% reduction)
+- **Training Loss**: 0.03598855588900905 -> 0.0010135974419259715 (97.1836% reduction)
 - **Test Loss**: 0.001067763894035297
 - **Stability**: Good result with very smooth error minimisation curve
 
@@ -182,7 +184,7 @@ where:
 **Results with LR = 0.01**:
 
 **Results**:
-- **Training Loss**: 0.008190058273522118 -> 0.00010437256305459837 (71% reduction)
+- **Training Loss**: 0.008190058273522118 -> 0.00010437256305459837 (98.7256% reduction)
 - **Test Loss**: 0.00023561222080829665
 - **Stability**: Acceptable with consistent minor oscillations.
 
@@ -231,7 +233,7 @@ where:
 ![Adam recursive prediction LR 0.001](./doc-images/adam_lr_0001.gif)
 
 **Results**:
-- **Training Loss**: 0.018982283008555922 -> 5.767988611904117e-05 (99.7538% reduction)
+- **Training Loss**: 0.018982283008555922 -> 5.767988611904117e-05 (99.6961% reduction)
 - **Test Loss**: 2.8265682014709896e-05
 - **Stability**: Acceptable with consistent tiny oscillations.
 
@@ -256,7 +258,7 @@ where:
 **Results with LR = 0.001**:
 
 **Results**:
-- **Training Loss**: 0.03495881138356216 -> 0.0010041029007837273  (89.1288% reduction)
+- **Training Loss**: 0.03495881138356216 -> 0.0010041029007837273  (97.1278% reduction)
 - **Test Loss**: 0.0008892338786418603
 - **Stability**: Extremely stable loss minimisation
 
