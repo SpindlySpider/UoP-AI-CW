@@ -14,7 +14,7 @@
 
 ## Overview
 
-The **main.py** file serves as the command-line interface (CLI) for the Spider Generation & Prediction System, providing an access point to multiple AI approaches for generating and predicting spider gait:
+The **main.py** file serves as the command-line interface (CLI) for the Spider Generation & Prediction System, providing an access point to multiple AI approaches, which allow the user to generate a gait or predict sequential movements
 
 **Genetic Algorithm (GA)** - Evolves optimal gait patterns through comparison to target solution.
 
