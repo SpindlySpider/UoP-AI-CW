@@ -12,7 +12,7 @@
 7. [Data Handling & Input/Output Format](#data-handling-and-input-output-format)
 8. [Performance Visualisation](#performance-visualisation)
 9. [MATLAB visualisation](#matlab-visualisation)
-10. [Explaination & Justification](#explaination-&-justificiation)
+10. [Explaination & Justification](#explaination-and-justificiation)
 11. [PyTorch Implementation Details](#pytorch-implementation-details)
 12. [conclusion](#pytorch-implementation-details)
 
@@ -611,7 +611,7 @@ end
 ```
 ---
 
-## Explanation & Justification
+## Explanation and Justification
 
 ### Key Design Choices
 

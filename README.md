@@ -142,7 +142,7 @@ Users are able to select different options using numbers (e.g. 0,1,2). This menu
 
 ### 2. Configuration Management
 
-Both the GA and NN allow users to customise parameters form inside the CLI. There are a few quality of life features such as:
+Both the GA and NN allow users to customise parameters from inside the CLI. There are a few quality of life features such as:
 - displaying the current configuration before running the GA or NN
 - allowing for saving / discarding modifications.
 

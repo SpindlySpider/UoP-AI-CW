@@ -3,7 +3,7 @@ from pathlib import Path
 import random as rd
 import numpy as np
 import torch
-from nn.input_data import normalise, denormalise
+from nn.load_and_predict import normalise, denormalise
 
 # Add parent directory to access ga module
 sys.path.insert(0, str(Path(__file__).parent.parent))
