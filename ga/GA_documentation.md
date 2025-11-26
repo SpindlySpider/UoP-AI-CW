@@ -249,6 +249,212 @@ def gen_gait(individual: Individual, gait_length: int) -> Gait:
     return gait
 ```
 
+### Comparisons Combination of Selection and Crossover 
+
+To identify the most effective combination of **selection** algorithm and **crossover** algorithm, several controlled tests were conducted. All other algorithm parameters were kept constant to ensure that any performance differences were solely due to the combinations of **selection** and **crossover** being compared. The following code was use for the test:
+```python
+import sys
+
+from fitness import Fitness
+import selection as selection
+import reproduce as reproduce
+import output as output 
+import matplotlib.pyplot as plt
+from custom_types import *
+
+
+# define the set of frames in the gait cycle
+gait_length:int = 300
+# define search space
+population_size:int = 3000
+mutation_rate:float = 0.025
+crossover_rate:float = 0.7
+# define fitness target score
+fitness_score_target:float = 1.5
+
+
+def plot_fitness_graph(fitness_values, avg_fitness_values, generations, graph_title):
+    '''
+    Plots the fitness graph showing best and average fitness scores over generations.
+    Parameters:
+    fitness_values (list): List of best fitness scores for each generation.
+    avg_fitness_values (list): List of average fitness scores for each generation.
+    generations (int): Total number of generations.
+    '''
+    # Create a new figure for the plot
+    plt.figure(figsize=(12, 6))
+    # Plot the best fitness values
+    plt.plot(range(generations), fitness_values, color='cornflowerblue', linewidth=2, label='Best Fitness')
+    # Plot the average fitness values
+    plt.plot(range(generations), avg_fitness_values, color='orchid', linewidth = 2, label='Average Fitness')
+    # Add title to the plot
+    plt.title("Best vs Average Fitness Score Over Generations")
+    # label x-axis
+    plt.xlabel("Generation")
+    # label y-axis
+    plt.ylabel("Fitness Score")
+    # Show grid
+    plt.grid(True)
+    # Show legend
+    plt.legend()
+    # Show tight layout
+    plt.tight_layout()
+    # Save figure (must be before plt.show())
+    plt.savefig(graph_title)
+    plt.show()
+
+
+def gen_individual(period: Period, h_offset: H_offset, amplitude: Amplitude, negative: Negative, v_offset: V_offset) -> Individual:
+
+    individual: Individual = []
+
+    for _ in range(12):
+        # Each chromosome encodes a sine wave controlling joint motion
+        # 8 legs × 3 joints = 24 joints, but symmetric legs share parameters → 12 unique sets.
+
+        # Define search space boundaries for each parameter.
+        period: Period = period        # Frequency of joint oscillation
+        h_offset: H_offset = h_offset      # Phase shift (horizontal offset)
+        amplitude: Amplitude = amplitude  # Amplitude of joint movement
+        negative: Negative = negative # Whether to invert sine wave motion
+        v_offset: V_offset = v_offset    # Vertical offset (baseline joint position)
+        # A chromosome is defined as a tuple of sine wave parameters.
+        chromosome: Chromosome = (amplitude, period, h_offset, negative, v_offset)
+        individual.append(chromosome)
+
+    return individual
+
+
+def gen_population(max_pop: int) -> Population:
+    """
+    Generate the initial population for the genetic algorithm.
+
+    Parameters:
+        max_pop (int): The total number of individuals to create in the initial population.
+        gait_length (int): The number of time steps in one gait cycle (passed to gen_individual).
+
+    Returns:
+        Population: A list of individuals, where each individual is a list of chromosomes.
+    """
+    population: Population = []
+
+    for i in range(max_pop):
+        population.append(gen_individual(-5 + (0.003 * i), -5 + (0.003 * i), -55 -5 + (0.02 * i), True, -50 + (0.03 * i)))
+
+    return population
+
+
+def test_cross_selection(gait_length:int = gait_length,population_size:int = population_size,mutation_rate:float = mutation_rate, crossover_rate:float = crossover_rate,fitness_score_target:float = fitness_score_target, crossover_method = reproduce.uniform_crossover, selection_method = selection.tournament) -> None:
+    '''
+    Main file to run genetic algorithm for gait generation of the spider.
+    The Genetic algorithm evolves the population over a defined set number of generations and outputs the best solution found.
+    Draws a fitness graph at the end showing best and average fitness scores over generations.
+    A max population size and gait length can be defined to control the search space.
+    '''
+
+    population: Population = gen_population(population_size)
+    # create fitness object using the class from fitness module(python file)
+    fit: Fitness = Fitness(gait_length)
+    # lists to store the best fitness scores over generations for plotting
+    fitness_over_time: list[float] = []
+    # list to store average fitness scores over generations for plotting
+    avg_fitness_over_time: list[float] = []
+    # run GA for set number of generations defined above
+    gen:int = 0
+    current_best_fitness:float = 0.0
+    while current_best_fitness < fitness_score_target:
+        # stores the fitness score of each individual in the population
+        # stores the index of the best individual in current population
+        fitness_list: list[float] = []  
+        # generate fitness list
+        best_idx: int = 0
+        # go through each individual in the population and get the fitness score 
+        for individual in population:
+            # calculate fitness score of the current individual using the method from fitness class
+            individual_fitness: float = fit.get_fitness(individual)
+            # append fitness score to list
+            fitness_list.append(individual_fitness)
+        # get index of best individual in current population
+        best_idx: int = fitness_list.index(max(fitness_list))
+        # update current best fitness
+        current_best_fitness: float = fitness_list[best_idx]
+        # print information about current generation
+        gen += 1
+        print("generation:",gen,"| best index: ",best_idx, "| fitness: ",fitness_list[best_idx])
+
+        # calculate average fitness for current generation
+        avg_fitness: float = sum(fitness_list) / len(fitness_list)
+        # append best and average fitness to their respective lists
+        fitness_over_time.append(fitness_list[best_idx])
+        avg_fitness_over_time.append(avg_fitness)
+
+        if len(fitness_over_time) >= 100:
+            last_100_avg: float = sum(fitness_over_time[-100:]) / 100
+            if round(last_100_avg , 3) == round(current_best_fitness, 3):
+                print("Fitness target consistently met over 100 generations with the best fitness score being:", current_best_fitness)
+                break
+
+        # select individuals for next generation using the functions from selection module(python file)
+        population = selection_method(population,fitness_list,10)
+        # perform crossover and mutation to generate new individuals using functions from reproduce module(python file)
+        population = crossover_method(population,gait_length,crossover_rate)
+        population = reproduce.mutate(population,mutation_rate)
+
+
+    # plot fitness graph using the function from fitness_graph module(python file)
+    print("Generating fitness graph...")
+    print(f"{crossover_method.__name__}-crossover_{selection_method.__name__}-selection_fitness-over-{gen}-gens.png")
+    plot_fitness_graph(fitness_over_time, avg_fitness_over_time, gen,f"{crossover_method.__name__}-crossover_{selection_method.__name__}-selection_fitness-over-{gen}-gens.png")
+
+
+if __name__ == "__main__":
+    test_cross_selection(crossover_method = reproduce.crossover,selection_method = selection.roulette)
+    test_cross_selection(crossover_method = reproduce.uniform_crossover,selection_method = selection.roulette)
+    test_cross_selection(crossover_method = reproduce.crossover,selection_method = selection.tournament)
+    test_cross_selection(crossover_method = reproduce.uniform_crossover,selection_method = selection.tournament)
+```
+
+### Results
+
+<p align="center">
+  <img src="./images/crossover-crossover_roulette-selection_fitness-over-113-gens.png" alt="Normal crossover and roulette">
+</p>
+
+**Normal crossover + roulette selection**  
+- **Generations:** 113  
+- **Best fitness:** 0.028706286808067798  
+- The best individual’s fitness remained static for several generations, then dropped sharply before settling at approximately **0.0287** for the final ~100 generations. The average fitness increased slightly at the beginning but then remained essentially constant with negligible variation.
+
+<p align="center">
+  <img src="./images/uniform_crossover-crossover_roulette-selection_fitness-over-134-gens.png" alt="Uniform crossover and roulette">
+</p>
+
+**Uniform crossover + roulette selection**  
+- **Generations:** 134  
+- **Best fitness:** 0.036777258899552204  
+- The best fitness started around **0.1**, fell steeply, and then fluctuated significantly across generations before stabilising near **0.037** in the final ~100 generations. The average fitness showed virtually no change throughout the test.
+
+<p align="center">
+  <img src="./images/crossover-crossover_tournament-selection_fitness-over-100-gens.png" alt="Normal crossover and tournament">
+</p>
+
+**Normal crossover + tournament selection**  
+- **Generations:** 100  
+- **Best fitness:** 0.059186057193700965  
+- The best fitness remained relatively stable across the generations, settling around **0.059** in the final ~100 generations. The average fitness initially rose sharply before levelling off.
+
+<p align="center">
+  <img src="./images/uniform_crossover-crossover_tournament-selection_fitness-over-322-gens.png" alt="Uniform crossover and tournament">
+</p>
+
+**Uniform crossover + tournament selection**  
+- **Generations:** 322  
+- **Best fitness:** 1.5017300943963494  
+- The only combination that successfully reached the target fitness score shows a rapid improvement early on, followed by steady, progressive increases. After a brief period of stagnation, a small spike occurs, and the algorithm gradually converges to the best-individual target fitness. The average fitness follows the same overall pattern.
+
+**Overall conclusion:**  
+Across all tests, the combination of **uniform crossover** and **tournament selection** consistently produced the strongest results, achieving the highest best-individual fitness values.
+
 ### Selection
 
 ### Selection Methods
