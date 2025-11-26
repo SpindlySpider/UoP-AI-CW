@@ -5,7 +5,7 @@
 2. [Project Structure](#project-structure)
 3. [System Architecture](#system-architecture)
 4. [CLI Features](#cli-features)
-5. [Installation & Usage Guide](#installation-&-usage-guide)
+5. [Installation & Usage Guide](#installation-and-usage-guide)
 6. [Component Integration](#component-integration)
 7. [Configuration Options](#configuration-options)
 8. [File Outputs](#file-outputs)
@@ -171,7 +171,7 @@ The CLI provides flexible input methods for different use cases:
 
 ---
 
-## Installation & Usage Guide
+## Installation and Usage Guide
 
 ![Python](https://img.shields.io/badge/Python-3.10%2B-blue?logo=python&logoColor=white)
 
