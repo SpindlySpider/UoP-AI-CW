@@ -21,8 +21,8 @@ def train_torch(
     
     Parameters:
         model: PyTorch model to train
-        input_list: Input data (already normalized)
-        target_list: Target data (already normalized)
+        input_list: Input data (already normalised)
+        target_list: Target data (already normalised)
         epochs: Number of training epochs
         batch_size: Size of batch per epoch
         lr: Learning rate
@@ -102,8 +102,8 @@ def test_torch(model: nn.Module, input_list: np.ndarray, target_list: np.ndarray
     
     Parameters:
         model: PyTorch model to test
-        input_list: Input data (already normalized)
-        target_list: Target data (already normalized)
+        input_list: Input data (already normalised)
+        target_list: Target data (already normalised)
         device: Device to run on
     """
     device = device or (torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu'))
@@ -133,16 +133,16 @@ def test_torch(model: nn.Module, input_list: np.ndarray, target_list: np.ndarray
     return error
 
 
-def predict(model: nn.Module, inputs: np.ndarray, device: Optional[torch.device] = None, denormalize: bool = True) -> np.ndarray:
+def predict(model: nn.Module, inputs: np.ndarray, device: Optional[torch.device] = None, denormalise: bool = True) -> np.ndarray:
     device = device or (torch.device('cuda') if torch.cuda.is_available() else torch.device('cpu'))
     model = model.to(device)
     model.eval()
     x = torch.tensor(inputs, dtype=torch.float32)
-    if denormalize:
+    if denormalise:
         x = (x + 50.0) / 80.0
     with torch.no_grad():
         preds = model(x.to(device))
     preds = preds.cpu().numpy()
-    if denormalize:
+    if denormalise:
         preds = preds * 80.0 - 50.0
     return preds

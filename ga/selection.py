@@ -8,7 +8,7 @@ def roulette(population: Population, fitness: list[float]) -> Population:
     """
     Selects individuals using a cumulative probability method based on fitness values.
 
-    This method normalizes the fitness values to create a cumulative distribution.
+    This method normalises the fitness values to create a cumulative distribution.
     For each selection, a random number is drawn and the first individual whose
     cumulative probability exceeds this number is selected.
 
@@ -34,8 +34,8 @@ def roulette(population: Population, fitness: list[float]) -> Population:
 
     # Build cumulative distribution
     for fit_value in fitness:
-        normalized_fit: float = fit_value / total_fit
-        running_total += normalized_fit
+        normalised_fit: float = fit_value / total_fit
+        running_total += normalised_fit
         cumulative_sum.append(running_total)
 
     # Select individuals based on cumulative probability

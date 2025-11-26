@@ -1,4 +1,5 @@
-import sys
+from time import time
+from pathlib import Path
 
 from ga.fitness import Fitness
 from ga.fitness_graph import plot_fitness_graph
@@ -10,19 +11,25 @@ from ga.custom_types import Population
 from utils import *
 
 
-# define the set of frames in the gait cycle
-gait_length:int = 300
+# number of frames to compare with MSE during GA execution
+gait_compare_length:int = 50
+# how many frames the outputted GA should be.
+final_gait_length:int = 1000
 
 # define search space
 population_size:int = 3000
 mutation_rate:float = 0.025
 crossover_rate:float = 0.7
-output_file:str = "ga_results.txt"
-# define fitness target score
+
+
+ga_dir = Path(__file__).parent
+output_file:str = str(ga_dir.joinpath(f"results/ga_results.txt"))
+
 fitness_score_target:float = 1.5
 
 defaults = {
-    "gait_length":gait_length,
+    "gait_compare_length":gait_compare_length,
+    "final_gait_length":final_gait_length,
     "population_size": population_size,
     "mutation_rate": mutation_rate,
     "crossover_rate": crossover_rate,
@@ -30,29 +37,29 @@ defaults = {
     "fitness_score_target": fitness_score_target
 }
 
-def main(gait_length:int = gait_length,population_size:int = population_size,mutation_rate:float = mutation_rate, crossover_rate:float = crossover_rate, output_file:str = output_file,fitness_score_target:float = fitness_score_target):
+def main(gait_compare_length:int = gait_compare_length,final_gait_length:int=final_gait_length,population_size:int = population_size,mutation_rate:float = mutation_rate, crossover_rate:float = crossover_rate, output_file:str = output_file,fitness_score_target:float = fitness_score_target):
     '''
     Main file to run genetic algorithm for gait generation of the spider.
-    The Genetic algorithm evolves the population over a defined set number of generations and outputs the best solution found.
+    The Genetic algorithm evolves the population until a fitness score is reached or the fitness score plateaus for 100 generations.
     Draws a fitness graph at the end showing best and average fitness scores over generations.
     A max population size and gait length can be defined to control the search space.
     '''
 
     population: Population = pop.gen_population(population_size)
     # create fitness object using the class from fitness module(python file)
-    fit: Fitness = Fitness(gait_length)
+    fit: Fitness = Fitness(gait_compare_length)
     # lists to store the best fitness scores over generations for plotting
     fitness_over_time: list[float] = []
     # list to store average fitness scores over generations for plotting
     avg_fitness_over_time: list[float] = []
-    # run GA for set number of generations defined above
+
+    # gen used to track what the current generation is
     gen:int = 0
     current_best_fitness:float = 0.0
     while current_best_fitness < fitness_score_target:
         # stores the fitness score of each individual in the population
+        fitness_list: list[float] = []
         # stores the index of the best individual in current population
-        fitness_list: list[float] = []  
-        # generate fitness list
         best_idx: int = 0
         # go through each individual in the population and get the fitness score 
         for individual in population:
@@ -78,17 +85,17 @@ def main(gait_length:int = gait_length,population_size:int = population_size,mut
             last_100_avg: float = sum(fitness_over_time[-100:]) / 100
             if round(last_100_avg , 3) == round(current_best_fitness, 3):
                 print("Fitness target consistently met over 100 generations with the best fitness score being:", current_best_fitness)
-                sys.exit(0)
+                break
 
         # select individuals for next generation using the functions from selection module(python file)
         population = selection.tournament(population,fitness_list,10)
         # perform crossover and mutation to generate new individuals using functions from reproduce module(python file)
-        population = reproduce.uniform_crossover(population,gait_length,crossover_rate)
+        population = reproduce.uniform_crossover(population,gait_compare_length,crossover_rate)
         population = reproduce.mutate(population,mutation_rate)
 
 
     # output the best individual found after the genetic algorithm is terminated
-    output.output_gait(output_file,population[best_idx],300)
+    output.output_gait(output_file,population[best_idx],final_gait_length)
 
     # plot fitness graph using the function from fitness_graph module(python file)
     plot_fitness_graph(fitness_over_time, avg_fitness_over_time, gen)

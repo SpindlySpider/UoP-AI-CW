@@ -32,7 +32,7 @@ def main():
         nn_choice = get_choice(options)
         if nn_choice == "exit":
             sys.exit(0)
-        
+
         # Set the correct modules based on choice
         if nn_choice == "pytorch": # PyTorch implementation
             nn_module = pytorch_nn
@@ -44,7 +44,7 @@ def main():
             predict_module = predict
             model_extension = "nn.pickle"
             predict_file_name = "nn_predict_results.txt"
-        
+
         options = {
             "prompt":"Would you like to train or predict using existing model?:",
             "options":["train","predict","exit"]

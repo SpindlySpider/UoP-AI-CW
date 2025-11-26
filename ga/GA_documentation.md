@@ -1,7 +1,7 @@
 # Chromosome Optimisation using Genetic Algorithms
 
 ## Table of Contents
-1. [Glossary](#glossary)
+1. [Definitions](#definitions)
 2. [Overview](#overview)
 3. [Solution and Approach](#solution-and-approach)
    - [Initialisation](#initialisation)
@@ -19,7 +19,7 @@
 
 ---
 
-## Glossary
+## Definitions
 | Term | Definition |
 |------|-------------|
 | **GA (Genetic Algorithm)** | A set of algorithms that are used to optimise solutions using methods that are inspired by evolutionary biology. |
@@ -27,23 +27,21 @@
 | **Chromosome** | A tuple encapsulating sine wave parameters. |
 | **Gene** | An individual parameter within a chromosome that controls a specific aspect of a joint movement. 
 
-- **Amplitude** *(float)*: Maximum rotational displacement of a joint  
-- **Period** *(float)*: Controls the speed of the gait cycle  
-- **H_offset** *(float)*: Horizontal phase offset of limb movement  
-- **Negative** *(bool)*: Inverts rotation along the x-axis, allowing limbs to move independently rather than in unison  
-- **V_offset** *(float)*: Angular offset applied to the femur joints 
-- **Fitness Function**: Function used to evaluate how well a solution performs the desired task. 
+- **Amplitude** *(float)*: Maximum rotational displacement of a joint
+- **Period** *(float)*: Controls the speed of the gait cycle
+- **H_offset** *(float)*: Horizontal phase offset of limb movement
+- **Negative** *(bool)*: Inverts rotation along the x-axis, allowing limbs to move independently rather than in unison
+- **V_offset** *(float)*: Angular offset applied to the femur joints
+- **Fitness Function**: Function used to evaluate how well a solution performs the desired task.
 
 ---
 
 ## Overview
-
-The goal of this project is to evolve a **complete gait pattern** for a simplified **3D spider model** using a **Genetic Algorithm (GA)**.
+The goal of this part is to evolve a gait pattern for the provided spider 3D model, using a Genetic algorithm (GA)
 
 ### Spider Model
-- **8 legs**, each with **3 joints**: coxa, femur, and tibia.  
-- Total **24 degrees of freedom**.
-- A gait is represented as an **n × 24 matrix**, where *n* is the number of time steps per full walking cycle.
+The spider model has 8 legs, each with 3 joints; coxa, femur and tibia. This totals for 24 degrees of freedom.
+A gait is represented as an **n × 24 matrix**, where *n* is the number of time steps per full walking cycle.
 
 ### Genetic Algorithm Process
 The GA explores the space of possible walking patterns using the following components:
@@ -55,7 +53,7 @@ The GA explores the space of possible walking patterns using the following compo
 | **Reproduction** | Creates new individuals through crossover and mutation. |
 | **Termination** | Ends when improvements plateau or a maximum generation count is reached. |
 
----
+The focus throughout this implementation is to balance 2 goals: Biological realism and computational efficiency
 
 ## Solution and Approach
 
@@ -80,16 +78,17 @@ Each joint’s motion is represented by a **sine-wave function** characterised b
 The wide range of possible values for these parameters creates a high-dimensional search space, providing the Genetic Algorithm (GA) with a large search space to be explored.
 
 #### Representation Rationale
-The Sine-wave encoding ensures that the movement of the spider is smooth and enables faster optimisation due to the compact coding.
+The sine wave parameter encoding, produces smooth oscillating motions, which can be aligned with natural walking patterns. It additionally ensures that the gait continually moves and values per time step are not too far apart for each joint. Finally due to there being 60 genes for an individual it is much more computationally efficient compared to 24x300.
 
-**Trade-off:** Restricts solutions to periodic gaits; possibly too restrictive for more complicated or irregular movements 
+However this approach does have the trade off of:
+Restricting the solution of the GA to a specific periodic gait predefined. Restricting gaits with more complex and irregular movements.
 
 ---
 
 ### Fitness Function Design
 
 #### Overview
-The **fitness function** measures how well a gait matches the desired solution.  
+The **fitness function** measures how well a gait matches the desired solution.
 A higher fitness value indicates better gait performance.
 
 #### Evaluation Method
@@ -115,7 +114,7 @@ The smaller the error, the higher the fitness score.
 | **Error Inversion** | `1 / (1 + MSE)` | Normalises to 0–1 range, suitable for GA | Compresses large error values |
 | **Target Gait** | Pre-generated once | Improves efficiency, ensures consistency | May bias evolution |
 | **Symmetry** | Evaluate only unique 12 joints | Enforces biological realism, reduces cost | Prevents asymmetric gait discovery |
-| **Normalization** | Averaged per joint | Fairness between individuals | Requires fixed gait length |
+| **Normalisation** | Averaged per joint | Fairness between individuals | Requires fixed gait length |
 | **Equal Joint Weighting** | All joints contribute equally | Simplifies implementation | Ignores biomechanical differences |
 
 ---
@@ -663,7 +662,7 @@ The algorithm stops when **either** of the following is true:
 
 ## Design Decisions and Trade-offs
 
-Initial exploration of spider locomotion through video analysis suggested that **sinusoidal motion patterns** closely matched natural spider walking behaviour.  
+Initial exploration of spider locomotion through video analysis suggested that **sinusoidal motion patterns** closely matched natural spider walking behaviour.
 Early experimentation aimed to replicate this motion directly by assigning fitness values to each **coxa joint** across time, using detailed frame-by-frame evaluations.
 
 ---
@@ -700,12 +699,12 @@ target_rotation = A \sin(Bx) + D
 ```
 
 Where:
-- **A** = half the range of motion  
-- **B** = movement frequency  
-- **D** = midpoint of the motion range  
+- **A** = half the range of motion
+- **B** = movement frequency
+- **D** = midpoint of the motion range
 - **x** = current frame index
 
-For a coxa range of **30°–70°**,  
+For a coxa range of **30°–70°**,
 \( A = 20 \), \( D = 50 \), producing smooth oscillations between 30° and 70°.
 
 <p align="center">
@@ -782,53 +781,7 @@ project/
 
 ## Usage Instructions
 
-![Python](https://img.shields.io/badge/Python-3.10%2B-blue?logo=python&logoColor=white)
-
-Follow these steps to install and run the Genetic Algorithm project.
-
----
-
-### 1. Install Python
-
-Ensure that **Python 3.10+** is installed on your system.  
-You can verify your version using:
-
-```bash
-python --version
-```
-
-If Python is not installed, download it from the [official Python website](https://www.python.org/downloads/).
-
----
-
-### 2. Install Required Libraries
-
-Use the following command to install all dependencies:
-
-```bash
-pip install -r requirements.txt
-```
-
----
-
-### 3. Run the Genetic Algorithm
-
-Execute the main program to start the Genetic Algorithm and evolve gait patterns:
-
-```bash
-python ga/main.py
-```
-The code generates a ga_results.txt file that contains a 300x24 matrix that can be imported into matlab.
----
-
-
-### 4. Generate a Target Gait (Without GA)
-
-To generate a **reference gait** without using the Genetic Algorithm:
-
-```bash
-python target_sol.py
-```
+<!-- # change this to customisable parameters? -->
 
 The generated gait data is automatically saved for future comparison and analysis.  
 The script produces a **`sol.txt`** file containing a **300 × 24 matrix**, fully compatible with **MATLAB** for import and further processing.
@@ -902,7 +855,7 @@ def produce_target(gait_length:int, period:Period, coxa_amplitude:float, tibia_f
 
 ## MATLAB Visualisation
 
-To visualize the gait in **MATLAB**, use the following script:
+To visualise the gait in **MATLAB**, use the following script:
 
 ```matlab
 function plot_spider_pose(angles)
@@ -1129,7 +1082,7 @@ generation: 277 | best fitness: 1.5035 ✓ (Target reached)
 - **Final convergence**: Generations 250-277 refined the gait from 1.38 to 1.50
 - **Total runtime**: 277 generations to achieve an optimal gait pattern exceeding the target threshold
 
-The resulting gait data is saved to `ga_results.txt` as a **300 × 24 matrix** (300 time steps, 24 joint angles), ready for visualization in MATLAB using the code provided below.
+The resulting gait data is saved to `ga_results.txt` as a **300 × 24 matrix** (300 time steps, 24 joint angles), ready for visualisation in MATLAB using the code provided below.
 
 ---
 
@@ -1146,7 +1099,7 @@ The resulting gait data is saved to `ga_results.txt` as a **300 × 24 matrix** (
 |----------|----------|
 | [NumPy](https://numpy.org/) | Numerical computation and matrix operations |
 | [Matplotlib (pyplot)](https://matplotlib.org/) | Visualisation and plotting of gait data |
-| **random** | Randomized initialization and mutation processes |
+| **random** | Randomised initialisation and mutation processes |
 | **math** | Trigonometric and mathematical calculations for gait motion |
 
 ---
@@ -1185,7 +1138,7 @@ This animation showcases an optimised walking gait evolved by the Genetic Algori
 
 ## Future Improvements
 
-1. **Introduce Elitism**  
+1. **Introduce Elitism**
    Preserve the top-performing individuals in each generation to ensure that the best solutions are always carried forward.
 2. **Evolve Multiple Target Gaits**  
    Enable the evolution of diverse movement styles (e.g., running, jumping, crawling) rather than optimising for a single gait. This promotes richer, more adaptable locomotion behaviours—such as a spider capable of both running and jumping.
