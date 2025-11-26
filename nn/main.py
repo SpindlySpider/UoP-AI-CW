@@ -19,7 +19,7 @@ training_data_ratio:float = 0.95
 training_batch_size:int = 1
 # Number of training epochs
 epochs:int = 500
-opt:str = "gradient_descent"
+opt:str = "adam"
 
 # Default parameters for main function
 defaults = {
