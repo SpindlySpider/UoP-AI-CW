@@ -29,21 +29,10 @@ The **main.py** file serves as the command-line interface (CLI) for the Spider G
 
 ```
 ├── .git/                          # Git version control
-├── .gitignore                     # Git ignore rules
-
-├── main.py                        # Main CLI entry point
-├── utils.py                       # CLI utility functions
-├── requirements.txt               # Python dependencies
-├── README.md                      # This documentation
-│
-├── ga_results.txt                 # Genetic algorithm output
-├── nn.pickle                      # Trained NumPy neural network
-├── nn_results.txt                 # NumPy NN training results
-├── nn_predict_results.txt         # NumPy NN prediction output
-├── nn_pytorch.pth                 # Trained PyTorch neural network
-│
 ├── ga/                            # Genetic Algorithm module
 │   ├── images/                    # GA visualisation
+│   ├── results/                   # Resulting GAs after being run
+│   │   └── ga_results.txt         # Genetic algorithm output
 │   ├── GA_documentation.md        # GA documentation
 │   ├── custom_types.py            # Type definitions
 │   ├── fitness.py                 # Fitness evaluation
@@ -53,8 +42,7 @@ The **main.py** file serves as the command-line interface (CLI) for the Spider G
 │   ├── output.py                  # Result output handling
 │   ├── reproduce.py               # Crossover & mutation
 │   ├── selection.py               # Selection operators
-│   ├── target_sol.py              # Target solution generator
-│   ├── results/                   # Resulting GAs after being run
+│   └── target_sol.py              # Target solution generator
 │
 ├── nn/                            # Custom NumPy Neural Network
 │   ├── doc-images/                # Documentation images
@@ -77,20 +65,22 @@ The **main.py** file serves as the command-line interface (CLI) for the Spider G
 │   ├── serialise.py               # Model save/load (.pth)
 │   ├── torch_model.py             # PyTorch model (nn.Module)
 │   └── torch_training.py          # PyTorch training loop
-│ 
-├── .gitignore                     # Specifies files Git should ignore
-├── README.md                      # This documentation
-├── ga_results.txt                 # Genetic algorithm output
+│
+├── .gitignore                     # Git ignore rules
 ├── main.py                        # Main CLI entry point
-├── nn.pickle                      # Trained NumPy neural network - This should be used by default - trained over 500 epochs, with adam optimiser and a learning rate of 0.001
-├── nn_predict_results.txt         # NumPy NN prediction output
+├── utils.py                       # CLI utility functions
 ├── requirements.txt               # Python dependencies
-└── utils.py                       # CLI utility functions
-└── adam-ep500-lr0001-nn.pickle    # NN trained over 500 epochs with adam optimiser and 0.001 learing rate 
-└── sgd-ep500-lr0001.pickle     # NN trained over 500 epochs with gradient descent optimiser and 0.001 learing rate 
-└── adam-ep500-lr001.pickle     # NN trained over 500 epochs with adam optimiser and 0.01 learing rate 
-└── sgd-ep500-lr001.pickle      # NN trained over 500 epochs with gradient descent optimiser and 0.01 learing rate 
-└── pytorch-adam-ep500-lr0001.pth  # NN trained over 500 epochs with adam optimiser and 0.001 learing rate using pytorch
+├── README.md                      # This documentation
+├── nn.pickle                      # Trained NumPy neural network - This should be used by default - trained over 500 epochs, with adam optimiser and a learning rate of 0.001
+├── nn_results.txt                 # NumPy NN training results
+├── nn_predict_results.txt         # NumPy NN prediction output
+├── pytorch_predict_results.txt    # PyTorch NN prediction output
+├── nn_pytorch.pth                 # Trained PyTorch neural network - Trained over 500 epochs with adam optimser and learning rate of 0.001
+├── adam-ep500-lr0001-nn.pickle    # NN trained over 500 epochs with adam optimiser and 0.001 learing rate 
+├── sgd-ep500-lr0001.pickle        # NN trained over 500 epochs with gradient descent optimiser and 0.001 learing rate 
+├── adam-ep500-lr001.pickle        # NN trained over 500 epochs with adam optimiser and 0.01 learing rate 
+├── sgd-ep500-lr001.pickle         # NN trained over 500 epochs with gradient descent optimiser and 0.01 learing rate 
+├── pytorch-adam-ep500-lr0001.pth  # NN trained over 500 epochs with adam optimiser and 0.001 learing rate using pytorch
 └── pytorch-sgd-ep500-lr001.pth    # NN trained over 500 epochs with gradient descent optimiser and 0.01 learing rate using pytorch
 ```
 
