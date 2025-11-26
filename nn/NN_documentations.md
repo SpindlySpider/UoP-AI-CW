@@ -688,8 +688,8 @@ PyTorch eliminates ~50 lines of core backpropagation code (gradient calculations
 
 #### Training Loss Curves
 
-![Custom NumPy Implementation - Gradient Descent](./doc-images/sgd-ep500-lr001.png)
-![PyTorch Implementation - 100 Epochs](./doc-images/pytorch-sgd-ep500-lr001.png)
+![Custom NumPy Implementation - Gradient Descent](./doc-images/adam-ep500-lr0001.png)
+![PyTorch Implementation - 100 Epochs](./doc-images/pytorch-adam-ep500-lr0001.png)
 
 **Observations**:
 - **Custom NumPy**: Final training loss ~0.00125, smooth exponential decay
