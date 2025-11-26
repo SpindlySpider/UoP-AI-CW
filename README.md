@@ -87,11 +87,11 @@ The **main.py** file serves as the command-line interface (CLI) for the Spider G
 ├── requirements.txt               # Python dependencies
 └── utils.py                       # CLI utility functions
 └── adam-ep500-lr0001-nn.pickle    # NN trained over 500 epochs with adam optimiser and 0.001 learing rate 
-└── sgd-ep500-lr0001-nn.pickle    # NN trained over 500 epochs with gradient descent optimiser and 0.001 learing rate 
-└── adam-ep500-lr001-nn.pickle    # NN trained over 500 epochs with adam optimiser and 0.01 learing rate 
-└── sgd-ep500-lr001-nn.pickle    # NN trained over 500 epochs with gradient descent optimiser and 0.01 learing rate 
-└── pytorch-adam-ep500-lr0001.pth   # NN trained over 500 epochs with adam optimiser and 0.001 learing rate using pytorch
-└── pytorch-sgd-ep500-lr001.pth   # NN trained over 500 epochs with gradient descent optimiser and 0.01 learing rate using pytorch
+└── sgd-ep500-lr0001-nn.pickle     # NN trained over 500 epochs with gradient descent optimiser and 0.001 learing rate 
+└── adam-ep500-lr001-nn.pickle     # NN trained over 500 epochs with adam optimiser and 0.01 learing rate 
+└── sgd-ep500-lr001-nn.pickle      # NN trained over 500 epochs with gradient descent optimiser and 0.01 learing rate 
+└── pytorch-adam-ep500-lr0001.pth  # NN trained over 500 epochs with adam optimiser and 0.001 learing rate using pytorch
+└── pytorch-sgd-ep500-lr001.pth    # NN trained over 500 epochs with gradient descent optimiser and 0.01 learing rate using pytorch
 ```
 
 ---
