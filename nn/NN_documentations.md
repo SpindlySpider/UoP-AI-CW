@@ -8,8 +8,8 @@
 3. [Activation Functions](#activation-functions)
 4. [Loss Functions](#loss-functions)
 5. [Training Method](#training-method)
-6. [Backpropagation & Convergence](#backpropagation-&-convergence)
-7. [Data Handling & Input/Output Format](#data-handling-&-input/output-format)
+6. [Backpropagation & Convergence](#backpropagation-and-convergence)
+7. [Data Handling & Input/Output Format](#data-handling-and-input-output-format)
 8. [Performance Visualisation](#performance-visualisation)
 9. [MATLAB visualisation](#matlab-visualisation)
 10. [Explaination & Justification](#explaination-&-justificiation)
@@ -232,7 +232,7 @@ Because of this we decided to use stochastic gradient descent with a learning ra
 
 ---
 
-## Backpropagation & Convergence
+## Backpropagation and Convergence
 
 ### Backpropagation Implementation
 
@@ -267,7 +267,7 @@ The network reaches a **reasonable solution** where predicted joint angles close
 
 ---
 
-## Data Handling & Input/Output Format
+## Data Handling and Input Output Format
 
 ### Training Data Generation
 
