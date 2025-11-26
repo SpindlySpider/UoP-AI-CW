@@ -62,7 +62,7 @@ def train_NN(nn:Neural_network,input_list:NDArray[float64],target_list:NDArray[f
         # average loss for epoch
         loss_per_epoch.append(mse_loss/((len(input_list) // batch_size)))
 
-        print(f"mean loss {loss_per_epoch[-1]} | epoch: {epoch}")
+        print(f"epoch {epoch}/{epochs} | mean loss {loss_per_epoch[-1]}")
     graph_results.plot_loss_graph(loss_per_epoch,epochs,batch_size)
     return nn
 
