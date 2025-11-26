@@ -117,10 +117,10 @@ Both optimisers were tested with the same sample size which has been shuffled af
 
 | Parameter | Value |
 |-----------|-------|
-| **Training Data** | 2850 samples (3 gait variations × 1000 gait length × 0.95) |
-| **Test Data** |  150 samples (5% holdout) |
+| **Training Data** | 950 samples (1 gait variations × 1000 gait length × 0.95) |
+| **Test Data** |  50 samples (5% holdout) |
 | **Batch Size** | 1 (SGD - Stochastic Gradient Descent) |
-| **Epochs** | 1000 |
+| **Epochs** | 500 |
 | **Learning Rate** | 0.01 (both optimisers) |
 
 ---
@@ -159,16 +159,15 @@ From the training progress we can see an unusually smooth curve for a model usin
 **Results**:
 - **Training Loss**: 0.008190058273522118 -> 0.00010437256305459837 (71% reduction)
 - **Test Loss**: 0.00023561222080829665
-- **Stability**: Poor - 10+ major loss spikes
+- **Stability**: Acceptable with consistent minor oscillations.
 
 **Training Progress**:
 
 ![Adam Default LR](./doc-images/adam-ep500-lr001.png)
 
 **Analysis**: 
-Severe instability over 1000 epochs during execution overflow warnings occurred which indicate gradient explosions despite clipping.
-
-This could be because the learning rate was too high for ADAM, we used a learning rate of `0.01` which could could a overshoot when combined with the momentum.
+Over the 500 epochs there are consistent minor oscillations which result in a "noisy" graph.
+Reasons for this "noise" because the learning rate was too high for adam, resulting in, overshoot minimisation when combined with the momentum.
 Additionally another issue we could be facing is our activation functions becoming saturated, leading to results close to the boundaries (0 and 1).
 
 ---
@@ -204,14 +203,14 @@ where:
 **Results**:
 - **Training Loss**: 0.03495881138356216 -> 0.0010041029007837273  (89.1288% reduction)
 - **Test Loss**: 0.0008892338786418603
-- **Stability**: Extremely stable - ultra-smooth convergence
+- **Stability**: Extremely stable loss minimisation
 
 **Training Progress**:
 
 ![Gradient Descent LR 0.001](./doc-images/sgd-ep500-lr0001.png)
 
 **Analysis**:
-Exceptionally smooth exponential decay with even more gradual convergence than LR=0.01. The lower learning rate produces an extremely stable training curve with zero visible oscillations and the loss decreases more slowly but very predictably.
+Extremely stable and smooth decay with a gradual convergence. This is because of the lower learning rate (`0.001`) which produces a stable training curve with zero visible oscillations.
 
 The trade off for the lower learning rate is that, while more stable and conservative, the NN learns significantly slower. We can compare this to the SGD with `0.01` LR and see that they a similar minimum error, however with a higher learning rate it converges on that point much faster (>20 epochs).
 
