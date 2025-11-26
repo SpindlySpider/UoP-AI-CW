@@ -1128,9 +1128,7 @@ The graph above illustrates this behaviour with two distinct examples:
 
 ## Visual Verification
 
-<p align="center">
-  <img src="images/spider_walking.gif" alt="Spider Walking Animation">
-</p>
+![GA walk cycle](./images/ga-results.gif)
 
 This animation showcases an optimised walking gait evolved by the Genetic Algorithm, demonstrating smooth and coordinated leg movement. The MATLAB code to reproduce this visualisation is provided in the **MATLAB Visualisation** section above.
 
