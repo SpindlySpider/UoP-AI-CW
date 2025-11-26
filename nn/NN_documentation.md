@@ -106,6 +106,8 @@ Where:
 
 ## Training Method
 
+All gifs of gait included here are started from the initial position of [0,0,...,0] with 24 0's. The NN then predicts what the next time step should be and this is saved as the next frame. This is repeated 100 times.
+
 ### Optimiser Comparison: Gradient Descent vs Adam
 
 Both optimisers were tested with the same sample size which has been shuffled after each epoch to prevent overfitting. The results below show **tested training runs**
@@ -142,6 +144,7 @@ where:
 **Training Graph Progress**:
 
 ![Gradient Descent Loss](./doc-images/sgd-ep500-lr001.png)
+![SGD recursive prediction](./doc-images/sgd_lr001.gif)
 
 **Analysis**:
 
@@ -162,6 +165,7 @@ From the training progress we can see an unusually smooth curve for a model usin
 **Training Progress**:
 
 ![Adam Default LR](./doc-images/adam-ep500-lr001.png)
+![Adam recursive prediction](./doc-images/adam_lr_001.gif)
 
 **Analysis**: 
 Over the 500 epochs there are consistent minor oscillations which result in a "noisy" graph.
@@ -175,6 +179,7 @@ Additionally another issue we could be facing is our activation functions becomi
 **Results with LR = 0.001**:
 
 ![Adam LR 0.001](./doc-images/adam-ep500-lr0001.png)
+![Adam recursive prediction LR 0.001](./doc-images/adam_lr_0001.gif)
 
 **Results**:
 - **Training Loss**: 0.018982283008555922 -> 5.767988611904117e-05 (99.7538% reduction)
@@ -206,6 +211,7 @@ where:
 **Training Progress**:
 
 ![Gradient Descent LR 0.001](./doc-images/sgd-ep500-lr0001.png)
+![SGD recursive prediction LR 0.001](./doc-images/sgd_lr0001.gif)
 
 **Analysis**:
 Extremely stable and smooth decay with a gradual convergence. This is because of the lower learning rate (`0.001`) which produces a stable training curve with zero visible oscillations.
