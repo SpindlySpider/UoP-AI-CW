@@ -6,6 +6,7 @@
 3. [Solution and Approach](#solution-and-approach)
    - [Initialisation](#initialisation)
    - [Fitness Function Design](#fitness-function-design)
+   - [Comparisons of combinations of Selection and Crossover techniques](#comparisons-of-combinations-of-selection-and-crossover-techniques)
    - [Selection](#selection)
    - [Reproduction](#reproduction)
    - [Termination](#termination)
@@ -249,7 +250,7 @@ def gen_gait(individual: Individual, gait_length: int) -> Gait:
     return gait
 ```
 
-### Comparisons Combination of Selection and Crossover 
+### Comparisons of combinations of Selection and Crossover techniques 
 
 To identify the most effective combination of **selection** algorithm and **crossover** algorithm, several controlled tests were conducted. All other algorithm parameters were kept constant to ensure that any performance differences were solely due to the combinations of **selection** and **crossover** being compared. The following code was use for the test:
 ```python
