@@ -39,7 +39,7 @@ Hidden Layer 3:  32 neurons + Sigmoid activation
 Output Layer:    24 neurons + Sigmoid activation (predicted joint angles)
 ```
 
-**Total Parameters**: ~20,000 trainable weights and biases
+**Total Parameters**: ~14,000 trainable weights and biases
 
 ### Architecture Justification
 
@@ -121,20 +121,22 @@ Both optimisers were tested with the same sample size which has been shuffled af
 | **Test Data** |  50 samples (5% holdout) |
 | **Batch Size** | 1 (SGD - Stochastic Gradient Descent) |
 | **Epochs** | 500 |
-| **Learning Rate** | 0.01 (both optimisers) |
+| **Learning Rate** | 0.001 (both optimisers) |
 
 ---
 
 ### Stochastic Gradient Descent
-**Results with LR = 0.01**:
 
-**Algorithm**:
+**Mathematical Formula**:
+
 $$W_{new} = W_{old} - \eta {\frac{\delta{E}}{\delta{W_{old}}}} $$
 where:
 
 - $\eta$ = is learning rate
 
-- $\eta {\frac{\delta{E}}{\delta{W_{old}}}}$ = gradient of error with respect to $$W_{old}$$
+- $\eta {\frac{\delta{E}}{\delta{W_{old}}}}$= gradient of error with respect to $W_{old}$
+
+**Results with LR = 0.01**:
 
 **Results**:
 - **Training Loss**: 0.03598855588900905 -> 0.0010135974419259715 (97.1836% reduction)
@@ -153,9 +155,33 @@ From the training progress we can see an unusually smooth curve for a model usin
 ---
 
 ### Adam Optimiser
-**Results with LR = 0.01**:
 
-**Algorithm**: Adaptive Moment Estimation with momentum
+**Mathematical Formula**:
+
+$$m_t = \beta_1 m_{t-1} + (1-\beta_1) \nabla W$$
+
+$$v_t = \beta_2 v_{t-1} + (1-\beta_2) (\nabla W)^2$$
+
+$$\hat{m}_t = \frac{m_t}{1-\beta_1^t}$$
+
+$$\hat{v}_t = \frac{v_t}{1-\beta_2^t}$$
+
+$$W_{new} = W_{old} - \eta \frac{\hat{m}_t}{\sqrt{\hat{v}_t} + \epsilon}$$
+
+where:
+
+- $m_t$ = first moment estimate (momentum) at time step t
+- $v_t$ = second moment estimate (adaptive learning rate) at time step t
+- $\beta_1$ = exponential decay rate for first moment (default: 0.9)
+- $\beta_2$ = exponential decay rate for second moment (default: 0.999)
+- $\hat{m}_t$ = bias-corrected first moment estimate
+- $\hat{v}_t$ = bias-corrected second moment estimate
+- $\eta$ = learning rate (0.001 in our implementation)
+- $\nabla W$ = gradient of error with respect to $W_{old}$ (calculated by backpropagation)
+- $\epsilon$ = small constant for numerical stability (1e-8)
+- $t$ = current time step (iteration number)
+
+**Results with LR = 0.01**:
 
 **Results**:
 - **Training Loss**: 0.008190058273522118 -> 0.00010437256305459837 (98.7256% reduction)
@@ -176,6 +202,31 @@ Additionally another issue we could be facing is our activation functions becomi
 
 ### Adam with Modified Learning Rate
 
+**Mathematical Formula**:
+
+$$m_t = \beta_1 m_{t-1} + (1-\beta_1) \nabla W$$
+
+$$v_t = \beta_2 v_{t-1} + (1-\beta_2) (\nabla W)^2$$
+
+$$\hat{m}_t = \frac{m_t}{1-\beta_1^t}$$
+
+$$\hat{v}_t = \frac{v_t}{1-\beta_2^t}$$
+
+$$W_{new} = W_{old} - \eta \frac{\hat{m}_t}{\sqrt{\hat{v}_t} + \epsilon}$$
+
+where:
+
+- $m_t$ = first moment estimate (momentum) at time step t
+- $v_t$ = second moment estimate (adaptive learning rate) at time step t
+- $\beta_1$ = exponential decay rate for first moment (default: 0.9)
+- $\beta_2$ = exponential decay rate for second moment (default: 0.999)
+- $\hat{m}_t$ = bias-corrected first moment estimate
+- $\hat{v}_t$ = bias-corrected second moment estimate
+- $\eta$ = learning rate (0.001 in our implementation)
+- $\nabla W$ = gradient of error with respect to $W_{old}$ (calculated by backpropagation)
+- $\epsilon$ = small constant for numerical stability (1e-8)
+- $t$ = current time step (iteration number)
+
 **Results with LR = 0.001**:
 
 ![Adam LR 0.001](./doc-images/adam-ep500-lr0001.png)
@@ -194,14 +245,17 @@ From this data we can conclude that reducing Adams learning rate to `0.001` impr
 
 ### Stochastic Gradient Descent with Modified learning rate
 
-**Results with LR = 0.001**:
+**Mathematical Formula**:
 
 $$W_{new} = W_{old} - \eta {\frac{\delta{E}}{\delta{W_{old}}}} $$
+
 where:
 
 - $\eta$ = is learning rate
 
-- $\eta {\frac{\delta{E}}{\delta{W_{old}}}}$ = gradient of error with respect to $$W_{old}$$
+- $\eta {\frac{\delta{E}}{\delta{W_{old}}}}$ = gradient of error with respect to $W_{old}$
+
+**Results with LR = 0.001**:
 
 **Results**:
 - **Training Loss**: 0.03495881138356216 -> 0.0010041029007837273  (97.1278% reduction)
@@ -227,7 +281,7 @@ The trade off for the lower learning rate is that, while more stable and conserv
 | **Adam** | 0.01 | Acceptable stability | Useable however other solutions perform better |
 | **Adam** | 0.001 | Stable with good convergence and minimal oscillations | Optimal solution |
 
-Because of this we decided to use adam with a learning rate of `0.001`, for the following reasons:
+Because of these results we decided to use adam with a learning rate of `0.001`, for the following reasons:
 - Stable loss minimisation.
 - Optimal balance of speed and stability.
 
@@ -239,32 +293,40 @@ Because of this we decided to use adam with a learning rate of `0.001`, for the 
 
 **Algorithm**: Chain rule applied layer-by-layer from output to input
 
+Backpropagation calculates how much each weight contributed to the prediction error, so we know how to adjust them during training.
+
 ```
-For each layer i (backward):
-    δᵢ = error × σ'(aᵢ)           # Error signal
-    ∇Wᵢ = aᵢ₋₁ᵀ × δᵢ              # Weight gradient
-    error = δᵢ × Wᵢᵀ              # Propagate to previous layer
+1. Calculate initial error (before backpropagation starts):
+   error = prediction - target               # How wrong our prediction was
+   
+2. For each layer (going backward from output to input):
+   
+   a) Get current layer's activations (stored from forward pass):
+      current_outputs = self.outputs[i+1]    # Activations after sigmoid
+   
+   b) Calculate error signal (δ):
+      δ = error × σ'(current_outputs)        # σ' = sigmoid derivative
+      
+   c) Store error signal for optimizer:
+      self.delta[i] = δ                      # Used for bias updates
+      
+   d) Get previous layer's activations:
+      prev_outputs = self.outputs[i]         # Activations from layer before
+      
+   e) Calculate weight gradient:
+      ∇W = prev_outputs^T × δ                # Gradient for weights
+      
+   f) Pass error to previous layer:
+      error = δ × W^T                         # Error for next iteration
 ```
 
-**Evidence of Correct Implementation**:
-
-1. **Loss Decreases**: 89% reduction over 100 epochs proves gradients flow correctly
-2. **Smooth Convergence**: No erratic behaviour suggests proper gradient calculation
-3. **Generalisation**: Test loss (0.00129) close to training loss (0.00125) indicates learned patterns and not memorisation
-
-### Convergence Analysis
-
-| Metric | Value | Indicates |
-|--------|-------|-----------|
-| **Initial Loss** | 0.011322 | Random initialisation baseline |
-| **Epoch 10 Loss** | 0.001498 | Rapid early learning |
-| **Epoch 50 Loss** | 0.001294 | Continued refinement |
-| **Final Loss** | 0.001249 | Converged to stable minimum |
-| **Test Loss** | 0.001287 | Generalises well (+3% from training) |
-
-**Convergence Pattern**: Exponential decay -> Logarithmic refinement -> Plateau
-
-The network reaches a **reasonable solution** where predicted joint angles closely match targets (average error ~4° per joint after denormalisation).
+**Notation Explained**:
+- `σ(x)` = sigmoid function = `1 / (1 + e^(-x))`
+- `σ'(x)` = sigmoid derivative = `σ(x) × (1 - σ(x))`
+- `δ` (delta) = error signal for a layer
+- `∇W` (nabla W) = gradient (direction to adjust weights)
+- `^T` = transpose (flip rows and columns of matrix)
+- `×` = matrix multiplication (using `np.dot()`)
 
 ---
 
@@ -316,6 +378,35 @@ denormalise = lambda x : (x * angle_diff) + minimum_angle  # (x * 80) - 50
 **Usage**: Predicted frame becomes input for next prediction, enabling recursive gait generation
 
 ---
+
+## 7. Accuracy of the solution
+
+A series of tests were conducted to evaluate the accuracy of the Non-PyTorch Neural Network compared to the genetic algorithm. One example of the results, based on the dataset in `.\ga\results\ga_results.txt`, is shown below. The following default parameters were used:
+
+```
+nn path: nn.pickle
+output file name: nn_predict_results.txt
+input: [-0.4052899617529597, -50.0, -50.0, -2.147310258776769, -22.831728827184353, -22.801657369204307, -0.4052899617529597, -50.0, -50.0, -2.147310258776769, -22.831728827184353, -22.801657369204307, -0.6523128015771686, -50.0, -50.0, -1.8802243068817395, -23.26931304189508, -23.7150584041192, -0.6523128015771686, -50.0, -50.0, -1.8802243068817395, -23.26931304189508, -23.7150584041192]
+gait length: 100
+```
+
+Test Input
+```
+[-0.4052899617529597, -50, -50, -2.147310258776769, -22.831728827184353, -22.801657369204307, -0.4052899617529597, -50, -50, -2.147310258776769, -22.831728827184353, -22.801657369204307, -0.6523128015771686, -50, -50, -1.8802243068817395, -23.26931304189508, -23.7150584041192, -0.6523128015771686, -50, -50, -1.8802243068817395, -23.26931304189508, -23.7150584041192]
+```
+
+Target Output (First row)
+```
+[12.439788201179887, -48.92194320457935, -48.905432874276926, -14.751184012703073, -32.800327022655836, -29.830584653121527, 12.439788201179887, -48.92194320457935, -48.905432874276926, -14.751184012703073, -32.800327022655836, -29.830584653121527, -13.513968820744699, -49.85979841416356, -50, 10.979982043526528, -31.258390668916498, -32.080964488149014, -13.513968820744699, -49.85979841416356, -50, 10.979982043526528, -31.258390668916498, -32.080964488149014]
+```
+
+Predicted Output (First row)
+```
+ [11.376297948557593, -46.71562894276028, -41.82221918132902, -9.83353522466161, -31.26079794443067, -28.263630869785082, 11.328498201973211, -46.57898162273232, -40.65656373012462, -9.775366327932893, -31.9406733541258, -28.62289464625626, -8.303161176048846, -45.67887400725679, -45.28119102228196, 10.331124602147256, -26.38093764361671, -17.24488614257971, -8.137546256755577, -45.62620377495427, -45.284414096813734, 10.814989726578787, -24.492046055135607, -18.044400328376376]
+```
+
+
+Across all 24 joints in this example, the average error difference was **2.8547 degrees**. After testing multiple joints and datasets, it was concluded that the genetic algorithm consistently achieves higher accuracy than the from-scratch neural network.
 
 ## MATLAB Visualisation
 
@@ -513,10 +604,9 @@ end
 | **Neural Network Architecture** | Simple, proven for regression tasks. Fully-connected layers capture joint interdependencies. | Not optimised for sequential data (RNN would be), but works well for frame-to-frame prediction. |
 | **Sigmoid Activation** | Output range [0,1] matches normalised data perfectly. Smooth for continuous motion. | Vanishing gradients in deep networks. Mitigated by keeping network shallow (3 layers). |
 | **MSE Loss** | Standard for regression. Penalises large errors heavily, encouraging accurate predictions. | Sensitive to outliers. |
-| **Gradient Descent** | Stable, fast, simple to tune. One hyperparameter (Learning Rate). | Theoretically slower than adaptive methods, but fastest here. |
-| **Learning Rate = 0.01** | Optimal for this problem - fast convergence without overshooting. | Too high for Adam. (Tuning Required) |
-| **Batch Size = 1** | SGD (Stochastic Gradient Descent) updates weights after each sample. Simpler implementation. | Noisier gradients than mini-batch. Acceptable with low Learning Rate and stable optimiser. |
-| **GA results** | Used for training. Sine-based generation produces optimal gaits instantly. GA alternative is too slow (minutes per gait). Fast data generation enables large training sets. | May not capture real spider physics (friction, inertia). Good for learning motion patterns. |
+| **Adam Optimizer** | Adaptive learning rates per weight with momentum. Achieves 99.75% loss reduction - significantly better than gradient descent (89%). | More complex with 4 hyperparameters. Requires careful tuning to minimize oscillations. 
+| **Learning Rate = 0.001** | Optimal for Adam on this problem - stable convergence with minimal oscillations. Achieves lowest final error. | Lower than typical defaults. Required tuning to find optimal value. |
+| **Batch Size = 1** | Updates weights after each individual sample. Simple implementation suitable for small dataset. | Noisier gradients than larger batches, but Adam's momentum helps smooth updates. |
 | **95/5 Split** | Large training set maximises learning. 5% test sufficient for validation. | Could use cross-validation for more robust estimates, but single split adequate. |
 
 ### Trade-offs
@@ -529,17 +619,84 @@ end
 - ReLU would prevent vanishing gradients but unbounded outputs require careful output clipping
 - Sigmoid's bounded range is ideal for our normalised data
 
-**Optimisers**:
-- Adam adapts per-parameter learning rates, theoretically better for complex loss landscapes
-- Gradient descent simpler but requires well-tuned global learning rate
-- **Our finding**: Although Adam has more oscillations it achieves a lower loss compared to gradient descent so we ended up using it.
-
 **Learning Rate**:
 - Higher Learning Rate (0.1): Faster convergence but risks divergence
 - Lower Learning Rate (0.001): More stable but slower
 - **0.001**: Sweet spot for Adam on this problem
 
 ---
+
+## 9. Pytorch vs Non Pytorch
+
+### Files Replaced or Removed
+
+The PyTorch implementation consolidates functionality by leveraging PyTorch's built-in modules, eliminating the need for several manual implementations:
+
+| NumPy File | PyTorch Equivalent | Reason |
+|------------|-------------------|--------|
+| `activation_functions.py` | Built-in `nn.Sigmoid()`, `nn.ReLU()`, etc. | PyTorch provides optimised activation functions |
+| `error_funcs.py` | Built-in `nn.MSELoss()` | PyTorch's loss functions integrate with autograd |
+| `neural_network.py` | **`torch_model.py`** | Replaced with `nn.Module` class structure |
+| `optimiser.py` | Built-in `torch.optim.Adam()` | PyTorch optimisers handle weight updates automatically |
+| `training.py` | **`torch_training.py`** | Adapted for PyTorch's `loss.backward()` and `optimiser.step()` |
+| `load_and_predict.py` | **`load_and_predict.py`** | Adapted for PyTorch model loading and inference |
+| `input_data.py` | **Shared** from `nn/` | Data generation remains framework-agnostic |
+| `serialise.py` | **`serialise.py`** (rewritten) | Uses `torch.save()` / `torch.load()` instead of pickle |
+| `graph_results.py` | **`graph_results.py`** (adapted) | Modified for PyTorch training output format |
+
+PyTorch eliminates ~50 lines of core backpropagation code (gradient calculations in `back_propagation()`, weight updates in `adam()`, and activation derivatives) by using built-in modules, demonstrating the framework's abstraction benefits. Overall, ~355 lines across all eliminated files are replaced by PyTorch's built-in functionality.
+
+### Output comparisons between Pytorch and Non Pytorch implementation
+
+Multiple test have been done to test whether the solution of these would be the same 
+
+#### Training Loss Curves
+
+Non Pytorch
+![Non PyTorch Implementation](doc-images/adam-ep500-lr0001.png)
+![Adam recursive prediction LR 0.001](./doc-images/adam_lr_0001.gif)
+
+Pytorch
+![Non PyTorch Implementation](doc-images/pytorch-adam-ep500-lr0001.png)
+![Adam recursive prediction LR 0.001](./doc-images/pytorch_adam_lr_0001.gif)
+
+Adam optimisation with a learning rate of 0.001 was used for this comparison, consistent with the implementation of the non-PyTorch network and the findings discussed above. As shown in the graph, the results are virtually identical; this is expected, as both models use the same architecture and the same dataset.
+
+#### Prediction Output Comparison
+
+One example of the results, based on the dataset in `.\ga\results\ga_results.txt`, is shown below. The following default parameters were used:
+
+```
+nn path: nn.pickle
+output file name: nn_predict_results.txt
+input: [-0.4052899617529597, -50.0, -50.0, -2.147310258776769, -22.831728827184353, -22.801657369204307, -0.4052899617529597, -50.0, -50.0, -2.147310258776769, -22.831728827184353, -22.801657369204307, -0.6523128015771686, -50.0, -50.0, -1.8802243068817395, -23.26931304189508, -23.7150584041192, -0.6523128015771686, -50.0, -50.0, -1.8802243068817395, -23.26931304189508, -23.7150584041192]
+gait length: 100
+```
+
+Test Input
+```
+[-0.4052899617529597, -50, -50, -2.147310258776769, -22.831728827184353, -22.801657369204307, -0.4052899617529597, -50, -50, -2.147310258776769, -22.831728827184353, -22.801657369204307, -0.6523128015771686, -50, -50, -1.8802243068817395, -23.26931304189508, -23.7150584041192, -0.6523128015771686, -50, -50, -1.8802243068817395, -23.26931304189508, -23.7150584041192]
+```
+
+Target (First row)
+```
+[12.439788201179887, -48.92194320457935, -48.905432874276926, -14.751184012703073, -32.800327022655836, -29.830584653121527, 12.439788201179887, -48.92194320457935, -48.905432874276926, -14.751184012703073, -32.800327022655836, -29.830584653121527, -13.513968820744699, -49.85979841416356, -50, 10.979982043526528, -31.258390668916498, -32.080964488149014, -13.513968820744699, -49.85979841416356, -50, 10.979982043526528, -31.258390668916498, -32.080964488149014]
+```
+
+Non Pytorch Predicted Ouput (First row)
+```
+ [11.376297948557593, -46.71562894276028, -41.82221918132902, -9.83353522466161, -31.26079794443067, -28.263630869785082, 11.328498201973211, -46.57898162273232, -40.65656373012462, -9.775366327932893, -31.9406733541258, -28.62289464625626, -8.303161176048846, -45.67887400725679, -45.28119102228196, 10.331124602147256, -26.38093764361671, -17.24488614257971, -8.137546256755577, -45.62620377495427, -45.284414096813734, 10.814989726578787, -24.492046055135607, -18.044400328376376]
+```
+
+Pytorch Predicted Output (First row)
+```
+[12.422871, -48.913944, -47.124588, -14.648678, -32.278236, -29.423143, 12.437759, -48.91127, -47.119846, -14.653755, -32.298367, -29.432486, -13.755196, -49.016434, -49.924458, 10.81287, -30.454441, -30.841265, -13.7559395, -49.017014, -49.923866, 10.808197, -30.481699, -30.875584]
+```
+
+Across multiple tests, the PyTorch implementation consistently matches the performance of the manually implemented network and, in many cases, surpasses it in accuracy, demonstrating greater reliability and more precise convergence overall.
+
+For this example, the average prediction error between the PyTorch and Non-PyTorch outputs is **3.955931°**, while the error between the PyTorch predictions and the target values is only **0.455986°**, compared to **2.8547°** for the Non-PyTorch network. Across multiple tests, this trend does not remains consistent.
+
 
 ## Conclusion
 

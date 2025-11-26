@@ -1043,7 +1043,8 @@ end
 
 **Configuration:**
 ```
-gait length: 300
+gait compare length: 50
+final gait length: 300
 population size: 3000
 mutation rate: 0.025
 crossover rate: 0.7
