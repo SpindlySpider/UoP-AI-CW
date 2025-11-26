@@ -252,7 +252,7 @@ def gen_gait(individual: Individual, gait_length: int) -> Gait:
 
 ### Comparisons of combinations of Selection and Crossover techniques 
 
-To identify the most effective combination of **selection** algorithm and **crossover** algorithm, several controlled tests were conducted. All other algorithm parameters were kept constant to ensure that any performance differences were solely due to the combinations of **selection** and **crossover** being compared. The following code was use for the test:
+To identify the most effective combination of **selection** algorithm and **crossover** algorithm, several controlled tests were conducted. All other algorithm parameters were kept constant to ensure that any performance differences were solely due to the combinations of **selection** and **crossover** that were being used for comparison. The following code was use for the test:
 ```python
 import sys
 
