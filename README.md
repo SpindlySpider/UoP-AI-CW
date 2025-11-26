@@ -82,10 +82,16 @@ The **main.py** file serves as the command-line interface (CLI) for the Spider G
 ├── README.md                      # This documentation
 ├── ga_results.txt                 # Genetic algorithm output
 ├── main.py                        # Main CLI entry point
-├── nn.pickle                      # Trained NumPy neural network
+├── nn.pickle                      # Trained NumPy neural network - This should be used by default - trained over 500 epochs, with adam optimiser and a learning rate of 0.001
 ├── nn_predict_results.txt         # NumPy NN prediction output
 ├── requirements.txt               # Python dependencies
 └── utils.py                       # CLI utility functions
+└── adam-ep500-lr0001-nn.pickle    # NN trained over 500 epochs with adam optimiser and 0.001 learing rate 
+└── sgd-ep500-lr0001-nn.pickle    # NN trained over 500 epochs with gradient descent optimiser and 0.001 learing rate 
+└── adam-ep500-lr001-nn.pickle    # NN trained over 500 epochs with adam optimiser and 0.01 learing rate 
+└── sgd-ep500-lr001-nn.pickle    # NN trained over 500 epochs with gradient descent optimiser and 0.01 learing rate 
+└── pytorch-adam-ep500-lr0001.pth   # NN trained over 500 epochs with adam optimiser and 0.001 learing rate using pytorch
+└── pytorch-sgd-ep500-lr001.pth   # NN trained over 500 epochs with gradient descent optimiser and 0.01 learing rate using pytorch
 ```
 
 ---
