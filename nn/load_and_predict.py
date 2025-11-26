@@ -1,10 +1,15 @@
-from ga.custom_types import Gait
-from ga.output import output
-from nn.neural_network import Neural_network
-import nn.serialize as serialize
+import sys
+from pathlib import Path
 import random as rd
 import numpy as np
 
+from ga.custom_types import Gait
+
+from nn.neural_network import Neural_network
+import nn.serialise as serialize
+
+# Normalisation constants matching input_data.py training normalisation
+# Maps [-50, 30] to [0, 1] using (x + 50) / 80
 minimum_angle = -50
 maximum_angle = 30
 angle_diff = abs(minimum_angle) + abs(maximum_angle)
@@ -18,15 +23,18 @@ def predict(nn:Neural_network,input:list[float]) -> list[float]:
     Returns:
         list of 24 values, next predicted frame for all joints.
     """
-    input = normalize(input)
+    input = normalise(input)
     predict = nn.feed_forward(input)
-    return denormalize(predict)
+    return denormalise(predict)
 
 
-normalize = lambda x : (x + abs(minimum_angle))/angle_diff
-denormalize = lambda x : (x*angle_diff) - abs(minimum_angle)
+# Normalisation/denormalisation matching input_data.py
+# Training uses: (x + 50) / 80 for normalisation
+# So denormalisation is: (x * 80) - 50
+normalise = lambda x : (x - minimum_angle) / angle_diff  # (x + 50) / 80
+denormalise = lambda x : (x * angle_diff) + minimum_angle  # (x * 80) - 50
 
-def predict_gait(nn:Neural_network, input:list[float],gait_length:int = 100) -> Gait:
+def predict_gait(nn:Neural_network, input:list[float],gait_length:int = 300) -> Gait:
     """
     Recursively predict entire gait from one input.
     Parameters:
@@ -45,7 +53,7 @@ def predict_gait(nn:Neural_network, input:list[float],gait_length:int = 100) -> 
         gait.append(prediction.reshape(prediction.shape[1]))
     return gait
 
-def load_and_predict(input:list[float],nn_path:str = "nn.pickle",output_file_name:str = "results.txt",gait_length:int = 100):
+def load_and_predict(input:list[float],nn_path:str = "nn.pickle",output_file_name:str = "results.txt",gait_length:int = 300):
     """
     Helper function to easily load nn and output results.
     Parameters:
@@ -58,8 +66,10 @@ def load_and_predict(input:list[float],nn_path:str = "nn.pickle",output_file_nam
     print(f"predicting next {gait_length} poses")
     nn = serialize.load(nn_path)
     gait = predict_gait(nn,input,gait_length)
-    # save predicted gait to file results.txt
-    output(output_file_name,gait)
+    # save predicted gait to file in root directory
+    with open(output_file_name, 'w') as f:
+        for frame in gait:
+            f.write(','.join(map(str, frame)) + '\n')
     print(f"predicted gait saved to {output_file_name}")
 
 

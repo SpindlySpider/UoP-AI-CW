@@ -1,3 +1,5 @@
+from pathlib import Path
+
 from ga.custom_types import Gait, Individual
 import ga.fitness as fitness
 # use functions here for outputting the final best GA to a string that matlab can take
@@ -6,10 +8,14 @@ import ga.fitness as fitness
 def output(filename:str,solution:Individual):
     '''
     Outputs the given solution to a file in a comma-separated format which can be read by MATLAB.
-    Args:
+    Parameters:
         filename (str): The name of the file to output the solution to.
         solution (Individual): The solution to be outputted.
     '''
+    # Ensure the path is relative to ga/ folder if just a filename
+    if not Path(filename).is_absolute() and not str(filename).startswith('.'):
+        filename = str(Path(__file__).parent / filename)
+    
     with open(filename,"w") as file:
         for arr in solution:
             out_string = ",".join(map(str,arr)) + "\n"
@@ -18,7 +24,7 @@ def output(filename:str,solution:Individual):
 def output_gait(filename:str,individual:Individual,gait_length:int):
     '''
     Outputs the gait generated from the given individual to a file in a comma-separated format which can be read by MATLAB.
-    Args:
+    Parameters:
         filename (str): The name of the file to output the gait to.
         individual (Individual): The individual to generate the gait from.
         gait_length (int): The length of the gait.

@@ -1,4 +1,5 @@
 import random
+
 from ga.custom_types import Chromosome, Individual, Population, Period, H_offset, Amplitude, Negative, V_offset
 
 def gen_individual() -> Individual:
