@@ -6,15 +6,15 @@
    - [Structure](#structure)
    - [Architecture Justification](#architecture-justification)
 3. [Activation Functions](#activation-functions)
-4. [Loss Functions](#loss-functions)
+4. [Loss Function](#loss-functions)
 5. [Training Method](#training-method)
 6. [Backpropagation & Convergence](#backpropagation-and-convergence)
 7. [Data Handling & Input/Output Format](#data-handling-and-input-output-format)
 8. [Performance Visualisation](#performance-visualisation)
 9. [MATLAB visualisation](#matlab-visualisation)
-10. [Explaination & Justification](#explaination-and-justificiation)
+10. [Explaination & Justification](#explanation-and-justification)
 11. [PyTorch Implementation Details](#pytorch-implementation-details)
-12. [conclusion](#pytorch-implementation-details)
+12. [Conclusion](#conclusion)
 
 ---
 
@@ -616,11 +616,11 @@ end
 |--------|---------------|------------|
 | **Neural Network Architecture** | Simple, proven for regression tasks. Fully-connected layers capture joint interdependencies. | Not optimised for sequential data (RNN would be), but works well for frame-to-frame prediction. |
 | **Sigmoid Activation** | Output range [0,1] matches normalised data perfectly. Smooth for continuous motion. | Vanishing gradients in deep networks. Mitigated by keeping network shallow (3 layers). |
-| **MSE Loss** | Standard for regression. Penalises large errors heavily, encouraging accurate predictions. | Sensitive to outliers. Acceptable since our synthetic data is clean. |
+| **MSE Loss** | Standard for regression. Penalises large errors heavily, encouraging accurate predictions. | Sensitive to outliers. |
 | **Gradient Descent** | Stable, fast, simple to tune. One hyperparameter (Learning Rate). | Theoretically slower than adaptive methods, but fastest here. |
 | **Learning Rate = 0.01** | Optimal for this problem - fast convergence without overshooting. | Too high for Adam. (Tuning Required) |
 | **Batch Size = 1** | SGD (Stochastic Gradient Descent) updates weights after each sample. Simpler implementation. | Noisier gradients than mini-batch. Acceptable with low Learning Rate and stable optimiser. |
-| **Synthetic Data (target_sol)** | Used for training. Sine-based generation produces optimal gaits instantly. GA alternative is too slow (minutes per gait). Fast data generation enables large training sets. | May not capture real spider physics (friction, inertia). Good for learning motion patterns. |
+| **GA results** | Used for training. Sine-based generation produces optimal gaits instantly. GA alternative is too slow (minutes per gait). Fast data generation enables large training sets. | May not capture real spider physics (friction, inertia). Good for learning motion patterns. |
 | **95/5 Split** | Large training set maximises learning. 5% test sufficient for validation. | Could use cross-validation for more robust estimates, but single split adequate. |
 
 ### Trade-offs
@@ -636,12 +636,12 @@ end
 **Optimisers**:
 - Adam adapts per-parameter learning rates, theoretically better for complex loss landscapes
 - Gradient descent simpler but requires well-tuned global learning rate
-- **Our finding**: Gradient decent is superior with proper tuning, despite Adam's theoretical advantages
+- **Our finding**: Although Adam has more oscillations it achieves a lower loss compared to gradient descent so we ended up using it.
 
 **Learning Rate**:
 - Higher Learning Rate (0.1): Faster convergence but risks divergence
 - Lower Learning Rate (0.001): More stable but slower
-- **0.01**: Sweet spot for GD on this problem
+- **0.001**: Sweet spot for Adam on this problem
 
 ---
 
