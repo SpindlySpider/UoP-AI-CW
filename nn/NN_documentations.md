@@ -185,7 +185,7 @@ Additionally another issue we could be facing is our activation functions becomi
 
 **Analysis**:
 
-From this data we can conclude that reducing Adams learning rate to `0.001` improves stability while reducing oscillations, however they are still visible. Dispite this adam still offers a significantly lower error compared to gradient descent.
+From this data we can conclude that reducing Adams learning rate to `0.001` improves stability while reducing oscillations, however they are still visible. Despite this adam still offers a significantly lower error compared to gradient descent.
 
 ---
 
