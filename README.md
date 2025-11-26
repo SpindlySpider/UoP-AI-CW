@@ -74,6 +74,7 @@ The **main.py** file serves as the command-line interface (CLI) for the Spider G
 ├── nn.pickle                      # Trained NumPy neural network - This should be used by default - trained over 500 epochs, with adam optimiser and a learning rate of 0.001
 ├── nn_results.txt                 # NumPy NN training results
 ├── nn_predict_results.txt         # NumPy NN prediction output
+├── pytorch_predict_results.txt    # PyTorch NN prediction output
 ├── nn_pytorch.pth                 # Trained PyTorch neural network - Trained over 500 epochs with adam optimser and learning rate of 0.001
 ├── adam-ep500-lr0001-nn.pickle    # NN trained over 500 epochs with adam optimiser and 0.001 learing rate 
 ├── sgd-ep500-lr0001.pickle        # NN trained over 500 epochs with gradient descent optimiser and 0.001 learing rate 
