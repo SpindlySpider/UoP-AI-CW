@@ -106,6 +106,8 @@ Where:
 
 ## Training Method
 
+All gifs of gait included here are started from the initial position of [0,0,...,0] with 24 0's. The NN then predicts what the next time step should be and this is saved as the next frame. This is repeated 100 times.
+
 ### Optimiser Comparison: Gradient Descent vs Adam
 
 Both optimisers were tested with the same sample size which has been shuffled after each epoch to prevent overfitting. The results below show **tested training runs**
