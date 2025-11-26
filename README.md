@@ -14,13 +14,14 @@
 
 ## Overview
 
-The **main.py** file serves as the command-line interface (CLI) for the Spider Generation & Prediction System, providing an access point to multiple AI approaches, which allow the user to generate a gait or predict sequential movements
+The **main.py** file serves as the command-line interface (CLI) for the Spider Generation & Prediction System, providing an access generating and predicting spider gait using the following:
 
 **Genetic Algorithm (GA)** - Evolves optimal gait patterns through comparison to target solution.
 
 **Neural Network (NN)** - Learns to predict sequential gait frames from training data:
-   - **From Scratch Implementation** - Pure Python implementation.
-   - **PyTorch Implementation** - GPU-accelerated deep learning framework.
+    - From Scratch Implementation - Pure Python implementation.
+    - PyTorch Implementation - GPU-accelerated deep learning framework.
+
 
 ---
 
